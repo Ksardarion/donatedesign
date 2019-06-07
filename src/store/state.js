@@ -41,6 +41,10 @@ let light_theme = {
 }
 
 var state = {
+	token: localStorage.getItem('user_token'),
+	user: {
+		id: null
+	},
 	mainSettings: {
 
 	},

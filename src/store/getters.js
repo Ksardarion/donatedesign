@@ -1,4 +1,7 @@
 var getters = {
+  token: state => {
+    return state.token
+  },
   mainSettings: state => {
     return state.mainSettings
   },

@@ -28,6 +28,7 @@
 
 </template>
 <script>
+	import axios from 'axios'
   import LogoBox from './components/LogoBox.vue'
   import NavBar from './components/NavBar.vue'
   import SideBar from './components/SideBar.vue'
@@ -67,9 +68,11 @@
         }
         ]
       }
-    },
+		},
     computed: {
-      ...mapGetters(['color_schema', 'mainSettings']),
+      ...mapGetters([
+				'color_schema', 'mainSettings', 'token'
+			]),
       modalItems () {
         var arr = []
         this.paymentItems.forEach(function (el) { arr.push({ value: el.name }) })
@@ -77,9 +80,17 @@
       }
 		},
 		methods: {
-			...mapActions(['fetchSettings'])
+			...mapActions([
+				'fetchSettings'
+			]),
+			authorization () {
+				if (this.token) {
+					axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.token
+				}
+			}
 		},
 		created () {
+			this.authorization()
 			this.fetchSettings()
 		}
   }
@@ -104,7 +115,7 @@ div#app {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 280px 1fr;;
+  grid-template-columns: 280px 1fr;
   grid-template-rows: 100px 1fr;
   grid-column-gap: 2px;
   grid-row-gap: 2px;

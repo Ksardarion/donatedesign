@@ -1,4 +1,8 @@
 var mutations = {
+	setToken (state, token) {
+		localStorage.setItem('user_token', token)
+		state.token = token
+	},
 	setSettings (state, settings) {
 		state.mainSettings = settings
 	},

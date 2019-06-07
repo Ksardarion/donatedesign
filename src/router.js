@@ -18,6 +18,7 @@ import Advancement from './views/Advancement.vue'
 import FormDonation from './views/FormDonation.vue'
 import Search from './views/Search.vue'
 import Profile from './views/Profile.vue'
+import Auth from './views/Auth.vue'
 
 Vue.use(Router)
 
@@ -29,6 +30,11 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/auth',
+      name: 'auth',
+      component: Auth
     },
     {
       path: '/dashboard',
