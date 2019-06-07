@@ -104,7 +104,7 @@ div#app {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px 1fr;;
   grid-template-rows: 100px 1fr;
   grid-column-gap: 2px;
   grid-row-gap: 2px;
