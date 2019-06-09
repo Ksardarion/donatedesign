@@ -81,11 +81,12 @@
 		},
 		methods: {
 			...mapActions([
-				'fetchSettings'
+				'fetchSettings', 'fetchUser'
 			]),
 			authorization () {
 				if (this.token) {
-					axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.token
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.token
+          this.fetchUser()
 				}
 			}
 		},

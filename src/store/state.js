@@ -47,7 +47,8 @@ var state = {
 	},
 	mainSettings: {
 
-	},
+  },
+  transactions: [],
   user_type: 'streamer',
   state_checkbox: false,
   color_schema: {

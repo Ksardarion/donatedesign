@@ -86,16 +86,20 @@
       </li>
     </ul>
     <li class="list-group-item exit-link">
-      <router-link to="/" class="text menu-link exit" exact :class="color_schema.link">
+      <div @click="exit" class="text menu-link exit" exact :class="color_schema.link">
         <img src="../assets/exit.svg" class="menu-icon">
         <span class="d-none d-lg-block">ВЫХОД</span>
-      </router-link>
+      </div>
+      <!-- <router-link to="/" class="text menu-link exit" exact :class="color_schema.link">
+        <img src="../assets/exit.svg" class="menu-icon">
+        <span class="d-none d-lg-block">ВЫХОД</span>
+      </router-link> -->
     </li>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'side-bar',
@@ -110,6 +114,15 @@ export default {
       return {
         'router-link-active': !!this.$route.path.includes('/settings')
       }
+    }
+  },
+  methods: {
+    ...mapActions([
+      'logout'
+    ]),
+    exit () {
+      this.logout()
+      this.$router.push({name: 'home'})
     }
   }
 }

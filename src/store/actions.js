@@ -1,6 +1,19 @@
 import client from 'api-client'
+import axios from 'axios'
 
 var actions = {
+    logout ({ commit }) {
+      localStorage.removeItem('user_token')
+      commit('logout')
+    },
+    fetchUser ({ commit }) {
+      return axios.get('http://gmail-import.com/api/user')
+      .then(response => commit('setUser', response.data))
+    },
+    fetchTransactions ({ commit }) {
+      return axios.get('http://gmail-import.com/api/transactions?sortBy=id&descending=true&rowsPerPage=10&page=1&totalItems=0')
+      .then(response => commit('setTransactions', response.data))
+    },
     fetchSettings ({ commit }) {
       return client
       .fetchSettings()

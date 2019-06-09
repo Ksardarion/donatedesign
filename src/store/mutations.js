@@ -1,5 +1,21 @@
+import axios from 'axios'
+
 var mutations = {
-	setToken (state, token) {
+  setUser (state, user) {
+    state.user = user
+  },
+  logout (state) {
+    state.token = null
+    state.user = {
+      id: null
+    }
+    axios.defaults.headers.common['Authorization'] = 'Bearer null'
+  },
+  setTransactions (state, transactions) {
+    state.transactions = transactions
+  },
+  setToken (state, token) {
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
 		localStorage.setItem('user_token', token)
 		state.token = token
 	},

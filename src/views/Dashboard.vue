@@ -103,7 +103,7 @@
       }
     },
     computed: {
-      ...mapGetters(['color_schema', 'user'])
+      ...mapGetters(['color_schema', 'user', 'user_info'])
     }
   }
 </script>

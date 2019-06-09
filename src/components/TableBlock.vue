@@ -30,7 +30,7 @@
       </div>
     </div>
     <div class="table-body">
-      <div class="body-item" v-for="item in activities" :key="item.id">
+      <div class="body-item" v-for="item in activities" :key="`transaction-${item.id}`">
         <div class="user">
           <img :src="item.user.avatar" class="avatar">
           <div class="username">
@@ -43,7 +43,7 @@
         <div class="amount">
           {{ item.amount }} EUR
         </div>
-        <div v-tooltip.click.top.end="{ content: item.message, class: 'tooltip-custom' }":class="['message', color_schema.text]">
+        <div v-tooltip.click.top.end="{ content: item.message, class: 'tooltip-custom' }" :class="['message', color_schema.text]">
           {{ item.message | truncate(15, '...') }}
         </div>
       </div>
@@ -51,7 +51,7 @@
   </div>
 </template>
 <script>
-  import { mapGetters, mapState } from 'vuex'
+  import { mapGetters, mapState, mapActions } from 'vuex'
 
   export default {
     name: 'table-block',
@@ -96,6 +96,9 @@
       },
     },
     methods: {
+      ...mapActions([
+        'fetchTransactions'
+      ]),
       loadMore() {
         this.busy = true;
         setTimeout(() => {
@@ -103,6 +106,9 @@
           this.busy = false;
         }, 200);
       }
+    },
+    created () {
+      this.fetchTransactions()
     },
     filters: {
       truncate: function (text, length, suffix) {

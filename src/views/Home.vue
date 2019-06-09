@@ -6,7 +6,8 @@
           <img src="../assets/Image 21@2x.png" class="logo">
         </div>
         <div class="buttons">
-          <b-button v-b-modal.login-modal variant="outline-light" class="sign-in text">ВОЙТИ</b-button>
+          <b-button v-if="!is_auth" v-b-modal.login-modal variant="outline-light" class="sign-in text">ВОЙТИ</b-button>
+          <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">КАБИНЕТ</b-button>
         </div>
       </div>
       <div class="main-content">
@@ -15,7 +16,8 @@
           и отправки донатов.
         </div>
         <div class="main-button">
-          <button v-b-modal.login-modal variant="btn" class="default-button text">ПРИСОЕДИНИТЬСЯ</button>
+          <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПРИСОЕДИНИТЬСЯ</button>
+          <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
         </div>
       </div>
     </div>
@@ -34,7 +36,8 @@
             Минимальная комиссия, максимум платежных систем.
           </div>
           <div class="item-button">
-            <button v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
+            <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
+            <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
           </div>
         </div>
       </div>
@@ -47,7 +50,8 @@
             Последнее сообщение, самые крупные донатеры, последние донатеры/подписчики, количество подписчиков и многое другое!
           </div>
           <div class="item-button">
-            <button v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
+            <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
+            <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
           </div>
         </div>
         <div class="item-video right">
@@ -70,7 +74,8 @@
             Самая гибкая настройка позиционирования элементов уведомлений. Сообщения/медиа при донате и подписке.
           </div>
           <div class="item-button">
-            <button v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
+            <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
+            <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
           </div>
         </div>
       </div>
@@ -83,7 +88,8 @@
             Для особенных донатеров вы можете создавать крутые условия! Персональные иконки, бейджики, мелодии и анимацию ника.
           </div>
           <div class="item-button">
-            <button v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
+            <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
+            <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
           </div>
         </div>
         <div class="item-video right">
@@ -94,11 +100,11 @@
       </div>
     </div>
     <div class="lending-support">
-      <img class="buble a" src="../assets/1.png"></img>
-      <img class="buble b" src="../assets/2.png"></img>
-      <img class="buble c" src="../assets/3.png"></img>
+      <img class="buble a" src="../assets/1.png"/>
+      <img class="buble b" src="../assets/2.png"/>
+      <img class="buble c" src="../assets/3.png"/>
       <div class="support-images">
-        <img class="coins" src="../assets/coins@2x.png"></img>
+        <img class="coins" src="../assets/coins@2x.png"/>
       </div>
       <div class="support title title text">
         Хочешь поддержать своего стримера?
@@ -108,16 +114,17 @@
         Чем больше донат - тем больше фишек.
       </div>
       <div class="support-lending-button">
-        <button v-b-modal.login-modal variant="btn" class="default-button text">ПОДДЕРЖАТЬ</button>
+        <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОДДЕРЖАТЬ</button>
+        <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
       </div>
     </div>
 
     <div class="lending counter-comments">
-      <img class="buble d" src="../assets/4.png"></img>
-      <img class="buble e" src="../assets/5.png"></img>
-      <img class="buble f" src="../assets/6.png"></img>
-      <img class="buble g" src="../assets/7.png"></img>
-      <img class="buble h" src="../assets/8.png"></img>
+      <img class="buble d" src="../assets/4.png"/>
+      <img class="buble e" src="../assets/5.png"/>
+      <img class="buble f" src="../assets/6.png"/>
+      <img class="buble g" src="../assets/7.png"/>
+      <img class="buble h" src="../assets/8.png"/>
       <div class="counter">
         <div class="count text">
           999999
@@ -132,7 +139,7 @@
       </div>
       <div class="custom-carousel">
         <b-carousel id="carousel-comments" indicators  img-width="900" img-height="400">
-            <b-carousel-slide img-blank img-alt="Blank image" v-for="(comment, index) in comments">
+            <b-carousel-slide img-blank img-alt="Blank image" v-for="(comment, index) in comments" :key="`carousel-comments-${index}`">
               <div class="comment">
                 <img :src="comment.user.avatar" class="author content-icon">
                 <div class="author-name text">{{comment.user.user_name}}</div>
@@ -152,7 +159,8 @@
           Присоединяйся к нам!
         </div>
         <div class="footer-button">
-          <b-button v-b-modal.login-modal variant="btn" class="default-button text">ВОЙТИ В СИСТЕМУ</b-button>
+          <b-button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ВОЙТИ В СИСТЕМУ</b-button>
+          <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
         </div>
       </div>
       <footer>
@@ -172,6 +180,7 @@
 
 <script>
 import LoginModal from '@/components/modals/LoginModal.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'home',
@@ -182,6 +191,11 @@ export default {
     return {
       comments: null
     }
+  },
+  computed: {
+    ...mapGetters([
+      'user_info', 'is_auth'
+    ])
   },
   created () {
     this.$http.get('comments/').then((res) => {

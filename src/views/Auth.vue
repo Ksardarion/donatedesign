@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 
 export default {
 	computed: {
@@ -14,12 +14,17 @@ export default {
 		])
 	},
 	methods: {
+		...mapActions([
+			'fetchUser'
+		]),
 		...mapMutations([
 			'setToken'
 		])
 	},
 	created () {
 		this.setToken(this.$route.query.token)
+		this.fetchUser()
+		this.$router.push({ name: 'dashboard'})
 	}
 }
 </script>

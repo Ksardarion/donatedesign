@@ -13,6 +13,12 @@ var getters = {
   },
   user: state => {
     return state.user_type == 'user'
+  },
+  user_info: state => {
+    return state.user
+  },
+  is_auth: state => {
+    return !!state.user.id
   }
 }
 
