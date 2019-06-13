@@ -11,8 +11,12 @@ var actions = {
       .then(response => commit('setUser', response.data))
     },
     fetchTransactions ({ commit }) {
-      return axios.get('http://gmail-import.com/api/transactions?sortBy=id&descending=true&rowsPerPage=10&page=1&totalItems=0')
+      return axios.get('http://gmail-import.com/api/transactions?sortBy=id&descending=true&rowsPerPage=10&page=1&totalItems=0&all')
       .then(response => commit('setTransactions', response.data))
+    },
+    fetchTransactionsStatistic ({ commit }) {
+      return axios.get('http://gmail-import.com/api/transactions/statistic')
+      .then(response => commit('setTransactionsStatistic', response.data))
     },
     fetchSettings ({ commit }) {
       return client
@@ -50,9 +54,12 @@ var actions = {
       .then(playlist => commit('addPlaylist', playlist))
     },
     fetchSubscribers ({ commit }) {
-      return client
-      .fetchSibscribers()
-      .then(subscribers => commit('setSubscribers', subscribers))
+			return axios.get('http://gmail-import.com/api/subscribers')
+			.then(response => commit('setSubscribers', response.data))
+
+      // return client
+      // .fetchSibscribers()
+      // .then(subscribers => commit('setSubscribers', subscribers))
     },
     createMilestone ({ commit }) {
       return client

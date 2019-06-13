@@ -1,8 +1,8 @@
 <template>
   <div class="content-app1 payments">
     <div class="info-blocks">
-      <info-block title="Платежей" counter="199" amount="2150"/>
-      <info-block title="В этом месяце" counter="140" amount="1550"/>
+      <info-block title="Платежей" :counter="transactions_statistic.count" :amount="transactions_statistic.sum"/>
+      <info-block title="В этом месяце" :counter="transactions_statistic.current_mounth.count" :amount="transactions_statistic.current_mounth.sum"/>
     </div>
     <info-round-chart title="Процент Доната" :sections="sections" :total="35" />
     <chart-block />
@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+
 import InfoBlock from '@/components/InfoBlock.vue'
 import InfoRoundChart from '@/components/InfoRoundChart.vue'
 import ChartBlock from '@/components/ChartBlock.vue'
@@ -30,7 +32,20 @@ export default {
         { label: 'Подписчики', value: 11, color: '#D6D6EA' }
       ]
     }
-  }
+	},
+	computed: {
+		...mapGetters([
+			'transactions_statistic'
+		])
+	},
+	methods: {
+		...mapActions([
+			'fetchTransactionsStatistic'
+		])
+	},
+	created () {
+		this.fetchTransactionsStatistic()
+	}
 }
 </script>
 

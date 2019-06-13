@@ -13,7 +13,10 @@ var mutations = {
   },
   setTransactions (state, transactions) {
     state.transactions = transactions
-  },
+	},
+	setTransactionsStatistic (state, statistic) {
+		state.transactions_statistic = statistic
+	},
   setToken (state, token) {
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
 		localStorage.setItem('user_token', token)

@@ -1,7 +1,7 @@
 <template>
   <div class="chart" :class="color_schema.item">
     <div class="chart-box">
-      <div class="chart-box-title text">Динамика платежей, EUR</div>
+      <div class="chart-box-title text">Динамика платежей, RUB</div>
       <div class="chart-select text" :class="color_schema.text">
         Период:
         <div class="select-block">
@@ -10,9 +10,9 @@
             :value="option.value"
             :key="option.value"
             :class="[{ active: chart_sections == option.value }, color_schema.title_text]"
-            @click="chart_sections = option.value; onChange(chart_sections)"
+            @click="chart_sections = option.title; onChange(option.value)"
             >
-            {{ option.value }}
+            {{ option.title }}
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 import BarChart from '@/components/BarChart.vue'
 import { mapGetters } from 'vuex'
 
@@ -40,25 +42,25 @@ export default {
   },
   data () {
     return {
-      chart_sections: 'Январь',
+      chart_sections: 'Июнь',
       chart_options: [
-        { value: 'Январь' },
-        { value: 'Февраль' },
-        { value: 'Март' },
-        { value: 'Апрель' },
-        { value: 'Май' },
-        { value: 'Июнь' },
-        { value: 'Июль' },
-        { value: 'Август' },
-        { value: 'Сентябрь' },
-        { value: 'Октябрь' },
-        { value: 'Ноябрь' },
-        { value: 'Декабрь' }
+        { value: '01', title: 'Январь' },
+        { value: '02', title: 'Февраль' },
+        { value: '03', title: 'Март' },
+        { value: '04', title: 'Апрель' },
+        { value: '05', title: 'Май' },
+        { value: '06', title: 'Июнь' },
+        { value: '07', title: 'Июль' },
+        { value: '08', title: 'Август' },
+        { value: '09', title: 'Сентябрь' },
+        { value: '10', title: 'Октябрь' },
+        { value: '11', title: 'Ноябрь' },
+        { value: '12', title: 'Декабрь' }
       ],
       datasets: {
-        labels: Array.from({ length: 30 }, (v, k) => (k + 1 + ' Января')),
+        labels: [],
         datasets: [{
-          data: Array(30).fill().map(() => Math.round(Math.random() * (1000 - 600) + 600)),
+          data: [],
           backgroundColor: '#8585AA'
         }]
       },
@@ -83,7 +85,7 @@ export default {
           titleFontSize: 12,
           callbacks: {
             title: function (tooltipItem, data) {
-              return tooltipItem[0].yLabel + ' EUR'
+              return tooltipItem[0].yLabel + ' RUB'
             },
             label: function (tooltipItem, data) {
               return tooltipItem.xLabel
@@ -115,15 +117,33 @@ export default {
   },
   methods: {
     onChange (value) {
-      this.datasets = {
-        labels: Array.from({ length: 30 }, (v, k) => (k + 1 + value)),
-        datasets: [{
-          data: Array(30).fill().map(() => Math.round(Math.random() * (1000 - 600) + 600)),
-          backgroundColor: '#8585AA'
-        }]
-      }
-    }
-  }
+			axios.get('http://gmail-import.com/api/statistic/donate?mounth=' + value).then(response => {
+				let stat = response.data
+				this.datasets = {
+					labels: stat.labels,
+					datasets: [{
+						data: stat.sum_donate,
+						backgroundColor: '#8585AA'
+					}]
+				}
+			})
+		},
+		fetchStatisticChart () {
+			axios.get('http://gmail-import.com/api/statistic/donate').then(response => {
+				let stat = response.data
+				this.datasets = {
+					labels: stat.labels,
+					datasets: [{
+						data: stat.sum_donate,
+						backgroundColor: '#8585AA'
+					}]
+				}
+			})
+		}
+	},
+	created () {
+		this.fetchStatisticChart()
+	}
 }
 </script>
 

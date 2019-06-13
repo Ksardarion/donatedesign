@@ -2,6 +2,7 @@
   <div class="subscribers-list">
     <div class="list-header" :class="color_schema.item">
       <div class="title-header">
+				<!-- {{subscribers}} -->
         Подписчики
       </div>
       <div class="list-actions">
@@ -25,13 +26,23 @@
     </div>
   </div>
   <div class="list-body" id="list-body-subscriptions">
-    <list-item
+    <!-- <list-item
     :avatar_url="subscribe.user.avatar"
     :nickname="subscribe.user.nickname"
     :date="subscribe.date"
     :donate="subscribe.donate"
     :state="subscribe.state"
     v-for="subscribe in sortable(sortKey.value)"
+		:key="`subscriptions-${subscribe.user.nickname}`"
+    /> -->
+		<list-item
+    :avatar_url="subscribe.logo"
+    :nickname="subscribe.name"
+    :date="subscribe.created_at"
+    :donate="50"
+    :states="subscribe.pivot"
+    v-for="subscribe in sortable(sortKey.value)"
+		:key="`subscriptions-${subscribe.name}`"
     />
   </div>
 </div>
@@ -55,7 +66,10 @@
         { value: 'date', text: 'Топ подписка' }
         ]
       }
-    },
+		},
+		// created () {
+		// 	console.log(this.subscribers)
+		// },
     mounted() {
       const listElm = document.querySelector('#list-body-subscriptions');
       listElm.addEventListener('scroll', e => {

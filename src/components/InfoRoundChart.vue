@@ -3,7 +3,7 @@
     <div class="chart-title text" >
      {{ title }}
      <div class="amount-total text" v-if="amount != 0">
-      {{ amount }} EUR
+      {{ amount }} RUB
     </div>
   </div>
 
@@ -20,11 +20,11 @@
 <div v-if="!legends" class="cdc-legend text" :class="color_schema.text">
   <div class="result" v-if="amount != 0">
     <div class="amount-percent" :class="color_schema.title_text">
-      {{ amountPercent }} EUR
+      {{ amountPercent }} RUB
       <p :class="color_schema.text">собрано</p>
     </div>
     <div class="amount-remainder" :class="color_schema.title_text">
-      {{ amountRemainder }} EUR
+      {{ amountRemainder }} RUB
       <p :class="color_schema.text">осталось</p>
     </div>
   </div>

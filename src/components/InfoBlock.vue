@@ -9,7 +9,7 @@
       </div>
       <template v-if="amount != null">
         <div class="amount text" :class="color_schema.extra">
-          {{ amount }} EUR
+          {{ amount }} RUB
         </div>
       </template>
     </div>
@@ -25,10 +25,10 @@ export default {
       type: String
     },
     counter: {
-      type: String
+      type: Number
     },
     amount: {
-      type: String,
+      type: Number,
       default: null
     }
   },

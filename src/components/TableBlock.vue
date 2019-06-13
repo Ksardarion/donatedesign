@@ -30,18 +30,18 @@
       </div>
     </div>
     <div class="table-body">
-      <div class="body-item" v-for="item in activities" :key="`transaction-${item.id}`">
+      <div class="body-item" v-for="item in transactions" :key="`transaction-${item.id}`">
         <div class="user">
           <img :src="item.user.avatar" class="avatar">
           <div class="username">
-            {{ item.user.user_name }}
+            {{ item.user.name }}
           </div>
         </div>
         <div :class="['date', color_schema.text]">
-          {{ item.date }}
+          {{ item.created_at }}
         </div>
         <div class="amount">
-          {{ item.amount }} EUR
+          {{ item.amount }} RUB
         </div>
         <div v-tooltip.click.top.end="{ content: item.message, class: 'tooltip-custom' }" :class="['message', color_schema.text]">
           {{ item.message | truncate(15, '...') }}
@@ -68,7 +68,7 @@
         pageOptions: [
         { value: '5' },
         { value: '10' }
-        ]    
+        ]
       }
     },
     props: {
@@ -89,7 +89,7 @@
       this.$store.dispatch('fetchActivities', this.type)
     },
     computed: {
-      ...mapGetters(['color_schema', 'user', 'state_checkbox']),
+      ...mapGetters(['color_schema', 'user', 'state_checkbox', 'transactions']),
       ...mapState(['activities']),
       text_color () {
         return this.state_checkbox ? 'dark-blue' : 'grey'

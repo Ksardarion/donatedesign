@@ -10,14 +10,14 @@
         </div>
       </div>
     </router-link>
-    <div class="donate d-flex">
+    <!-- <div class="donate d-flex">
       <div :class="color_schema.text">
         Общий донат
       </div>
       <div class="money">
        {{ donate }} EUR
      </div>
-   </div>
+   </div> -->
    <div class="sibscribe-date d-flex">
     <div :class="color_schema.text">
       Подписан на вас
@@ -38,7 +38,7 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'list-item',
-  props: ['avatar_url', 'nickname', 'date', 'donate', 'state'],
+  props: ['avatar_url', 'nickname', 'date', 'donate', 'states'],
   data () {
     return {
       icon_path: {
@@ -56,7 +56,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['color_schema', 'user', 'state_checkbox']),
+		...mapGetters(['color_schema', 'user', 'state_checkbox']),
+		state () {
+			if (this.states.free) {
+				return 'simple'
+			}
+			if (this.states.paid) {
+				return 'paid'
+			}
+			if (this.states.premium) {
+				return 'premium'
+			}
+		},
     update_state () {
       return this.text_state[this.state]
     },

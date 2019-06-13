@@ -48,7 +48,15 @@ var state = {
 	mainSettings: {
 
   },
-  transactions: [],
+	transactions: [],
+	transactions_statistic: {
+		count: 0,
+		sum: 0,
+		current_mounth: {
+			count: 0,
+			sum: 0,
+		}
+	},
   user_type: 'streamer',
   state_checkbox: false,
   color_schema: {

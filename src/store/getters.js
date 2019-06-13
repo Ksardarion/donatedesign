@@ -1,4 +1,10 @@
 var getters = {
+  transactions: state => {
+    return state.transactions
+  },
+  transactions_statistic: state => {
+    return state.transactions_statistic
+  },
   token: state => {
     return state.token
   },
