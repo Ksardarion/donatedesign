@@ -1,11 +1,11 @@
 <template>
   <div class="select-block">
-    <b-dropdown toggle-class="drop-select-block" :id="id" v-model="value" :text="value" dropbottom class="btn my-btn">
+    <b-dropdown toggle-class="drop-select-block" :id="id" :text="value" dropbottom class="btn my-btn">
       <b-dropdown-item v-for="option in options"
       :value="option.value"
       :key="option.value"
       :class="{ active: value == option.value }"
-      @click="value = option.value"
+      @click="model = option.value"
       >
       {{ option.value }}
     </b-dropdown-item>
@@ -15,7 +15,17 @@
 <script>
 export default {
   name: 'select-block',
-  props: ['id', 'value', 'options']
+	props: ['id', 'value', 'options'],
+	computed: {
+		model: {
+			get () {
+				return this.value
+			},
+			set (new_value) {
+				this.$emit('update', new_value)
+			}
+		}
+	}
 }
 </script>
 <style>

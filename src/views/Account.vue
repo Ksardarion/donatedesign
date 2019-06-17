@@ -5,102 +5,18 @@
         Привязанные аккаунты
       </div>
       <div class="accounts">
-        <!-- <div class="social-account" :class="color_schema.item">
-          <div class="social-info">
-            <div class="social-icon">
-              <img src="../assets/twitch.svg">
-            </div>
-            <div class="social-name text">
-              Twitch
-            </div>
-          </div>
-          <div class="account-actions">
-            <div class="verify">
-              <img src="../assets/verification-sign.svg">
-            </div>
-            <button class="link-button active text" :class="color_schema.item">
-              Отвязать
-            </button>
-          </div>
-        </div> -->
 
+				<social-item
+					:is_connected="user_info.social_twitch"
+					title="Twitch"/>
 
-        <div class="social-account" :class="color_schema.item">
-          <div class="social-info">
-            <div class="social-icon">
-              <img src="../assets/twitch.svg">
-            </div>
-            <div class="social-name text">
-              Twitch
-            </div>
-          </div>
-          <div class="account-actions" v-if="!user_info.social_twitch">
-            <button class="link-button text" :class="color_schema.item">
-              Привязать
-            </button>
-          </div>
-         <div class="account-actions" v-else>
-            <div class="verify">
-              <img src="../assets/verification-sign.svg">
-            </div>
-            <button class="link-button active text" :class="color_schema.item">
-              Отвязать
-            </button>
-          </div>
+				<social-item
+					:is_connected="user_info.social_youtube"
+					title="YouTube"/>
 
-        </div>
-
-        <div class="social-account" :class="color_schema.item">
-          <div class="social-info">
-            <div class="social-icon">
-              <img src="../assets/youtube.svg">
-            </div>
-            <div class="social-name text">
-              YouTube
-            </div>
-          </div>
-          <div class="account-actions" v-if="!user_info.social_youtube">
-            <button class="link-button text" :class="color_schema.item">
-              Привязать
-            </button>
-          </div>
-          <div class="account-actions" v-else>
-            <div class="verify">
-              <img src="../assets/verification-sign.svg">
-            </div>
-            <button class="link-button active text" :class="color_schema.item">
-              Отвязать
-            </button>
-          </div>
-
-       </div>
-
-
-        <div class="social-account" :class="color_schema.item">
-          <div class="social-info">
-            <div class="social-icon">
-              <img src="../assets/vk.svg">
-            </div>
-            <div class="social-name text">
-              VKontakte
-            </div>
-          </div>
-          <div class="account-actions" v-if="!user_info.social_vkontakte">
-            <button class="link-button text" :class="color_schema.item">
-              Привязать
-            </button>
-          </div>
-          <div class="account-actions" v-else>
-            <div class="verify">
-              <img src="../assets/verification-sign.svg">
-            </div>
-            <button class="link-button active text" :class="color_schema.item">
-              Отвязать
-            </button>
-          </div>
-
-       </div>
-
+				<social-item
+					:is_connected="user_info.social_vkontakte"
+					title="VKontakte"/>
 
       </div>
     </div>
@@ -111,45 +27,56 @@
       <div class="settings-block" :class="[color_schema.item, color_schema.text]">
         <div class="select-form-group">
           <label for="currency" class="currency text" :class="color_schema.text">
-            Основная Валюта{{ currency }}
+            Основная Валюта {{ user_info.currency }}
           </label>
-          <select-block id="currency" :value="currency" :options="currencyOptions" />
+          <select-block id="currency" @update="user_info.currency = $event" :value="user_info.currency" :options="currencyOptions" />
         </div>
         <div class="select-form-group">
           <label for="time-zone" class="time-zone text" :class="color_schema.text">
             Часовой пояс
           </label>
-          <select-block id="time-zone" :value="time_zone" :options="[{value: time_zone}]" />
+          <select-block id="time-zone" @update="user_info.time_zone = $event" :value="user_info.time_zone" :options="[{value: user_info.time_zone}]" />
         </div>
         <div class="select-form-group">
           <label for="language" class="language text" :class="color_schema.text">
             Язык
           </label>
-          <select-block id="language" :value="language" :options="languageOptions" />
+          <select-block id="language" @update="user_info.language = $event" :value="user_info.language" :options="languageOptions" />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import axios from 'axios'
+
 import SelectBlock from '../components/SelectBlock.vue'
+import SocialItem from '../components/SocialItem.vue'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'account',
   components: {
-    SelectBlock
-  },
+    SelectBlock, SocialItem
+	},
+	watch: {
+		'user_info.currency': function (currency) {
+			axios.put('/user', {currency})
+		},
+		'user_info.time_zone': function (time_zone) {
+			axios.put('/user', {time_zone})
+		},
+		'user_info.language': function (language) {
+			axios.put('/user', {language})
+		}
+	},
   data () {
     return {
-      currency: 'RUS',
       currencyOptions: [
         { value: 'EUR' },
         { value: 'RUS' },
         { value: 'USD' }
       ],
-      time_zone: '(UTC+3:00) Европа/Москва',
-      language: 'Русский',
       languageOptions: [
         {
           value: 'Русский'

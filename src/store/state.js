@@ -43,7 +43,13 @@ let light_theme = {
 var state = {
 	token: localStorage.getItem('user_token'),
 	user: {
-		id: null
+		id: null,
+		social_twitch: false,
+		social_youtube: false,
+		social_vkontakte: false,
+		currency: 'RUS',
+		time_zone: '(UTC+3:00) Европа/Москва',
+		language: 'Русский'
 	},
 	mainSettings: {
 
