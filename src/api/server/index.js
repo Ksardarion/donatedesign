@@ -1,8 +1,7 @@
 import Vue from 'vue'
-import Axios from 'axios';
+import Axios from 'axios'
 
-export default {
-	// INDEX
+export default {// INDEX
 	fetchSibscribers () {
 		return Vue.http.get('subscribers/')
 		.then(response => response.body)

@@ -5,7 +5,7 @@
         Привязанные аккаунты
       </div>
       <div class="accounts">
-        <div class="social-account" :class="color_schema.item">
+        <!-- <div class="social-account" :class="color_schema.item">
           <div class="social-info">
             <div class="social-icon">
               <img src="../assets/twitch.svg">
@@ -22,7 +22,34 @@
               Отвязать
             </button>
           </div>
+        </div> -->
+
+
+        <div class="social-account" :class="color_schema.item">
+          <div class="social-info">
+            <div class="social-icon">
+              <img src="../assets/twitch.svg">
+            </div>
+            <div class="social-name text">
+              Twitch
+            </div>
+          </div>
+          <div class="account-actions" v-if="!user_info.social_twitch">
+            <button class="link-button text" :class="color_schema.item">
+              Привязать
+            </button>
+          </div>
+         <div class="account-actions" v-else>
+            <div class="verify">
+              <img src="../assets/verification-sign.svg">
+            </div>
+            <button class="link-button active text" :class="color_schema.item">
+              Отвязать
+            </button>
+          </div>
+
         </div>
+
         <div class="social-account" :class="color_schema.item">
           <div class="social-info">
             <div class="social-icon">
@@ -32,15 +59,23 @@
               YouTube
             </div>
           </div>
-          <div class="account-actions">
-<!--             <div class="verify">
-              <img src="../assets/verification-sign.svg">
-            </div> -->
+          <div class="account-actions" v-if="!user_info.social_youtube">
             <button class="link-button text" :class="color_schema.item">
               Привязать
             </button>
           </div>
-        </div>
+          <div class="account-actions" v-else>
+            <div class="verify">
+              <img src="../assets/verification-sign.svg">
+            </div>
+            <button class="link-button active text" :class="color_schema.item">
+              Отвязать
+            </button>
+          </div>
+
+       </div>
+
+
         <div class="social-account" :class="color_schema.item">
           <div class="social-info">
             <div class="social-icon">
@@ -50,15 +85,23 @@
               VKontakte
             </div>
           </div>
-          <div class="account-actions">
-<!--             <div class="verify">
-              <img src="../assets/verification-sign.svg">
-            </div> -->
+          <div class="account-actions" v-if="!user_info.social_vkontakte">
             <button class="link-button text" :class="color_schema.item">
               Привязать
             </button>
           </div>
-        </div>
+          <div class="account-actions" v-else>
+            <div class="verify">
+              <img src="../assets/verification-sign.svg">
+            </div>
+            <button class="link-button active text" :class="color_schema.item">
+              Отвязать
+            </button>
+          </div>
+
+       </div>
+
+
       </div>
     </div>
     <div class="global-settings" >
@@ -68,7 +111,7 @@
       <div class="settings-block" :class="[color_schema.item, color_schema.text]">
         <div class="select-form-group">
           <label for="currency" class="currency text" :class="color_schema.text">
-            Основная Валюта
+            Основная Валюта{{ currency }}
           </label>
           <select-block id="currency" :value="currency" :options="currencyOptions" />
         </div>
@@ -118,7 +161,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['color_schema'])
+    ...mapGetters(['color_schema', 'user_info'])
   }
 }
 </script>

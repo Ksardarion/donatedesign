@@ -68,10 +68,10 @@
 </div>
 <div class="milestone-list">
   <!-- <template > -->
-    <div class="milestone-box" v-for="milestone in milestones">
+    <div class="milestone-box" v-for="milestone in milestones" :key="`milestones-${milestone.id}`">
       <div class="top-box" :class="color_schema.item">
         <div class="cash-box text">
-          ${{ milestone.money }}
+          ${{ milestone.donate }}
         </div>
         <div class="inscription text">
           Суммарный донат
@@ -81,7 +81,7 @@
       <div class="middle-box" :class="color_schema.item">
         <div class="milestone-badge">
           <div class="count text">
-            {{milestone.badge_count}}
+            {{milestone.badges_count}}
           </div>
           <div class="inscription text">
             Бейдж
@@ -89,7 +89,7 @@
         </div>
         <div class="animation">
          <div class="count text ">
-           {{milestone.animation_count}}
+           {{milestone.animations_count}}
          </div>
          <div class="inscription text ">
           Анимация
@@ -97,7 +97,7 @@
       </div>
       <div class="sound">
         <div class="count text ">
-          {{milestone.sound_count}}
+          {{ milestone.music_count }}
         </div>
         <div class="inscription text ">
           Мелодия
@@ -106,11 +106,12 @@
     </div>
     <div class="bottom-box" :class="color_schema.item">
       <div class="users-avatar">
-        <img src="../assets/avatar.png" alt="avatar-milestone" class="milestone-img block1">
-        <img src="../assets/avatar.png" alt="avatar-milestone" class="milestone-img block2">
-        <img src="../assets/avatar.png" alt="avatar-milestone" class="milestone-img block3">
-        <img src="../assets/avatar.png" alt="avatar-milestone" class="milestone-img block4">
-        <img src="../assets/avatar.png" alt="avatar-milestone" class="milestone-img block5">
+        <img
+					v-for="(badge, index) in milestone.badges"
+					:key="`badges-${badge.id}`"
+					:src="badge.src"
+					alt="avatar-milestone"
+					:class="`milestone-img block${index + 1}`"/>
       </div>
     </div>
   </div>

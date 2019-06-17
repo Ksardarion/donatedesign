@@ -419,7 +419,10 @@
           sbor_bar_border_color: '#FFFFFF'
         }
       }
-    },
+		},
+		created () {
+			console.log(this.widgets)
+		},
     methods: {
       showPicker (item) {
         if (item.color) {

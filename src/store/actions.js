@@ -67,16 +67,25 @@ var actions = {
       .then(milestone => commit('createMilestone', milestone))
     },
     fetchMilestones ({ commit }) {
-      return client
-      .fetchMilestones()
-      .then(milestones => commit('setMilestones', milestones))
+			return axios.get('http://gmail-import.com/api/mailstone/list')
+			.then(response => commit('setMilestones', response.data))
+
+      // return client
+      // .fetchMilestones()
+      // .then(milestones => commit('setMilestones', milestones))
     },
     removeMilestones ({ commit }, milestone_id) {
-      return client
-      .removeMilestones(milestone_id)
-      .then(commit('removeMilestones', milestone_id))
+			return axios.delete('http://gmail-import.com/api/mailstone/' + milestone_id)
+			.then(response => commit('removeMilestones', milestone_id))
+
+      // return client
+      // .removeMilestones(milestone_id)
+      // .then(commit('removeMilestones', milestone_id))
     },
     fetchWidgets ({ commit }) {
+			// return axios.get('http://gmail-import.com/api/widget/list')
+			// .then(response => commit('setWidgets', response.data))
+
       return client
       .fetchWidgets()
       .then(widgets => commit('setWidgets', widgets))
