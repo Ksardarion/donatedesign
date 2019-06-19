@@ -1,5 +1,6 @@
 <template>
 	<div class="social-account" :class="color_schema.item">
+
 		<div class="social-info">
 			<div class="social-icon">
 				<img :src="icon">
@@ -9,9 +10,11 @@
 			</div>
 		</div>
 		<div class="account-actions" v-if="!is_connected">
-			<button @click="join" class="link-button text" :class="color_schema.item">
-				Привязать
-			</button>
+			<authorize :service="title" :redirect="redirect">
+				<button class="link-button text" :class="color_schema.item">
+					Привязать
+				</button>
+			</authorize>
 		</div>
 		<div class="account-actions" v-else>
 			<div class="verify">
@@ -25,13 +28,19 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import axios from 'axios'
+import { mapGetters, mapMutations } from 'vuex'
+
+import Authorize from '../components/Authorize.vue';
 
 import TwithIcon from '../assets/twitch.svg';
 import YouTubeIcon from '../assets/youtube.svg';
 import VKontakte from '../assets/vk.svg';
 
 export default {
+	components: {
+		Authorize
+	},
 	props: {
 		is_connected: {
 			type: Boolean,
@@ -46,7 +55,8 @@ export default {
 		return {
 			twithIcon: TwithIcon,
 			youTubeIcon: YouTubeIcon,
-			VKontakte: VKontakte
+			VKontakte: VKontakte,
+			redirect: window.btoa(`account`)
 		}
 	},
 	computed: {
@@ -63,13 +73,17 @@ export default {
 		}
 	},
 	methods: {
+		...mapMutations([
+			'setUser'
+		]),
 		join () {
 			console.log('join', this.title)
 			// TODO: редирект на бэкенд для подключения сервиса
 		},
 		disconnect () {
-			console.log('disconnect', this.title)
-			// TODO: редирект на бэкенд для отключения сервиса
+			axios.delete(`/user/service/${this.title}`).then(response => {
+				this.setUser(response.data.user)
+			})
 		}
 	}
 }

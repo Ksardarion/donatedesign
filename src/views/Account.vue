@@ -27,7 +27,7 @@
       <div class="settings-block" :class="[color_schema.item, color_schema.text]">
         <div class="select-form-group">
           <label for="currency" class="currency text" :class="color_schema.text">
-            Основная Валюта {{ user_info.currency }}
+            Основная Валюта
           </label>
           <select-block id="currency" @update="user_info.currency = $event" :value="user_info.currency" :options="currencyOptions" />
         </div>
