@@ -30,13 +30,13 @@ export default {
       this.$refs.destroy_modal.hide()
     },
     removeItem() {
-      if (this.title == 'Виджет') {
+      if (this.title === 'Виджет') {
         this.removeWidgets({id: this.w_id, type: this.type})
-      } 
-      if (this.title == 'Майлстоун') {} {
+      }
+      if (this.title === 'Майлстоун') {
         this.removeMilestones(this.m_id)
       }
-      if (this.title == 'Алерт') {} {
+      if (this.title === 'Алерт') {
         this.removeAlert(this.a_id)
       }
       this.$refs.destroy_modal.hide()

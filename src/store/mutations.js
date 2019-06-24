@@ -58,13 +58,13 @@ var mutations = {
   },
   removeWidgets (state, payload) {
     var i_i = state.widgets.map(function(item) { return item.title; }).indexOf(payload['type']);
-    var items = state.widgets[i_i]['collapseItem']
-    var r_i = items.map(function(item) { return item.id; }).indexOf(payload['id']);
-    state.widgets[i_i]['collapseItem'].splice(r_i, 1)
+    var items = state.widgets[i_i]['collapse_item']
+		var r_i = items.map(function(item) { return item.slug; }).indexOf(payload['id']);
+    state.widgets[i_i]['collapse_item'].splice(r_i, 1)
 
   },
   createWidgets (state, widget) {
-    state.widgets[0]['collapseItem'].push(widget)
+    state.widgets[0]['collapse_item'].push(widget)
   },
   setPlaylist (state, playlist) {
     state.playlist = playlist

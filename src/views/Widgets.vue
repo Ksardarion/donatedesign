@@ -3,13 +3,18 @@
     <div class="widget-header">
       <div class="widgets-actions">
         <div class="widget-title text white-text">
-          {{ actions ? 'НОВЫЙ ВИДЖЕТ' : 'ВИДЖЕТЫ'}}
+          {{ actions ? !item_edit_slug ? 'НОВЫЙ ВИДЖЕТ' : 'РЕДАКТИРОВАТЬ ВИДЖЕТ' : 'ВИДЖЕТЫ'}}
         </div>
         <div class="action-buttons">
           <button class="default-button text" @click="save(payload); actions = !actions" v-b-toggle.widget-construction>
            {{ actions ? 'СОХРАНИТЬ' : 'ДОБАВИТЬ'}}
          </button>
-         <button v-if="actions" class="btn-cancel" @click="actions = !actions" v-b-toggle.widget-construction></button>
+         <button
+				 	v-if="actions"
+					class="default-button text btn-cancel"
+					v-b-toggle.widget-construction
+					@click="cancel"
+				></button>
        </div>
      </div>
 
@@ -220,7 +225,7 @@
   </label>
   <color-picker :color="item_form.sbor_bar_border_color" v-model="item_form.sbor_bar_border_color" />
 </div>
-</div>
+</div>/
 </form>
 
 </div>
@@ -238,10 +243,10 @@
 </div>
 
 <div class="widgets-list">
-  <template v-for="(item,index) in widgets" >
+  <template v-for="(item,index) in widgets">
 
     <div class="widget-item" :class="color_schema.item" :key="item.id"  >
-      <div class="item-title" v-b-toggle="'collapse-' + index " @click="item.active = !item.active">
+      <div class="item-title" v-b-toggle="'collapse-' + index ">
         {{ item.title }}
       </div>
       <div class="item-actions">
@@ -249,21 +254,31 @@
         style="border: 0"
         class="copy-link btn-action"
         v-tooltip.hover.top.end="{ content: 'Копировать ссылку', class: 'tooltip-custom' }"
-        v-clipboard="'test-text' + index"
+        v-clipboard="item.link"
         aria-controls="false"
         />
         <button
         style="border: 0"
         :class="[{'collapse-link': !item.active, 'collapse-link-up': item.active } , 'btn-action']"
-        v-b-toggle="'collapse-' + index " aria-expanded="false" @click="item.active = !item.active"
+        v-b-toggle="'collapse-' + index " aria-expanded="false"
         />
       </div>
     </div>
-    <b-collapse :id="'collapse-' + index">
-      <div class="widget-collapse collapse-content" :class="color_schema.item"  v-for="(c_item, c_index) in item.collapseItem">
+    <b-collapse :id="'collapse-' + index" :key="`widgets-${index}`">
+      <div
+				class="widget-collapse collapse-content"
+				:class="color_schema.item"
+				v-for="(c_item, c_index) in item.collapse_item"
+				:key="`collapse_item-${c_index}`"
+			>
         <div class="collapse-checkbox">
           <label class="switch-checkbox" >
-            <input type="radio" :name="'select-widget'+index" v-model="c_item.active" :value="c_item.active">
+            <input type="radio"
+							:name="'select-widget'+index"
+							@change="activate(c_item.slug)"
+							v-model="c_item.active"
+							:value="c_item.active"
+						>
             <span class="collapse-slider-checkbox round"></span>
           </label>
         </div>
@@ -271,22 +286,22 @@
           <span :class="color_schema.text">
             Количество:
           </span>
-          {{c_item.count}}
+          {{ c_item.count }} ({{ c_item.id }})
         </div>
         <div class="collapse-animation">
           <span :class="color_schema.text">
             Анимация:
           </span>
-          {{c_item.animation}}
+          {{ c_item.animation }}
         </div>
         <div class="collapse-actions">
           <button
           style="border: 0"
           class="edit-link btn-action"
           v-tooltip.hover.top.end="{ content: 'Редактировать', class: 'tooltip-custom' }"
-          @click="editForm(1)"
+          @click="editForm(c_item)"
           />
-          <button style="border: 0" class="delete-link btn-action" v-b-modal.destroy-modal @click="w_id = c_item.id; type = item.title; "/>
+          <button style="border: 0" class="delete-link btn-action" v-b-modal.destroy-modal @click="w_id = c_item.slug; type = item.title; "/>
         </div>
       </div>
     </b-collapse>
@@ -297,6 +312,8 @@
 </template>
 
 <script>
+	import axios from 'axios'
+
   import { mapActions, mapGetters, mapState } from 'vuex'
   import SelectBlock from '@/components/SelectBlock.vue'
   import ColorPicker from '@/components/widget-component/ColorPicker.vue'
@@ -336,15 +353,8 @@
         { value: 'Премиум' },
         { value: 'Простая' }
         ],
-        widget_type_options: [
-        { value: 'Последнее сообщение', message: 'Последнее сообщение: {{message}}' },
-        { value: 'Самый крупный донатер', message: 'Самый(-е) крупный(-е) донатер(-ы): {{users}} || {{name}} {{sum}}' },
-        { value: 'Последний донатер', message: 'Последний(-е) донатер(-ы): {{users}} || {{name}} {{sum}}' },
-        { value: 'Последний подписчик', message: 'Последний(-е) подписчик(-и): {{subscriber}}' },
-        { value: 'Количество подписчиков', message: 'Количество подписчиков: {{count}}' },
-        { value: 'Количество подписчиков за период', message: 'Количество подписчиков за период: {{count}} {{type}} {{period}}' },
-        { value: 'Сбор средств', message: 'Сбор средств - 1' }
-        ],
+				widget_type_options: [],
+				item_edit_slug: null,
         item_form: {
           widget_type: { value: 'Последнее сообщение', message: 'Последнее сообщение: {{message}}' },
           widget_list_count: 20,
@@ -366,9 +376,9 @@
         }
       }
     },
-    mounted() {
-      this.$store.dispatch('fetchWidgets')
-    },
+    // mounted() {
+    //   this.$store.dispatch('fetchWidgets')
+    // },
     computed: {
       ...mapGetters(['color_schema']),
       ...mapState(['widgets']),
@@ -421,9 +431,25 @@
       }
 		},
 		created () {
-			console.log(this.widgets)
+			this.fetchWidgetOptions()
+			this.$store.dispatch('fetchWidgets')
 		},
     methods: {
+			cancel () {
+				this.item_edit_slug = null
+				setTimeout(() => {
+					this.actions = false
+				}, 50);
+			},
+			activate (widget_slug) {
+				console.log(widget_slug)
+				axios.get('/widget/activate/' + widget_slug)
+			},
+			fetchWidgetOptions () {
+				axios.get('/widget/options').then(response => {
+					this.widget_type_options = response.data
+				})
+			},
       showPicker (item) {
         if (item.color) {
           this.colors = item.color
@@ -431,19 +457,25 @@
 
         this.displayPicker = true
       },
-      editForm (id) {
-        this.$http.get('widgets/' + id).then((res) => {
-          this.item_form = res.body
-        })
+      editForm (item) {
+        // this.$http.get('widgets/' + id).then((res) => {
+        //   this.item_form = res.body
+				// })
+				this.item_form = item.settings2
         this.$root.$emit('bv::toggle::collapse', 'widget-construction')
-        this.actions = true
+				this.actions = true
+				this.item_edit_slug = item.slug
       },
       save(payload) {
         if (this.actions) {
-          this.createWidgets(payload)
+					if (this.item_edit_slug) {
+						console.log('this.item_edit_slug', this.item_edit_slug)
+						return this.editWidgets({settings: this.item_form, item_slug: this.item_edit_slug})
+					}
+          return this.createWidgets(this.item_form)
         }
       },
-      ...mapActions(['createWidgets'])
+      ...mapActions(['createWidgets', 'editWidgets'])
     }
   }
 </script>

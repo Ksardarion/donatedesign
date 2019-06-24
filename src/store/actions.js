@@ -7,15 +7,15 @@ var actions = {
       commit('logout')
     },
     fetchUser ({ commit }) {
-      return axios.get('http://gmail-import.com/api/user')
+      return axios.get('/user')
       .then(response => commit('setUser', response.data))
     },
     fetchTransactions ({ commit }) {
-      return axios.get('http://gmail-import.com/api/transactions?sortBy=id&descending=true&rowsPerPage=10&page=1&totalItems=0&all')
+      return axios.get('/transactions?sortBy=id&descending=true&rowsPerPage=10&page=1&totalItems=0&all')
       .then(response => commit('setTransactions', response.data))
     },
     fetchTransactionsStatistic ({ commit }) {
-      return axios.get('http://gmail-import.com/api/transactions/statistic')
+      return axios.get('/transactions/statistic')
       .then(response => commit('setTransactionsStatistic', response.data))
     },
     fetchSettings ({ commit }) {
@@ -54,7 +54,7 @@ var actions = {
       .then(playlist => commit('addPlaylist', playlist))
     },
     fetchSubscribers ({ commit }) {
-			return axios.get('http://gmail-import.com/api/subscribers')
+			return axios.get('/subscribers')
 			.then(response => commit('setSubscribers', response.data))
 
       // return client
@@ -67,7 +67,7 @@ var actions = {
       .then(milestone => commit('createMilestone', milestone))
     },
     fetchMilestones ({ commit }) {
-			return axios.get('http://gmail-import.com/api/mailstone/list')
+			return axios.get('/mailstone/list')
 			.then(response => commit('setMilestones', response.data))
 
       // return client
@@ -75,7 +75,7 @@ var actions = {
       // .then(milestones => commit('setMilestones', milestones))
     },
     removeMilestones ({ commit }, milestone_id) {
-			return axios.delete('http://gmail-import.com/api/mailstone/' + milestone_id)
+			return axios.delete('/mailstone/' + milestone_id)
 			.then(response => commit('removeMilestones', milestone_id))
 
       // return client
@@ -83,23 +83,21 @@ var actions = {
       // .then(commit('removeMilestones', milestone_id))
     },
     fetchWidgets ({ commit }) {
-			// return axios.get('http://gmail-import.com/api/widget/list')
-			// .then(response => commit('setWidgets', response.data))
-
-      return client
-      .fetchWidgets()
-      .then(widgets => commit('setWidgets', widgets))
+			return axios.get('/widget/list-v2')
+			.then(response => commit('setWidgets', response.data))
     },
     removeWidgets ({ commit }, payload) {
-      return client
-      .removeWidgets(payload['id'])
-      .then(commit('removeWidgets', payload))
+			return axios.delete('/widget/' + payload.id)
+			.then(() => commit('removeWidgets', payload))
     },
-    createWidgets ({ commit }) {
-      return client
-      .createWidgets()
-      .then(widget => commit('createWidgets', widget))
-    },
+    createWidgets ({ dispatch }, settings) {
+			return axios.post('/widget', {settings})
+			.then(() => dispatch('fetchWidgets'))
+		},
+		editWidgets ({ dispatch }, payload) {
+			return axios.put(`/widget/${payload.item_slug}/v2`, {settings: payload.settings})
+			.then(() => dispatch('fetchWidgets'))
+		},
     updateSubscribers ({ commit }) {
       return client
       .fetchSibscribers()

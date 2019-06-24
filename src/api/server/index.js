@@ -52,8 +52,9 @@ export default {// INDEX
 		.then(response => response.body)
 	},
 	removeWidgets (id) {
-		return Vue.http.delete('widgets/')
-		.then(response => response.body)
+		console.log('removeWidgets')
+		// return Vue.http.delete('widgets/')
+		// .then(response => response.body)
 	},
 	removeAlert (id) {
 		return Vue.http.delete('alerts/')
