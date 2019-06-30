@@ -63,7 +63,7 @@ export default {// INDEX
 
 	// SETTING
 	fetchSettings () {
-		return Axios.get('http://gmail-import.com/api/mainsettings')
+		return Axios.get('/mainsettings')
 		.then(response => response.data)
 	}
 }

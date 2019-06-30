@@ -117,7 +117,7 @@ export default {
   },
   methods: {
     onChange (value) {
-			axios.get('http://gmail-import.com/api/statistic/donate?mounth=' + value).then(response => {
+			axios.get('/statistic/donate?mounth=' + value).then(response => {
 				let stat = response.data
 				this.datasets = {
 					labels: stat.labels,
@@ -129,7 +129,7 @@ export default {
 			})
 		},
 		fetchStatisticChart () {
-			axios.get('http://gmail-import.com/api/statistic/donate').then(response => {
+			axios.get('/statistic/donate').then(response => {
 				let stat = response.data
 				this.datasets = {
 					labels: stat.labels,
