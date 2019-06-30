@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = {
-  chainWebpack: config => {
+	chainWebpack: config => {
     config.resolve.alias.set(
       'api-client',
       path.resolve(__dirname, `src/api/server`)

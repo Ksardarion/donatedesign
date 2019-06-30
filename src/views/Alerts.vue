@@ -6,10 +6,10 @@
 					НОВОЕ ОПОВЕЩЕНИЕ О ДОНАТЕ
 				</div>
 				<div class="action-buttons">
-					<button class="default-button text" @click="actions = !actions" v-b-toggle.alerts-actions>
-						ДОБАВИТЬ
+					<button class="default-button text" @click="create" v-b-toggle.alerts-actions>
+						СОЗДАТЬ
 					</button>
-					<button v-if="actions" class="btn-cancel" @click="actions = !actions" v-b-toggle.alerts-actions></button>
+					<button v-if="actions" class="btn-cancel" @click="formToggle" v-b-toggle.alerts-actions></button>
 				</div>
 			</div>
 			<div class="alert-form">
@@ -20,9 +20,9 @@
 								Диапазон доната для алерта, EUR
 							</label>
 							<div class="alert-range-slider">
-								<div class="slider-value text">{{Math.min(...range_value) }} </div>
-								<b-form-slider ref="range" :min="0" :max="1000" v-model="range_value" />
-								<div class="slider-value text">{{Math.max(...range_value) }}</div>
+								<div class="slider-value text">{{Math.min(...form_data.range_value) }} </div>
+								<b-form-slider ref="range" :min="0" :max="1000" v-model="form_data.range_value" />
+								<div class="slider-value text">{{Math.max(...form_data.range_value) }}</div>
 							</div>
 						</div>
 					</div>
@@ -43,7 +43,7 @@
 						<div class="form-group">
 							<input type="text" name="alert-title" v-model="alert_title" class="alert-input">
 						</div>
-						<div class="preview-title" :class="[color_schema.global, color_schema.text]" :style="{color: alert_title_color, fontSize: alert_title_font_size + 'px'}" v-html="previewTitle">
+						<div class="preview-title" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_title_color, fontSize: form_data.alert_title_font_size + 'px'}" v-html="previewTitle">
 
 						</div>
 						<div class="form-format-text">
@@ -60,15 +60,15 @@
 									</label>
 									<div class="radion-text">
 										<label>
-											<input type="radio" name="text-title-align" value="left" class="text-title-align" v-model="title_align">
+											<input type="radio" name="text-title-align" value="left" class="text-title-align" v-model="form_data.title_align">
 											<img src="../assets/left-text.svg" alt="text-title-align" class="text-title-align">
 										</label>
 										<label>
-											<input type="radio" name="text-title-align" value="center" class="text-title-align" v-model="title_align" >
+											<input type="radio" name="text-title-align" value="center" class="text-title-align" v-model="form_data.title_align" >
 											<img src="../assets/center-text.svg" alt="text-title-align" class="text-title-align">
 										</label>
 										<label>
-											<input type="radio" name="text-title-align" value="right" class="text-title-align" v-model="title_align">
+											<input type="radio" name="text-title-align" value="right" class="text-title-align" v-model="form_data.title_align">
 											<img src="../assets/right-text.svg" alt="text-title-align" class="text-title-align">
 										</label>
 									</div>
@@ -83,13 +83,13 @@
 									<label class="text" :class="color_schema.text" for="color-title">
 										Цвет текста
 									</label>
-									<color-picker :color="alert_title_color" v-model="alert_title_color" />
+									<color-picker :color="form_data.alert_title_color" v-model="form_data.alert_title_color" />
 								</div>
 								<div class="form-group input-title-font-size">
 									<label for="alert-font-size" class="text" :class="color_schema.text">
 										Размер текста
 									</label>
-									<input type="number" min="1" max="36" name="alert-font-size" v-model="alert_title_font_size" class="alert-input">
+									<input type="number" min="1" max="36" name="alert-font-size" v-model="form_data.alert_title_font_size" class="alert-input">
 								</div>
 							</div>
 							<div class="form-block1 input-title-style" :class="color_schema.text">
@@ -97,7 +97,7 @@
 									Жирный
 									<label class="switch-checkbox" for="bold-style">
 
-										<input type="checkbox" id="bold-style" v-model="title_style.bold">
+										<input type="checkbox" id="bold-style" v-model="form_data.title_style.bold">
 										<span class="alert-slider-checkbox round"></span>
 									</label>
 								</div>
@@ -105,7 +105,7 @@
 									Курсив
 									<label class="switch-checkbox" for="cursive-style">
 
-										<input type="checkbox" id="cursive-style" v-model="title_style.italic">
+										<input type="checkbox" id="cursive-style" v-model="form_data.title_style.italic">
 										<span class="alert-slider-checkbox round"></span>
 									</label>
 
@@ -115,7 +115,7 @@
 						</div>
 					</div>
 					<div v-if="activetab === 2" class="tabcontent" :class="color_schema.item">
-						<div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="{color: alert_message_color, fontSize: alert_message_font_size + 'px'}" v-html="alert_message">
+						<div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="{color: alert_message_color, fontSize: form_data.alert_message_font_size + 'px'}" v-html="form_data.alert_message">
 
 						</div>
 						<div class="form-format-text">
@@ -132,15 +132,15 @@
 									</label>
 									<div class="radion-text">
 										<label>
-											<input type="radio" name="text-title-align" value="left" class="text-title-align" v-model="message_align">
+											<input type="radio" name="text-title-align" value="left" class="text-title-align" v-model="form_data.message_align">
 											<img src="../assets/left-text.svg" alt="text-title-align" class="text-title-align">
 										</label>
 										<label>
-											<input type="radio" name="text-title-align" value="center" class="text-title-align" v-model="message_align" >
+											<input type="radio" name="text-title-align" value="center" class="text-title-align" v-model="form_data.message_align" >
 											<img src="../assets/center-text.svg" alt="text-title-align" class="text-title-align">
 										</label>
 										<label>
-											<input type="radio" name="text-title-align" value="right" class="text-title-align" v-model="message_align">
+											<input type="radio" name="text-title-align" value="right" class="text-title-align" v-model="form_data.message_align">
 											<img src="../assets/right-text.svg" alt="text-title-align" class="text-title-align">
 										</label>
 									</div>
@@ -161,7 +161,7 @@
 									<label for="alert-font-size" class="text" :class="color_schema.text">
 										Размер текста
 									</label>
-									<input type="number" min="1" max="36" name="alert-font-size" v-model="alert_message_font_size" class="alert-input">
+									<input type="number" min="1" max="36" name="alert-font-size" v-model="form_data.alert_message_font_size" class="alert-input">
 								</div>
 							</div>
 							<div class="form-block1 input-title-style" :class="color_schema.text">
@@ -169,7 +169,7 @@
 									Жирный
 									<label class="switch-checkbox" for="bold-style">
 
-										<input type="checkbox" id="bold-style" v-model="message_style.bold">
+										<input type="checkbox" id="bold-style" v-model="form_data.message_style.bold">
 										<span class="alert-slider-checkbox round"></span>
 									</label>
 								</div>
@@ -177,7 +177,7 @@
 									Курсив
 									<label class="switch-checkbox" for="cursive-style">
 
-										<input type="checkbox" id="cursive-style" v-model="message_style.italic">
+										<input type="checkbox" id="cursive-style" v-model="form_data.message_style.italic">
 										<span class="alert-slider-checkbox round"></span>
 									</label>
 
@@ -187,12 +187,12 @@
 						</div>
 					</div>
 					<div v-if="activetab === 3" class="tabcontent" :class="color_schema.item">
-						<vue-dropzone 
-						id="alerts-dropzone" 
-						@vdropzone-file-added="showImageDropzone = !showImageDropzone" 
-						@vdropzone-removed-file="showImageDropzone = !showImageDropzone" 
-						:include-styling="false" 
-						:options="dropzoneImageOptions" 
+						<vue-dropzone
+						id="alerts-dropzone"
+						@vdropzone-file-added="showImageDropzone = !showImageDropzone"
+						@vdropzone-removed-file="showImageDropzone = !showImageDropzone"
+						:include-styling="false"
+						:options="dropzoneImageOptions"
 						:useCustomSlot="true"
 						v-on:vdropzone-thumbnail="thumbnail"
 						>
@@ -265,7 +265,7 @@
 					</div>
 					<div class="custom-alert-title" :style="titleStyleoptions" v-html="alert_title">
 					</div>
-					<div class="custom-alert-message" :style="messageStyleoptions" v-html="alert_message">
+					<div class="custom-alert-message" :style="messageStyleoptions" v-html="form_data.alert_message">
 					</div>
 				</div>
 			</div>
@@ -279,12 +279,12 @@
 			<div class="text" :class="color_schema.title_text">
 				Оповещение о донате
 			</div>
-			<button class="default-button text" v-show="!actions" @click="actions = !actions" v-b-toggle.alerts-actions>
+			<button class="default-button text" v-show="!actions" @click="formToggle" v-b-toggle.alerts-actions>
 				{{ 'ДОБАВИТЬ'}}
 			</button>
 		</div>
 		<div class="donat-alert-list">
-			<div class="donat-alert-item" v-for="(item, index) in alerts" :class="color_schema.item">
+			<div class="donat-alert-item" v-for="(item, index) in alerts" :key="`alerts-${index}`" :class="color_schema.item">
 				<div class="alert-item-checkbox" >
 					<label class="switch-checkbox" :for="'select-alert'+index">
 						<input type="checkbox" :id="'select-alert'+index" v-model="item.active" :key="'select-alert' +index">
@@ -296,7 +296,7 @@
 						Сумма:
 					</div>
 					<div class="range-amount">
-						{{item.amount.min}} < {{item.amount.max}}
+						{{item.amount.min}} &laquo; {{item.amount.max}}
 					</div>
 
 				</div>
@@ -319,7 +319,7 @@
 			</button>
 		</div>
 		<div class="subscribe-alert-list">
-			<div class="subscribe-alert-item" v-for="(item, index) in subscribeItems" :class="color_schema.item">
+			<div class="subscribe-alert-item" v-for="(item, index) in subscribeItems" :key="`subscribeItems-${index}`" :class="color_schema.item">
 				<div class="subscribe-item-checkbox">
 					<label class="switch-checkbox" :for="'select-alert' + index">
 						<input type="checkbox" :id="'select-alert' + index" v-model="item.active" :key="'select-alert' + index">
@@ -397,18 +397,20 @@
 					addRemoveLinks: true,
 					maxFiles: 1
 				},
-				alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
-				title_align: 'center',
-				message_align: 'center',
-				title_style: { bold: true, italic: false },
-				message_style: { bold: true, italic: false },
-				alert_title_font_size: 12,
-				alert_message_font_size: 12,
-				alert_title_color: '#A1A1C3',
+				form_data: {
+					range_value: [100, 500],
+					alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
+					title_align: 'center',
+					message_align: 'center',
+					title_style: { bold: true, italic: false },
+					message_style: { bold: true, italic: false },
+					alert_title_font_size: 12,
+					alert_message_font_size: 12,
+					alert_title_color: '#A1A1C3',
+				},
 				alert_message_color: '#A1A1C3',
 				alert_title_font: 'Montserrat',
 				alert_message_font: 'Montserrat',
-				range_value: [100, 500],
 				activetab: 1,
 				actions: false,
 				alert_title: '{{user}} перевел вам {{amount}}',
@@ -428,28 +430,45 @@
 			},
 			titleStyleoptions () {
 				return {
-					color: this.alert_title_color,
-					textAlign: this.title_align,
-					fontSize: this.alert_title_font_size + 'px',
+					color: this.form_data.alert_title_color,
+					textAlign: this.form_data.title_align,
+					fontSize: this.form_data.alert_title_font_size + 'px',
 					fontFamily: this.alert_title_font,
-					fontStyle: this.title_style
+					fontStyle: this.form_data.title_style
 				}
 			},
 			messageStyleoptions () {
 				return {
 					color: this.alert_message_color,
-					textAlign: this.message_align,
-					fontSize: this.alert_message_font_size + 'px',
+					textAlign: this.form_data.message_align,
+					fontSize: this.form_data.alert_message_font_size + 'px',
 					fontFamily: this.alert_message_font,
-					fontStyle: this.message_style
+					fontStyle: this.form_data.message_style
 				}
 			},
 			AlertImage () {
 				return this.alert_image == '' ? require('../assets/Image 23.png') : this.alert_image
 			}
 		},
+		watch: {
+			subscribeItems (val) {
+				console.log('subscribeItems', val)
+			},
+			alerts (val) {
+				console.log('alerts', this.alerts)
+			}
+		},
 		methods: {
 			...mapActions(['fetchAlerts', 'removeAlert']),
+			create () {
+				console.log('create')
+				this.formToggle()
+			},
+			formToggle () {
+				setTimeout(() => {
+					this.actions = !this.actions
+				}, 50);
+			},
 			hideImageDropzone () {
 				this.showImageDropzone = false
 			},
@@ -468,7 +487,7 @@
 
 				<div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
 				<div class="dz-error-message"><span data-dz-errormessage></span></div>
-				
+
 				</div>
 				`;
 			},

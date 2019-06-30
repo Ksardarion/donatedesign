@@ -5,13 +5,16 @@ import router from './router'
 import store from './store'
 import mock_data from './mock_data'
 import require_data from './require_data'
-import VueClipboard from 'vue-clipboard2'
+// import VueClipboard from 'vue-clipboard2'
+import VueSwimlane from 'vue-swimlane'
+
+Vue.use(VueSwimlane)
 
 Vue.config.productionTip = false
 
-axios.defaults.baseURL = 'http://gmail-import.com/api'
+axios.defaults.baseURL = 'https://api.dev.donatesupp.com/api'
 
-Vue.use(VueClipboard)
+// Vue.use(VueClipboard)
 
 new Vue({
   router,

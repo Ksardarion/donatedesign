@@ -122,14 +122,14 @@
   <label for="widget-animation-speed" :class="color_schema.text">
    Задержка между слайдами (микросекунды)
  </label>
- <input type="number" min="1" name="widget-animation-speed" v-model="item_form.widget_animation_delay" class="widget-input">
+ <b-form-slider ref="range" :min="100" :max="5000" v-model="item_form.widget_animation_delay" />
 </div>
 <div class="form-group" v-show="item_form.widget_animation.value.match(/Бегущая строка/)">
   <label for="widget-animation-speed" :class="color_schema.text">
    Скорость прокрутки
  </label>
  <div class="amount-slider">
-  <b-form-slider ref="range" :min="0" :max="4000" v-model="item_form.widget_animation_delay" />
+  <b-form-slider ref="range" :min="0" :max="500" v-model="item_form.widget_animation_delay" />
   <div class="slider-value text">{{ item_form.widget_animation_delay }}</div>
 </div>
 </div>
@@ -154,15 +154,16 @@
       <div class="ingathering-text">
         {{item_form.widget_amount}} EUR ({{ item_form.sbor_percent }}%)
       </div>
-      <!-- <b-progress :value="widget_amount" :max="widget_max_amount" show-value></b-progress> -->
+			<!-- {{ item_form.widget_amount }} --
+      <b-progress :value="item_form.widget_amount" :max="item_form.widget_max_amount" show-value></b-progress> -->
     </div>
     <div class="max-amount" :style="{color: item_form.sbor_text_outside}">
-      {{item_form.widget_max_amount}} EUR
+      {{ item_form.widget_max_amount }} EUR
     </div>
   </div>
 
 </div>
-<div class="form-group">
+<!-- <div class="form-group">
   <label :class="color_schema.text">Фоновая картинка</label>
   <vue-dropzone id="dropzone" @vdropzone-file-added="showImageDropzone = !showImageDropzone" :include-styling="false" :options="dropzoneImageOptions" :useCustomSlot="true">
     <div class="dropzone-custom-content" ref="dropzoneContent" v-show="showImageDropzone">
@@ -180,7 +181,7 @@
     </div>
 
   </vue-dropzone>
-</div>
+</div> -->
 <div class="customization-ingathering">
  <div class="form-group">
   <label for="widget-font-size" :class="color_schema.text">
@@ -225,7 +226,7 @@
   </label>
   <color-picker :color="item_form.sbor_bar_border_color" v-model="item_form.sbor_bar_border_color" />
 </div>
-</div>/
+</div>
 </form>
 
 </div>
@@ -234,8 +235,11 @@
     Превью
   </div>
   <div class="custom-widget">
-    <div :class="['custom-widget-message', item_form.widget_animation.class_name]" :style="{ color: item_form.widget_color, fontSize: item_form.widget_font_size + 'px' , 'animation-duration': (item_form.widget_animation_delay/1000) +'s' }" v-html="item_form.widget_type.message">
-    </div>
+		<message-template
+			:settings="item_form"
+		/>
+    <!-- <div :class="['custom-widget-message', item_form.widget_animation.class_name]" :style="{ color: item_form.widget_color, fontSize: item_form.widget_font_size + 'px' , 'animation-duration': (item_form.widget_animation_delay/1000) +'s' }" v-html="item_form.widget_type.message">
+    </div> -->
   </div>
 </div>
 </div>
@@ -276,8 +280,8 @@
             <input type="radio"
 							:name="'select-widget'+index"
 							@change="activate(c_item.slug)"
-							v-model="c_item.active"
 							:value="c_item.active"
+							:checked="c_item.active"
 						>
             <span class="collapse-slider-checkbox round"></span>
           </label>
@@ -286,13 +290,13 @@
           <span :class="color_schema.text">
             Количество:
           </span>
-          {{ c_item.count }} ({{ c_item.id }})
+          {{ c_item.count }}
         </div>
         <div class="collapse-animation">
           <span :class="color_schema.text">
             Анимация:
           </span>
-          {{ c_item.animation }}
+          {{ c_item.animation_ru }}
         </div>
         <div class="collapse-actions">
           <button
@@ -317,6 +321,7 @@
   import { mapActions, mapGetters, mapState } from 'vuex'
   import SelectBlock from '@/components/SelectBlock.vue'
   import ColorPicker from '@/components/widget-component/ColorPicker.vue'
+	import MessageTemplate from '@/components/widgets/template'
   import vue2Dropzone from 'vue2-dropzone'
   import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
@@ -325,7 +330,8 @@
     components: {
       SelectBlock,
       ColorPicker,
-      vueDropzone: vue2Dropzone
+      vueDropzone: vue2Dropzone,
+			MessageTemplate
     },
     data () {
       return {
@@ -360,7 +366,7 @@
           widget_list_count: 20,
           widget_subscribe: 'Любая',
           widget_animation: { value: 'Стандартно', class_name: 'static' },
-          widget_animation_delay: 1000,
+          widget_animation_delay: 100,
           widget_color: '#ffffff',
           widget_font_size: 16,
           widget_amount: 900,
