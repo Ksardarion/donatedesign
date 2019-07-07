@@ -63,6 +63,11 @@ var mutations = {
     state.widgets[i_i]['collapse_item'].splice(r_i, 1)
 
   },
+  removeAlert (state, alert_id) {
+    var removeIndex = state.alerts.map(function(item) { return item.id; }).indexOf(alert_id);
+    state.alerts.splice(removeIndex, 1)
+
+  },
   createWidgets (state, widget) {
     state.widgets[0]['collapse_item'].push(widget)
   },

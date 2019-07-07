@@ -68,13 +68,13 @@ export default {
     locationHref: function () {
       let is_streamer = this.user ? 0 : 1
       if (this.service === 'twitch') {
-        return `https://api.dev.donatesupp.com/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `http://gmail-import.com/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
       if (this.service === 'google') {
-        return `https://api.dev.donatesupp.com/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `http://gmail-import.com/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
 
-      return `https://api.dev.donatesupp.com/oauth/${this.service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+      return `http://gmail-import.com/oauth/${this.service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
     },
     redirectRoute: function () {
       if (this.redirectParams[0].length === 0) {

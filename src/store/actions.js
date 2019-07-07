@@ -24,14 +24,20 @@ var actions = {
       .then(settings => commit('setSettings', settings))
     },
     fetchAlerts ({ commit }) {
+			return axios.get('/alerts')
+			.then(response => commit('setAlerts', response.data))
+
       return client
       .fetchAlerts()
       .then(alerts => commit('setAlerts', alerts))
     },
     removeAlert ({ commit }, alert_id) {
-      return client
-      .removeAlert(alert_id)
-      .then(commit('removeAlert', alert_id))
+			return axios.delete('/alerts/' + alert_id)
+			.then(() => commit('removeAlert', alert_id))
+
+      // return client
+      // .removeAlert(alert_id)
+      // .then(commit('removeAlert', alert_id))
     },
     fetchSupports ({ commit }) {
       return client

@@ -41,7 +41,7 @@
 				<div class="alert-form-content">
 					<div v-if="activetab === 1" class="tabcontent" :class="color_schema.item">
 						<div class="form-group">
-							<input type="text" name="alert-title" v-model="alert_title" class="alert-input">
+							<input type="text" name="alert-title" v-model="form_data.alert_title" class="alert-input">
 						</div>
 						<div class="preview-title" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_title_color, fontSize: form_data.alert_title_font_size + 'px'}" v-html="previewTitle">
 
@@ -52,7 +52,7 @@
 									<label class="text" :class="color_schema.text" >
 										Шрифт
 									</label>
-									<select-block id="alert-title-font" :value="alert_title_font" :options="[{value: alert_title_font}]" />
+									<select-block id="alert-title-font" :value="form_data.alert_title_font" :options="[{value: form_data.alert_title_font}]" />
 								</div>
 								<div class="form-group form-text-align">
 									<label class="text" :class="color_schema.text" >
@@ -115,7 +115,7 @@
 						</div>
 					</div>
 					<div v-if="activetab === 2" class="tabcontent" :class="color_schema.item">
-						<div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="{color: alert_message_color, fontSize: form_data.alert_message_font_size + 'px'}" v-html="form_data.alert_message">
+						<div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_message_color, fontSize: form_data.alert_message_font_size + 'px'}" v-html="form_data.alert_message">
 
 						</div>
 						<div class="form-format-text">
@@ -124,7 +124,7 @@
 									<label class="text" :class="color_schema.text" >
 										Шрифт
 									</label>
-									<select-block id="alert-title-font" :value="alert_message_font" :options="[{value: alert_title_font}]" />
+									<select-block id="alert-title-font" :value="form_data.alert_message_font" :options="[{value: form_data.alert_title_font}]" />
 								</div>
 								<div class="form-group">
 									<label class="text" :class="color_schema.text" >
@@ -155,7 +155,7 @@
 									<label class="text" :class="color_schema.text" for="color-title">
 										Цвет текста
 									</label>
-									<color-picker :color="alert_message_color" v-model="alert_message_color" />
+									<color-picker :color="form_data.alert_message_color" v-model="form_data.alert_message_color" />
 								</div>
 								<div class="form-group input-title-font-size">
 									<label for="alert-font-size" class="text" :class="color_schema.text">
@@ -263,7 +263,7 @@
 					<div class="custom-alert-image">
 						<img :src="AlertImage" alt="alert-image">
 					</div>
-					<div class="custom-alert-title" :style="titleStyleoptions" v-html="alert_title">
+					<div class="custom-alert-title" :style="titleStyleoptions" v-html="form_data.alert_title">
 					</div>
 					<div class="custom-alert-message" :style="messageStyleoptions" v-html="form_data.alert_message">
 					</div>
@@ -287,7 +287,7 @@
 			<div class="donat-alert-item" v-for="(item, index) in alerts" :key="`alerts-${index}`" :class="color_schema.item">
 				<div class="alert-item-checkbox" >
 					<label class="switch-checkbox" :for="'select-alert'+index">
-						<input type="checkbox" :id="'select-alert'+index" v-model="item.active" :key="'select-alert' +index">
+						<input type="checkbox" :id="'select-alert'+index" @change="activeToggle(item)" v-model="item.active" :key="'select-alert' +index">
 						<span class="alert-slider-checkbox round"></span>
 					</label>
 				</div>
@@ -304,12 +304,12 @@
 					<button style="border: 0" class="preview-link btn-action" />
 					<button style="border: 0" class="copy-link btn-action" />
 					<button style="border: 0" class="edit-link btn-action" />
-					<button style="border: 0" class="delete-link btn-action" v-b-modal.destroy-modal/>
+					<button @click="destroy_payload.a_id = item.id" style="border: 0" class="delete-link btn-action" v-b-modal.destroy-modal/>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="subscribe-alert">
+	<!-- <div class="subscribe-alert">
 		<div class="subscribe-alert-header">
 			<div class="text" :class="color_schema.title_text">
 				Оповещение о стриках подписок
@@ -351,13 +351,14 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 	<preview-modal/>
-	<destroy-modal title="Алерт" />
+	<destroy-modal title="Алерт" :a_id="destroy_payload.a_id" />
 </div>
 </template>
 
 <script>
+	import axios from 'axios'
 	import { mapState, mapActions, mapGetters } from 'vuex'
 	import SelectBlock from '@/components/SelectBlock.vue'
 	import ColorPicker from '@/components/widget-component/ColorPicker.vue'
@@ -377,6 +378,9 @@
 		},
 		data () {
 			return {
+				destroy_payload: {
+					a_id: null
+				},
 				alert_image: '',
 				durationSound: 15,
 				volumeSound: 50,
@@ -407,13 +411,13 @@
 					alert_title_font_size: 12,
 					alert_message_font_size: 12,
 					alert_title_color: '#A1A1C3',
+					alert_message_color: '#A1A1C3',
+					alert_title_font: 'Montserrat',
+					alert_message_font: 'Montserrat',
+					alert_title: '{{user}} перевел вам {{amount}}',
 				},
-				alert_message_color: '#A1A1C3',
-				alert_title_font: 'Montserrat',
-				alert_message_font: 'Montserrat',
 				activetab: 1,
 				actions: false,
-				alert_title: '{{user}} перевел вам {{amount}}',
 				subscribeItems: [
 				{ id: 1, active: true, strick: '1 месяц', icon: require('../assets/simple-icon.svg'), type: 'Простая подписка' },
 				{ id: 2, active: true, strick: '2 месяца', icon: require('../assets/prem-dark.svg'), type: 'Премиум подписка' }
@@ -426,23 +430,23 @@
 			...mapState(['alerts']),
 			...mapGetters(['color_schema']),
 			previewTitle () {
-				return this.alert_title.replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
+				return this.form_data.alert_title.replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
 			},
 			titleStyleoptions () {
 				return {
 					color: this.form_data.alert_title_color,
 					textAlign: this.form_data.title_align,
 					fontSize: this.form_data.alert_title_font_size + 'px',
-					fontFamily: this.alert_title_font,
+					fontFamily: this.form_data.alert_title_font,
 					fontStyle: this.form_data.title_style
 				}
 			},
 			messageStyleoptions () {
 				return {
-					color: this.alert_message_color,
+					color: this.form_data.alert_message_color,
 					textAlign: this.form_data.message_align,
 					fontSize: this.form_data.alert_message_font_size + 'px',
-					fontFamily: this.alert_message_font,
+					fontFamily: this.form_data.alert_message_font,
 					fontStyle: this.form_data.message_style
 				}
 			},
@@ -460,8 +464,17 @@
 		},
 		methods: {
 			...mapActions(['fetchAlerts', 'removeAlert']),
+			activeToggle (item) {
+				axios.put(`/alerts/${item.id}`, item).then(response => {
+					// this.fetchAlerts()
+				})
+			},
 			create () {
-				console.log('create')
+				console.log('form_data', this.form_data)
+				axios.post('/alerts', this.form_data).then(response => {
+					this.fetchAlerts()
+				})
+				// console.log('create')
 				this.formToggle()
 			},
 			formToggle () {
@@ -513,6 +526,9 @@
 		},
 		mounted() {
 			this.fetchAlerts()
+			// axios.get('/alerts').then(response => {
+			// 	console.log(response.data)
+			// })
 		}
 	}
 </script>

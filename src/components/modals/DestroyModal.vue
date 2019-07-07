@@ -25,7 +25,7 @@ export default {
   name: 'destroy-modal',
   props: ['title', 'type', 'w_id', 'm_id', 'a_id'],
   methods: {
-    ...mapActions(['removeMilestones', 'removeWidgets']),
+    ...mapActions(['removeMilestones', 'removeWidgets', 'removeAlert']),
     hideModal () {
       this.$refs.destroy_modal.hide()
     },
@@ -37,6 +37,7 @@ export default {
         this.removeMilestones(this.m_id)
       }
       if (this.title === 'Алерт') {
+				console.log(this.a_id)
         this.removeAlert(this.a_id)
       }
       this.$refs.destroy_modal.hide()
