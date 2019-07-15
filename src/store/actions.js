@@ -31,9 +31,9 @@ var actions = {
       .fetchAlerts()
       .then(alerts => commit('setAlerts', alerts))
     },
-    removeAlert ({ commit }, alert_id) {
+    removeAlert ({ commit, dispatch }, alert_id) {
 			return axios.delete('/alerts/' + alert_id)
-			.then(() => commit('removeAlert', alert_id))
+			.then(() => dispatch('fetchAlerts'))
 
       // return client
       // .removeAlert(alert_id)

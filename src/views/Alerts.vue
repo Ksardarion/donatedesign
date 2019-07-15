@@ -6,14 +6,17 @@
 					НОВОЕ ОПОВЕЩЕНИЕ О ДОНАТЕ
 				</div>
 				<div class="action-buttons">
-					<button class="default-button text" @click="create" v-b-toggle.alerts-actions>
-						СОЗДАТЬ
-					</button>
+					<button
+						class="default-button text"
+						@click="submit"
+						v-b-toggle.alerts-actions
+						v-text="!alert_edit_id ? 'СОЗДАТЬ' : 'ИЗМЕНИТЬ'"
+					/>
 					<button v-if="actions" class="btn-cancel" @click="formToggle" v-b-toggle.alerts-actions></button>
 				</div>
 			</div>
 			<div class="alert-form">
-				<div class="alerts-range" :class="color_schema.item">
+				<div class="alerts-range" :class="color_schema.item" v-if="type_form === 'donate'">
 					<div class="custom-form-alerts">
 						<div class="form-alert-range">
 							<label :class="color_schema.text" for="alert-range">
@@ -40,6 +43,27 @@
 
 				<div class="alert-form-content">
 					<div v-if="activetab === 1" class="tabcontent" :class="color_schema.item">
+
+						<div class="form-alert-sound-slider" v-if="type_form === 'subscribe'">
+							<label :class="color_schema.text" for="alert-range">
+								Продолжительность стрика {{ form_data.strick }} <span>мес.</span>
+							</label>
+							<div class="alert-sound-slider">
+								<b-form-slider  :min="0" :max="100" v-model="form_data.strick"/>
+							</div>
+						</div>
+						<div class="form-group input-title-font" v-if="type_form === 'subscribe'">
+							<label class="text" :class="color_schema.text" >
+								Тип подписки{{ form_data.type }}
+							</label>
+							<select-block @update="form_data.type = $event" :value="form_data.type" :options="[
+								{value: 'donate'},
+								{value: 'free'},
+								{value: 'paid'},
+								{value: 'premium'},
+							]" />
+						</div>
+
 						<div class="form-group">
 							<input type="text" name="alert-title" v-model="form_data.alert_title" class="alert-input">
 						</div>
@@ -261,12 +285,49 @@
 			<div class="custom-alert" :class="color_schema.global">
 				<div class="alert-custom-block">
 					<div class="custom-alert-image">
-						<img :src="AlertImage" alt="alert-image">
+						<drr
+							:selectable="false"
+							:x="form_data.positions.image.x"
+							:y="form_data.positions.image.y"
+							:w="form_data.positions.image.width"
+							:h="form_data.positions.image.height"
+							:angle="form_data.positions.image.angle"
+							:hasActiveContent="true"
+							:outerBound="{ w: 1000, h: 645 }"
+						>
+							<img :src="AlertImage" alt="Dog" :style="{ width: '100%', height: '100%' }">
+						</drr>
 					</div>
-					<div class="custom-alert-title" :style="titleStyleoptions" v-html="form_data.alert_title">
-					</div>
-					<div class="custom-alert-message" :style="messageStyleoptions" v-html="form_data.alert_message">
-					</div>
+
+					<drr
+						:selectable="false"
+						:x="form_data.positions.title.x"
+						:y="form_data.positions.title.y"
+						:w="form_data.positions.title.width"
+						:h="form_data.positions.title.height"
+						:angle="form_data.positions.title.angle"
+						:hasActiveContent="true"
+						:outerBound="{ w: 1000, h: 645 }"
+					>
+						<div class="element" :style="getElementStyles(form_data.positions.title)">
+							{{ form_data.alert_title }}
+						</div>
+					</drr>
+
+					<drr
+						:selectable="false"
+						:x="form_data.positions.text.x"
+						:y="form_data.positions.text.y"
+						:w="form_data.positions.text.width"
+						:h="form_data.positions.text.height"
+						:angle="form_data.positions.text.angle"
+						:hasActiveContent="true"
+						:outerBound="{ w: 1000, h: 645 }"
+					>
+						<div class="element" :style="getElementStyles(form_data.positions.text)">
+							{{ form_data.alert_message }}
+						</div>
+					</drr>
 				</div>
 			</div>
 
@@ -279,80 +340,85 @@
 			<div class="text" :class="color_schema.title_text">
 				Оповещение о донате
 			</div>
-			<button class="default-button text" v-show="!actions" @click="formToggle" v-b-toggle.alerts-actions>
+			<button class="default-button text" v-show="!actions" @click="formToggle('donate')" v-b-toggle.alerts-actions>
 				{{ 'ДОБАВИТЬ'}}
 			</button>
 		</div>
-		<div class="donat-alert-list">
-			<div class="donat-alert-item" v-for="(item, index) in alerts" :key="`alerts-${index}`" :class="color_schema.item">
-				<div class="alert-item-checkbox" >
-					<label class="switch-checkbox" :for="'select-alert'+index">
-						<input type="checkbox" :id="'select-alert'+index" @change="activeToggle(item)" v-model="item.active" :key="'select-alert' +index">
-						<span class="alert-slider-checkbox round"></span>
-					</label>
-				</div>
-				<div class="alert-amount">
-					<div class="text" :class="color_schema.text">
-						Сумма:
-					</div>
-					<div class="range-amount">
-						{{item.amount.min}} &laquo; {{item.amount.max}}
-					</div>
 
+		<div class="donat-alert-list">
+			<alert-listing
+				v-for="item in alerts.donate"
+				:key="`alerts-${item.id}`"
+				:alert="item"
+				:color_schema="color_schema"
+				@editing="editAlert($event)"
+				@destroy="destroy_payload.a_id = $event.id"
+			>
+				<div slot="counter">
+					<div class="alert-amount">
+						<div class="text" :class="color_schema.text">
+							Сумма:
+						</div>
+						<div class="range-amount">
+							{{ item.amount.min }} &laquo; {{item.amount.max}}
+						</div>
+					</div>
 				</div>
-				<div class="alert-item-actions">
-					<button style="border: 0" class="preview-link btn-action" />
-					<button style="border: 0" class="copy-link btn-action" />
-					<button style="border: 0" class="edit-link btn-action" />
-					<button @click="destroy_payload.a_id = item.id" style="border: 0" class="delete-link btn-action" v-b-modal.destroy-modal/>
-				</div>
-			</div>
+
+			</alert-listing>
 		</div>
+
 	</div>
-	<!-- <div class="subscribe-alert">
+
+
+	<div class="subscribe-alert">
 		<div class="subscribe-alert-header">
 			<div class="text" :class="color_schema.title_text">
 				Оповещение о стриках подписок
 			</div>
-			<button class="default-button text" @click="actions = !actions" v-b-toggle.alerts-actions>
+			<button class="default-button text" @click="formToggle('subscribe')" v-b-toggle.alerts-actions>
 				{{ actions ? 'СОХРАНИТЬ' : 'ДОБАВИТЬ'}}
 			</button>
 		</div>
+
+
 		<div class="subscribe-alert-list">
-			<div class="subscribe-alert-item" v-for="(item, index) in subscribeItems" :key="`subscribeItems-${index}`" :class="color_schema.item">
-				<div class="subscribe-item-checkbox">
-					<label class="switch-checkbox" :for="'select-alert' + index">
-						<input type="checkbox" :id="'select-alert' + index" v-model="item.active" :key="'select-alert' + index">
-						<span class="alert-slider-checkbox round"></span>
-					</label>
-				</div>
-				<div class="subscribe-strick">
+			<alert-listing
+				v-for="item in alerts.subscribe"
+				:key="`alerts-${item.id}`"
+				:alert="item"
+				:color_schema="color_schema"
+				@editing="editAlert($event, 'subscribe')"
+				@destroy="destroy_payload.a_id = $event.id"
+			>
+				<div slot="counter" class="subscribe-strick">
 					<div class="text" :class="color_schema.text">
 						Стрик
 					</div>
 					<span class="strick" :class="color_schema.global">
 						{{ item.strick }}
 					</span>
+					<div class="subscribe-item-type">
+						<div class="subscribe-icon">
+							<img :src="require(`../assets/${item.icon}.svg`)" :alt="item.type">
+						</div>
+						<div class="text subscribe-type">
+							{{ item.type }}
+						</div>
+					</div>
 
 				</div>
-				<div class="subscribe-item-type">
-					<div class="subscribe-icon">
-						<img :src="item.icon" :alt="item.type">
-					</div>
-					<div class="text subscribe-type">
-						{{ item.type }}
-					</div>
-				</div>
-				<div class="subscribe-item-actions">
-					<button style="border: 0" class="preview-link btn-action" />
-					<button style="border: 0" class="copy-link btn-action" />
-					<button style="border: 0" class="edit-link btn-action" />
-					<button style="border: 0" class="delete-link btn-action" v-b-modal.destroy-modal />
-				</div>
-			</div>
+			</alert-listing>
 		</div>
-	</div> -->
-	<preview-modal/>
+
+	</div>
+
+	<preview-modal
+	 	:settings="[form_data.positions.image, form_data.positions.title, form_data.positions.text]"
+		@change-image="form_data.positions.image = $event"
+		@change-title="form_data.positions.title = $event"
+		@change-text="form_data.positions.text = $event"
+	/>
 	<destroy-modal title="Алерт" :a_id="destroy_payload.a_id" />
 </div>
 </template>
@@ -361,6 +427,7 @@
 	import axios from 'axios'
 	import { mapState, mapActions, mapGetters } from 'vuex'
 	import SelectBlock from '@/components/SelectBlock.vue'
+	import AlertListing from '@/components/alerts/listing.vue'
 	import ColorPicker from '@/components/widget-component/ColorPicker.vue'
 	import bFormSlider from 'vue-bootstrap-slider/es/form-slider'
 	import PreviewModal from '@/components/modals/PreviewModal.vue'
@@ -374,10 +441,13 @@
 			ColorPicker,
 			bFormSlider,
 			PreviewModal,
-			vueDropzone: vue2Dropzone
+			vueDropzone: vue2Dropzone,
+			AlertListing
 		},
 		data () {
 			return {
+				elements: [],
+				type_form: null,
 				destroy_payload: {
 					a_id: null
 				},
@@ -402,6 +472,8 @@
 					maxFiles: 1
 				},
 				form_data: {
+					strick: 0,
+					type: 'donate',
 					range_value: [100, 500],
 					alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
 					title_align: 'center',
@@ -415,7 +487,65 @@
 					alert_title_font: 'Montserrat',
 					alert_message_font: 'Montserrat',
 					alert_title: '{{user}} перевел вам {{amount}}',
+					positions: {
+						title: {
+							id: 'title',
+							x: 200,
+							y: 120,
+							scaleX: 1,
+							scaleY: 1,
+							width: 400,
+							height: 20,
+							angle: 0,
+							text: '{{user}} перевел вам {{amount}}',
+							classPrefix: 'tr',
+							styles: {
+								background: 'transparent',
+								fontSize: '14px',
+								width: '100%',
+								height: '100%'
+							}
+						},
+						text: {
+							id: 'text',
+							x: 200,
+							y: 200,
+							scaleX: 1,
+							scaleY: 1,
+							width: 400,
+							height: 100,
+							angle: 0,
+							text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
+							classPrefix: 'tr',
+							styles: {
+								background: 'transparent',
+								fontSize: '10px',
+								width: '100%',
+								height: '100%'
+							}
+						},
+						image: {
+							id: 'image',
+							x: 200,
+							y: 50,
+							scaleX: 1,
+							scaleY: 1,
+							width: 100,
+							height: 100,
+							angle: 0,
+							text: '',
+							classPrefix: 'tr',
+							styles: {
+								background: 'transparent',
+								fontSize: '10px',
+								width: '100%',
+								height: '100%'
+							}
+						}
+					}
 				},
+				alert_edit_id: null,
+				// links: [],
 				activetab: 1,
 				actions: false,
 				subscribeItems: [
@@ -429,6 +559,10 @@
 		computed: {
 			...mapState(['alerts']),
 			...mapGetters(['color_schema']),
+			// linkDonate () {
+			// 	if (!this.links.length)return ''
+			// 	return this.links.find(x => x.type === 'donate').link
+			// },
 			previewTitle () {
 				return this.form_data.alert_title.replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
 			},
@@ -460,24 +594,53 @@
 			},
 			alerts (val) {
 				console.log('alerts', this.alerts)
+			},
+			actions (val) {
+				if (!val && this.alert_edit_id) {
+					this.alert_edit_id = null
+				}
 			}
 		},
 		methods: {
 			...mapActions(['fetchAlerts', 'removeAlert']),
-			activeToggle (item) {
-				axios.put(`/alerts/${item.id}`, item).then(response => {
-					// this.fetchAlerts()
-				})
+			getElementStyles (element) {
+				const styles = element.styles ? element.styles : {}
+				return {
+					width: `${element.width}px`,
+					height: `${element.height}px`,
+					...styles
+				}
+			},
+			editAlert (alert, type_form = 'donate') {
+				this.form_data = alert.settings
+				this.alert_edit_id = alert.id
+				this.formToggle(type_form)
 			},
 			create () {
-				console.log('form_data', this.form_data)
 				axios.post('/alerts', this.form_data).then(response => {
 					this.fetchAlerts()
 				})
-				// console.log('create')
-				this.formToggle()
 			},
-			formToggle () {
+			edit () {
+				axios.put(`/alerts/${this.alert_edit_id}`, this.form_data).then(response => {
+					this.fetchAlerts()
+				})
+			},
+			submit () {
+				!this.alert_edit_id ? this.create() : this.edit()
+				this.formToggle(this.type_form, false)
+			},
+			formToggle (type_form = 'donate', type_update = true) {
+				this.type_form = type_form
+				console.log(type_update)
+				if (type_update) {
+					if (type_form === 'subscribe') {
+						this.form_data.type = 'free'
+					} else {
+						this.form_data.type = 'donate'
+					}
+				}
+
 				setTimeout(() => {
 					this.actions = !this.actions
 				}, 50);
@@ -526,9 +689,6 @@
 		},
 		mounted() {
 			this.fetchAlerts()
-			// axios.get('/alerts').then(response => {
-			// 	console.log(response.data)
-			// })
 		}
 	}
 </script>
@@ -1119,3 +1279,7 @@ div.remove-icon {
 	height: 20px;
 }
 </style>
+
+    function newFunction() {
+      return 'title';
+    }

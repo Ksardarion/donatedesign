@@ -1,40 +1,27 @@
 <template>
   <b-modal id="preview-modal" ref="preview_modal" hide-header hide-footer content-class="preview-modal-content" :body-class="['preview-modal-body', color_schema.item]" centered>
-    <div class="custom-position-block" >
-      <drr
-      key="img"
-      :x="200"
-      :y="50"
-      :w="100"
-      :h="100"
-      :angle="0"
-      :hasActiveContent="true"
-      :outerBound="{ w: 1000, h: 645 }"
-      @update="update('el-img', $event);"
-      >
-      <img src="../../assets/dog.png" alt="Dog" :style="{ width: '100%', height: '100%' }">
-    </drr>
+    <div class="custom-position-block" v-if="settings.length">
     <drr
-    v-for="element in elements"
-    :key="element.id"
-    :x="element.x"
-    :y="element.y"
-    :w="element.width"
-    :h="element.height"
-    :angle="element.angle"
-    :hasActiveContent="true"
-    :outerBound="{ w: 1000, h: 645 }"
-    @update="update(element.id, $event);"
+			v-for="element in elements"
+			:key="element.id"
+			:x="element.x"
+			:y="element.y"
+			:w="element.width"
+			:h="element.height"
+			:angle="element.angle"
+			:hasActiveContent="true"
+			:outerBound="{ w: 1000, h: 645 }"
+			@change="update(element.id, $event);"
     >
-    <div class="element" :style="getElementStyles(element)">
+    <div class="element" :style="getElementStyles(element)" v-if="element.id !== 'image'">
       {{ element.text }}
     </div>
+		<img v-else :src="imgDog" alt="Dog" :style="{ width: '100%', height: '100%' }">
   </drr>
 </div>
 <div class="preview-modal-footer text" :class="color_schema.item">
   <div class="preview-action-button text">
-    <b-button class="preview-close" variant="outline-light" @click="hideModal">ОТМЕНА</b-button>
-    <button class="default-button preview-save">СОХРАНИТЬ</button>
+    <button class="default-button preview-save" @click="hideModal">СОХРАНИТЬ</button>
   </div>
 
 </div>
@@ -43,53 +30,18 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import imgDog from '../../assets/dog.png'
 
 export default {
-  name: 'preview-modal',
+	name: 'preview-modal',
+	props: ['settings'],
   data () {
     return {
-      elements: [
-        {
-          id: 'el-1',
-          x: 200,
-          y: 200,
-          scaleX: 1,
-          scaleY: 1,
-          width: 400,
-          height: 100,
-          angle: 0,
-          text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
-          classPrefix: 'tr',
-          styles: {
-            background: 'transparent',
-            fontSize: '10px',
-            width: '100%',
-            height: '100%'
-          }
-        },
-        {
-          id: 'el-2',
-          x: 200,
-          y: 120,
-          scaleX: 1,
-          scaleY: 1,
-          width: 400,
-          height: 20,
-          angle: 0,
-          text: '{{user}} перевел вам {{amount}}',
-          classPrefix: 'tr',
-          styles: {
-            background: 'transparent',
-            fontSize: '14px',
-            width: '100%',
-            height: '100%'
-          }
-        }
-      ],
+			imgDog: imgDog,
       offsetX: 0,
       offsetY: 0
     }
-  },
+	},
   methods: {
     hideModal () {
       this.$refs.preview_modal.hide()
@@ -97,13 +49,13 @@ export default {
     update (id, payload) {
       this.elements = this.elements.map(item => {
         if (item.id === id) {
-          return {
-            ...item,
-            ...payload
-          }
+					let position = {...item, ...payload}
+					this.$emit('change-' + item.id, position)
+
+          return position
         }
         return item
-      })
+			})
     },
     getElementStyles (element) {
       const styles = element.styles ? element.styles : {}
@@ -115,7 +67,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['color_schema', 'user'])
+		...mapGetters(['color_schema', 'user']),
+		elements: {
+			get () {
+				return this.settings
+			},
+			set () {
+				//
+			}
+		}
   }
 }
 </script>
