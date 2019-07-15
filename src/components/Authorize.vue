@@ -46,13 +46,13 @@ export default {
 			let is_streamer =  this.is_streamer ? 1 : 0
 			let service = this.service.toLowerCase()
       if (service === 'twitch') {
-        return `http://gmail-import.com/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `http://dev.donatesupp.ru/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
       if (service === 'youtube') {
-        return `http://gmail-import.com/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `http://dev.donatesupp.ru/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
 
-      return `http://gmail-import.com/oauth/${service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+      return `http://dev.donatesupp.ru/oauth/${service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
     }
 	},
 	methods: {

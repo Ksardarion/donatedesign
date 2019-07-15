@@ -12,7 +12,8 @@ Vue.use(VueSwimlane)
 
 Vue.config.productionTip = false
 
-axios.defaults.baseURL = 'http://gmail-import.com/api'
+// axios.defaults.baseURL = 'http://dev.donatesupp.ru/api'
+axios.defaults.baseURL = 'http://dev.donatesupp.ru/api'
 
 // Vue.use(VueClipboard)
 
