@@ -42,7 +42,7 @@ export default {
   },
   data () {
     return {
-      chart_sections: 'Июнь',
+      chart_sections: 'Январь',
       chart_options: [
         { value: '01', title: 'Январь' },
         { value: '02', title: 'Февраль' },
@@ -139,10 +139,17 @@ export default {
 					}]
 				}
 			})
-		}
+    },
+    setCurrentMonth () {
+      let d = new Date()
+      let month = ("0" + (d.getMonth() + 1)).slice(-2)
+
+      this.chart_sections = this.chart_options.find(element => element.value === month).title
+    }
 	},
 	created () {
-		this.fetchStatisticChart()
+    this.fetchStatisticChart()
+    this.setCurrentMonth()
 	}
 }
 </script>

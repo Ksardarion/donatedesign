@@ -2,11 +2,11 @@
   <div class="content-app1 dashboard">
     <template v-if="!user">
       <div class="info-blocks">
-        <info-block title="Платежей" counter="199" amount="2150"/>
-        <info-block title="Подписчиков" counter="325"/>
+        <info-block title="Платежей" :counter="statistic.count" :amount="statistic.sum"/>
+        <info-block title="Подписчиков" :counter="statisticSubscribe.all"/>
       </div>
 
-      <info-round-chart title="Сбор средств" :amount="800" :sections="sections" :total="40"/>
+      <!-- <info-round-chart title="Сбор средств" :amount="800" :sections="sections" :total="40"/> -->
       <chart-block />
       <div class="history-activity text" :class="color_schema.item">
         <div class="activity-block">
@@ -77,6 +77,7 @@
 </template>
 
 <script>
+  import axios from 'axios'
   import InfoBlock from '@/components/InfoBlock.vue'
   import InfoRoundChart from '@/components/InfoRoundChart.vue'
   import ChartBlock from '@/components/ChartBlock.vue'
@@ -99,11 +100,37 @@
       return {
         sections: [
         { label: 'amount', value: 16, color: '#8280FF' }
-        ]
+        ],
+        statistic: {
+          sum: 0,
+          count: 0,
+          current_mounth: {
+            sum: 0,
+            count: 0,
+          }
+        },
+        statisticSubscribe: {
+          all: 0,
+          mounth: 0,
+          chart: []
+        }
       }
     },
     computed: {
       ...mapGetters(['color_schema', 'user', 'user_info'])
+    },
+    methods: {
+      fetchStatistic () {
+        axios.get('/transactions/statistic').then(response => {
+          this.statistic = response.data
+        })
+        axios.get('/subscribers/statistic').then(response => {
+          this.statisticSubscribe = response.data
+        })
+      }
+    },
+    created () {
+      this.fetchStatistic()
     }
   }
 </script>
