@@ -2,9 +2,9 @@
 	<div class="content-app1 profile">
 		<div class="profile-block">
 			<div class="user-info" :class="color_schema.item">
-				<img src="../assets/profile-avatar.png" alt="profile-avatar">
+				<img :src="streamer_info.avatar" alt="profile-avatar">
 				<div class="text">
-					Morgana_1234
+					{{ streamer_info.name }}
 				</div>
 			</div>
 			<div class="user-statistic text" :class="color_schema.item">
@@ -54,7 +54,7 @@
 				<img src="../assets/+.svg" alt="+" class="icon-plus">
 				ПОДПИСАТЬСЯ
 			</button>
-			<button @click="$router.push('form-donation')" class="default-button">
+			<button @click="$router.push({name: 'form-donation', params: { id: streamer_info.id }})" class="default-button">
 				ОТПРАВИТЬ ДЕНЬГИ
 			</button>
 		</div>
@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'profile',
@@ -117,11 +117,18 @@ export default {
         { amount: 1200, badge_count: 10, animation_count: 10, sound_count: 10 },
         { amount: 1200, badge_count: 10, animation_count: 10, sound_count: 10 },
         { amount: 1200, badge_count: 10, animation_count: 10, sound_count: 10 }
-      ]
+      ],
+      userId: this.$route.params.id ? this.$route.params.id : this.$store.getters.user_info.id
     }
   },
+  methods: {
+    ...mapActions(['fetchStreamerData'])
+  },
   computed: {
-    ...mapGetters(['color_schema', 'user'])
+    ...mapGetters(['color_schema', 'streamer_info'])
+  },
+  created () {
+    this.fetchStreamerData()
   }
 }
 </script>

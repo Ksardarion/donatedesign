@@ -23,7 +23,7 @@ import DestroyModal from '@/components/modals/DestroyModal.vue'
 import LoadFileModal from '@/components/modals/LoadFileModal.vue'
 import AudioPlayer from '@/components/player/audio-player.vue'
 import Tooltip from 'vue-directive-tooltip'
-import 'vue-directive-tooltip/css/index.css'
+// import 'vue-directive-tooltip/css/index.css'
 
 import VueClipboards from 'vue-clipboards'
 var infiniteScroll =  require('vue-infinite-scroll');
@@ -52,7 +52,7 @@ Vue.filter('numbers', (value) => {
   let number = value + 1
   if (number < 10) {
     return "0" + number + "."
-  } 
+  }
   return number + "."
 })
 

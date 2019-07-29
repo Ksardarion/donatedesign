@@ -41,28 +41,26 @@ let light_theme = {
 }
 
 var state = {
-	token: localStorage.getItem('user_token'),
-	user: {
-		id: null,
-		social_twitch: false,
-		social_youtube: false,
-		social_vkontakte: false,
-		currency: 'RUS',
-		time_zone: '(UTC+3:00) Европа/Москва',
-		language: 'Русский'
-	},
-	mainSettings: {
-
+  token: localStorage.getItem('user_token'),
+  user: {
+    id: null,
+    social_twitch: false,
+    social_youtube: false,
+    social_vkontakte: false,
+    currency: 'RUS',
+    time_zone: '(UTC+3:00) Европа/Москва',
+    language: 'Русский'
   },
-	transactions: [],
-	transactions_statistic: {
-		count: 0,
-		sum: 0,
-		current_mounth: {
-			count: 0,
-			sum: 0,
-		}
-	},
+  mainSettings: {},
+  transactions: [],
+  transactions_statistic: {
+    count: 0,
+    sum: 0,
+    current_mounth: {
+      count: 0,
+      sum: 0
+    }
+  },
   user_type: 'streamer',
   state_checkbox: false,
   color_schema: {
@@ -76,10 +74,17 @@ var state = {
   playlist: [],
   sounds: [],
   testSound: [
-  "http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3",
-  "http://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3"
+    'http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3',
+    'http://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3'
   ],
   alerts: [],
+  streamer_form: {
+    donat_amount: null,
+    background_image: null
+  },
+  streamer_data: {
+    avatar: '../assets/avatar.png'
+  }
 }
 
 export default state
