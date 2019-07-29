@@ -1,28 +1,28 @@
 <template>
 	<div class="list-activity">
-		<div class="item-activity" v-for="(item, index) in activities">
+		<div class="item-activity" v-for="(item, index) in activities" :key="`item-${index}`">
 			<div class="title-item" :class="color_schema.text">
 				{{item.title}}
 			</div>
 			<div class="amount-item">
-				<template v-if="(item.amount == '' && user)">
-					<img :src="update_icon(item.subscribe.state)" class="subscriber-icon">
+				<template v-if="(item.type !== 'donate')">
+					<!-- <img :src="update_icon(item.subscribe.state)" class="subscriber-icon"> -->
 					<span class="strick dark">
-						{{item.subscribe.count}} месяц
+						{{item.counter}} месяц
 					</span>
 				</template>
-				<template v-if="(item.amount != '')">
-					{{item.amount}}
+				<template v-else>
+					{{item.counter}}
 				</template>
 			</div>
 			<div class="date-activity" :class="color_schema.text">
-				{{item.date}}
+				{{item.created_at}}
 			</div>
 			<div class="user-info-activity">
 				<div class="user-name">
-					{{item.user.nickname}}
+					nickname
 				</div>
-				<img :src="item.user.avatar" alt="avatar" class="avatar-icon">
+				<!-- <img :src="item.user.avatar" alt="avatar" class="avatar-icon"> -->
 			</div>
 			<div class="message-activity" >
 				<img :src="state_message(item.message)" alt="message" class="message-img" v-tooltip.click.top.end="{content: item.message, class: 'tooltip-custom' }">
@@ -32,6 +32,7 @@
 </template>
 
 <script>
+	import axios from 'axios'
 	import { mapGetters, mapState } from 'vuex'
 
 	export default {
@@ -45,13 +46,14 @@
 						light: require('../assets/platn_dark.svg') },
 						'premium': require('../assets/prem-dark.svg')
 					},
-					busy: false
+					busy: false,
+					page: 1,
+					activities: []
 				}
 			},
 			props: ['type'],
 			computed: {
 				...mapGetters(['color_schema', 'user', 'state_checkbox']),
-				...mapState(['activities'])
 			},
 			mounted() {
 				const listElm = document.querySelector('.activity-block');
@@ -60,7 +62,9 @@
 						this.loadMore();
 					}
 				});
-				this.$store.dispatch('fetchActivities', this.type)
+				axios.get(`/recentoperations?page=${this.page}`).then(response => {
+					this.activities = [...response.data.data]
+				})
 			},
 			methods: {
 				state_message (value) {
@@ -79,8 +83,13 @@
 				},
 				loadMore() {
 					this.busy = true;
+					++this.page
 					setTimeout(() => {
-						this.$store.dispatch('updateActivities', this.type);
+						axios.get(`/recentoperations?page=${this.page}`).then(response => {
+							if (response.data.data.length) {
+								this.activities = [...this.activities, ...response.data.data]
+							}
+						})
 						this.busy = false;
 					}, 200);
 				}
