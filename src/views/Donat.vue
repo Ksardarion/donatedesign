@@ -10,7 +10,7 @@
 			<div class="payment-list">
 				<div class="payment-item" v-for="item in paymentItems" :class="color_schema.item">
 					<div class="payment-info">
-						<div class="payment-name" v-if="item.name == 'Credit card'">
+						<div class="payment-name" v-if="item.name === 'Credit card'">
 							{{item.name}}
 						</div>
 						<img :src="item.icon" :alt="item.name">
@@ -41,7 +41,7 @@
 									<label >
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-default" value="default" v-model="background_image" class="form-donation-radio">
+											<input type="radio" name="background-default" value="default" v-model="streamer_form.background_image" class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Стандартно
 										</div>
@@ -54,7 +54,7 @@
 									<label>
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-color" value="color" v-model="background_image" class="form-donation-radio">
+											<input type="radio" name="background-color" value="color" v-model="streamer_form.background_image" class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Цвет
 										</div>
@@ -62,23 +62,23 @@
 
 										</div>
 									</label>
-								</div>	
+								</div>
 								<div class="group-input">
 									<label  >
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-image" value="image" v-model="background_image" class="form-donation-radio">
+											<input type="radio" name="background-image" value="image" v-model="streamer_form.background_image" class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Изображение
 										</div>
 										<div class="background-image-block image">
-											<vue-dropzone 
+											<vue-dropzone
 											id="dropzone"
 											ref="myVueDropzone"
-											@vdropzone-file-added="showImageDropzone = !showImageDropzone" 
-											@vdropzone-removed-file="showImageDropzone = !showImageDropzone" 
-											:include-styling="false" 
-											:options="dropzoneImageOptions" 
+											@vdropzone-file-added="showImageDropzone = !showImageDropzone"
+											@vdropzone-removed-file="showImageDropzone = !showImageDropzone"
+											:include-styling="false"
+											:options="dropzoneImageOptions"
 											:useCustomSlot="true"
 											v-on:vdropzone-thumbnail="thumbnail"
 											>
@@ -115,14 +115,14 @@
 				<div class="slider-donation-form" :class="color_schema.item">
 					<div>Минимальная сумма доната для заказа медиа</div>
 					<div class="amount-slider">
-						<b-form-slider ref="range" :min="0" :max="1200" v-model="donat_amount" />
-						<div class="slider-value text">{{ donat_amount }}</div> EUR
+						<b-form-slider ref="range" :min="0" :max="1200" v-model="streamer_form.donat_amount" />
+						<div class="slider-value text">{{ streamer_form.donat_amount }}</div> EUR
 					</div>
 				</div>
 				<div class="form-buttons">
 					<div class="buttons">
 						<button class="button-cancel">СБРОС</button>
-						<button class="default-button">СОХРАНИТЬ</button>
+						<button @click="save(payload)" class="default-button">СОХРАНИТЬ</button>
 					</div>
 				</div>
 			</div>
@@ -135,59 +135,64 @@
 
 <script>
 
-	import { mapGetters } from 'vuex'
-	import vue2Dropzone from 'vue2-dropzone'
-	import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import { mapGetters, mapActions } from 'vuex'
+import vue2Dropzone from 'vue2-dropzone'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
-	export default {
-		name: 'donat',
-		components: {
-			vueDropzone: vue2Dropzone
-		},
-		computed: {
-			...mapGetters(['color_schema', 'user'])
-		},
-		data () {
-			return {
-				dropzoneImageOptions: {
-					url: 'https://httpbin.org/post',
-					thumbnailWidth: 150,
-					maxFilesize: 3,
-					headers: { 'My-Awesome-Header': 'header value' },
-					maxFiles: 1,
-					previewTemplate: this.template(),
-				},
-				showImageDropzone: true,
-				donat_amount: 500,
-				background_image: 'default',
-				paymentItems: [
-				{
-					name: 'Credit card',
-					icon: require('../assets/Credit card.svg'),
-					number: '4275 **** **** 4563'
-				},
-				{
-					name: 'Web Money',
-					icon: require('../assets/webmoney-paying-logo.svg'),
-					number: '+79281248796'
-				},
-				{
-					name: 'Yandex Money',
-					icon: require('../assets/yandex-pay-logo.svg'),
-					number: '410011435701035'
-				},
-				{
-					name: 'Qiwi',
-					icon: require('../assets/qiwi.svg'),
-					number: '+79281248796'
-				}
-				]
-
-			}
-		},
-		methods: {
-			template: function () {
-				return `<div class="dz-preview dz-file-preview">
+export default {
+  name: 'donat',
+  components: {
+    vueDropzone: vue2Dropzone
+  },
+  computed: {
+    ...mapGetters(['color_schema', 'user', 'streamer_form']),
+    payload () {
+      return {
+        settings: {
+          donat_amount: this.streamer_form.donat_amount,
+          background_image: this.streamer_form.background_image
+        }
+      }
+    }
+  },
+  data () {
+    return {
+      dropzoneImageOptions: {
+        url: 'https://httpbin.org/post',
+        thumbnailWidth: 150,
+        maxFilesize: 3,
+        headers: { 'My-Awesome-Header': 'header value' },
+        maxFiles: 1,
+        previewTemplate: this.template()
+      },
+      showImageDropzone: true,
+      paymentItems: [
+        {
+          name: 'Credit card',
+          icon: require('../assets/Credit card.svg'),
+          number: '4275 **** **** 4563'
+        },
+        {
+          name: 'Web Money',
+          icon: require('../assets/webmoney-paying-logo.svg'),
+          number: '+79281248796'
+        },
+        {
+          name: 'Yandex Money',
+          icon: require('../assets/yandex-pay-logo.svg'),
+          number: '410011435701035'
+        },
+        {
+          name: 'Qiwi',
+          icon: require('../assets/qiwi.svg'),
+          number: '+79281248796'
+        }
+      ]
+    }
+  },
+  methods: {
+    template: function () {
+      return `<div class="dz-preview dz-file-preview">
 				<div class="dz-image">
 				<div data-dz-thumbnail-bg></div>
 				</div>
@@ -197,29 +202,36 @@
 				</div>
 				<div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
 				<div class="dz-error-message"><span data-dz-errormessage></span></div>
-				
+
 				</div>
-				`;
-			},
-			thumbnail: function(file, dataUrl) {
-				var j, len, ref, thumbnailElement;
-				if (file.previewElement) {
-					file.previewElement.classList.remove("dz-file-preview");
-					ref = file.previewElement.querySelectorAll("[data-dz-thumbnail-bg]");
-					for (j = 0, len = ref.length; j < len; j++) {
-						thumbnailElement = ref[j];
-						thumbnailElement.alt = file.name;
-						thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
-					}
-					return setTimeout(((function(_this) {
-						return function() {
-							return file.previewElement.classList.add("dz-image-preview");
-						};
-					})(this)), 1);
-				}
-			},
-		}
-	}
+				`
+    },
+    thumbnail: function (file, dataUrl) {
+      var j, len, ref, thumbnailElement
+      if (file.previewElement) {
+        file.previewElement.classList.remove('dz-file-preview')
+        ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]')
+        for (j = 0, len = ref.length; j < len; j++) {
+          thumbnailElement = ref[j]
+          thumbnailElement.alt = file.name
+          thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")'
+        }
+        return setTimeout(((function (_this) {
+          return function () {
+            return file.previewElement.classList.add('dz-image-preview')
+          }
+        })(this)), 1)
+      }
+    },
+    save (payload) {
+      this.updateDonateForm(payload)
+    },
+    ...mapActions(['updateDonateForm', 'fetchFormData'])
+  },
+  created () {
+    this.fetchFormData()
+  }
+}
 </script>
 
 <style scoped>
@@ -410,7 +422,6 @@ input.form-donation-radio:checked ~ .custom-checkbox {
 .background-image-block > div#dropzone > .dz-message > .dropzone-custom-content {
 	height: 65px;
 }
-
 
 #dropzone .dz-preview {
 	width: 160px;

@@ -13,18 +13,18 @@ var mutations = {
   },
   setTransactions (state, transactions) {
     state.transactions = transactions
-	},
-	setTransactionsStatistic (state, statistic) {
-		state.transactions_statistic = statistic
-	},
+  },
+  setTransactionsStatistic (state, statistic) {
+    state.transactions_statistic = statistic
+  },
   setToken (state, token) {
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
-		localStorage.setItem('user_token', token)
-		state.token = token
-	},
-	setSettings (state, settings) {
-		state.mainSettings = settings
-	},
+    localStorage.setItem('user_token', token)
+    state.token = token
+  },
+  setSettings (state, settings) {
+    state.mainSettings = settings
+  },
   set_state_checkbox: (state, payload) => {
     state.state_checkbox = payload
   },
@@ -50,23 +50,21 @@ var mutations = {
     state.milestones = milestones
   },
   removeMilestones (state, milestone_id) {
-    var removeIndex = state.milestones.map(function(item) { return item.id; }).indexOf(milestone_id);
+    var removeIndex = state.milestones.map(function (item) { return item.id }).indexOf(milestone_id)
     state.milestones.splice(removeIndex, 1)
   },
   setWidgets (state, widgets) {
     state.widgets = widgets
   },
   removeWidgets (state, payload) {
-    var i_i = state.widgets.map(function(item) { return item.title; }).indexOf(payload['type']);
+    var i_i = state.widgets.map(function (item) { return item.title }).indexOf(payload['type'])
     var items = state.widgets[i_i]['collapse_item']
-		var r_i = items.map(function(item) { return item.slug; }).indexOf(payload['id']);
+    var r_i = items.map(function (item) { return item.slug }).indexOf(payload['id'])
     state.widgets[i_i]['collapse_item'].splice(r_i, 1)
-
   },
   removeAlert (state, alert_id) {
-    var removeIndex = state.alerts.map(function(item) { return item.id; }).indexOf(alert_id);
+    var removeIndex = state.alerts.map(function (item) { return item.id }).indexOf(alert_id)
     state.alerts.splice(removeIndex, 1)
-
   },
   createWidgets (state, widget) {
     state.widgets[0]['collapse_item'].push(widget)
@@ -87,6 +85,12 @@ var mutations = {
   setAlerts (state, alerts) {
     state.alerts = alerts
   },
+  updateDonateForm (state, settings) {
+    state.streamer_form = settings
+  },
+  updateStreamerData (state, streamer) {
+    state.streamer_data = streamer
+  }
 }
 
 export default mutations

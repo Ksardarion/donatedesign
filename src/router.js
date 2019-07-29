@@ -103,7 +103,7 @@ export default new Router({
       component: Advancement
     },
     {
-      path: '/form-donation',
+      path: '/form-donation/:id',
       name: 'form-donation',
       component: FormDonation
     },
