@@ -12,7 +12,7 @@
       </label>
     </div>
     <div class="avatar">
-      <img src="../assets/avatar.png">
+      <img :src="user_info.avatar">
     </div>
   </div>
 </div>
@@ -24,7 +24,7 @@ export default {
   name: 'nav-bar',
   computed: {
     ...mapState(['state_checkbox']),
-    ...mapGetters(['color_schema', 'user']),
+    ...mapGetters(['color_schema', 'user', 'user_info']),
     current_state_checkbox: {
       set (current_state_checkbox) {
         this.$store.commit('set_state_checkbox', current_state_checkbox)
@@ -59,6 +59,7 @@ export default {
 .avatar > img {
   width: 45px;
   height: 45px;
+	border-radius: 25px;
 }
 
 .switch {

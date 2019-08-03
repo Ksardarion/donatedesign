@@ -34,19 +34,19 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'login-modal',
   compenents: {
-	},
-	data () {
-		return {
-			service: 'twitch',
-			redirect: ''
-		}
-	},
+  },
+  data () {
+    return {
+      service: 'twitch',
+      redirect: ''
+    }
+  },
   methods: {
-		submit (service) {
-			this.service = service
-			console.log(this.service)
-			window.location.href = this.locationHref
-		},
+    submit (service) {
+      this.service = service
+      console.log(this.service)
+      window.location.href = this.locationHref
+    },
     hideModal () {
       this.$refs.login_modal.hide()
     },
@@ -58,7 +58,7 @@ export default {
     ...mapGetters(['color_schema', 'user']),
     item_value () {
       return this.items[0].value
-		},
+    },
     redirectDecode: function () {
       return window.atob(this.redirect)
     },
@@ -68,29 +68,28 @@ export default {
     locationHref: function () {
       let is_streamer = this.user ? 0 : 1
       if (this.service === 'twitch') {
-        return `https://api.dev.donatesupp.ru/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `https://api.donatesupp.com/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
       if (this.service === 'google') {
-        return `https://api.dev.donatesupp.ru/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `https://api.donatesupp.com/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
 
-      return `https://api.dev.donatesupp.ru/oauth/${this.service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+      return `https://api.donatesupp.com/oauth/${this.service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
     },
     redirectRoute: function () {
       if (this.redirectParams[0].length === 0) {
-        return {href: ''}
+        return { href: '' }
       }
       let props = this.$router.resolve({
         name: this.redirectParams[0],
-        params: { id: this.redirectParams[1] },
-      });
+        params: { id: this.redirectParams[1] }
+      })
 
-      return props;
-
+      return props
     },
     redirectHref: function () {
       return escape(this.redirectRoute.href)
-    },
+    }
   }
 }
 </script>

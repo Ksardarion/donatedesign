@@ -41,7 +41,7 @@
 									<label >
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-default" value="default" v-model="streamer_form.background_image" class="form-donation-radio">
+											<input type="radio" name="background-default" value="default" v-model="settings.main.bg" class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Стандартно
 										</div>
@@ -54,12 +54,12 @@
 									<label>
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-color" value="color" v-model="streamer_form.background_image" class="form-donation-radio">
+											<input type="radio" name="background-color" value="color" v-model="settings.main.bg" class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Цвет
 										</div>
 										<div class="background-image-block color">
-
+											<color-picker :color="settings.main.bgColor" v-model="settings.main.bgColor" />
 										</div>
 									</label>
 								</div>
@@ -67,7 +67,7 @@
 									<label  >
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-image" value="image" v-model="streamer_form.background_image" class="form-donation-radio">
+											<input type="radio" name="background-image" value="image" v-model="settings.main.bg" class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Изображение
 										</div>
@@ -101,7 +101,7 @@
 				<div class="donation-form-preview" :class="color_schema.item">
 					<div class="top-block">
 						<div :class="color_schema.text"> Превью </div>
-						<router-link to="/form-donation" class="form-donation-page-link" :class="color_schema.title_text">
+						<router-link :to="{path: '/form-donation', params: {id: this.$store.getters.user_info.id}}" class="form-donation-page-link" :class="color_schema.title_text">
 							Посмотреть полный размер
 							<img src="../assets/right-arrow.svg" alt="arrow" class="arrow-icon">
 						</router-link>
@@ -115,14 +115,14 @@
 				<div class="slider-donation-form" :class="color_schema.item">
 					<div>Минимальная сумма доната для заказа медиа</div>
 					<div class="amount-slider">
-						<b-form-slider ref="range" :min="0" :max="1200" v-model="streamer_form.donat_amount" />
-						<div class="slider-value text">{{ streamer_form.donat_amount }}</div> EUR
+						<b-form-slider ref="range" :min="0" :max="1200" v-model="settings.main.minDonate" />
+						<div class="slider-value text">{{ settings.main.minDonate }}</div> EUR
 					</div>
 				</div>
 				<div class="form-buttons">
 					<div class="buttons">
 						<button class="button-cancel">СБРОС</button>
-						<button @click="save(payload)" class="default-button">СОХРАНИТЬ</button>
+						<button @click="updateDonateForm(settings)" class="default-button">СОХРАНИТЬ</button>
 					</div>
 				</div>
 			</div>
@@ -138,22 +138,17 @@
 import { mapGetters, mapActions } from 'vuex'
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import ColorPicker from '@/components/donat-component/ColorPicker.vue'
+import axios from 'axios'
 
 export default {
   name: 'donat',
   components: {
+    ColorPicker,
     vueDropzone: vue2Dropzone
   },
   computed: {
-    ...mapGetters(['color_schema', 'user', 'streamer_form']),
-    payload () {
-      return {
-        settings: {
-          donat_amount: this.streamer_form.donat_amount,
-          background_image: this.streamer_form.background_image
-        }
-      }
-    }
+    ...mapGetters(['color_schema', 'user'])
   },
   data () {
     return {
@@ -187,7 +182,14 @@ export default {
           icon: require('../assets/qiwi.svg'),
           number: '+79281248796'
         }
-      ]
+      ],
+      settings: {
+        main: {
+          bg: 'default',
+          bgColor: '#6C55D9',
+          minDonate: 500
+        }
+      }
     }
   },
   methods: {
@@ -223,10 +225,13 @@ export default {
         })(this)), 1)
       }
     },
-    save (payload) {
-      this.updateDonateForm(payload)
+    fetchFormData: function () {
+      axios.get('/user/donationformdata/')
+        .then((response) => { this.settings = response.data.form_settings })
     },
-    ...mapActions(['updateDonateForm', 'fetchFormData'])
+    updateDonateForm: function () {
+      return axios.post('/donate/settings/', this.settings)
+    }
   },
   created () {
     this.fetchFormData()

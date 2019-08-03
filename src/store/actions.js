@@ -123,31 +123,6 @@ var actions = {
       .fetchActivities(type)
       .then(activities => commit('addActivities', activities))
   },
-  updateDonateForm ({ commit }, payload) {
-    return axios.post('/donate/settings/', payload)
-      .then(() => commit('updateDonateForm', payload.settings))
-  },
-  fetchStreamerData ({ commit }, userId = false) {
-    if (userId) {
-      return axios.get(`/user/donationformdata/?streamer=${userId}`)
-        .then((response) => {
-          commit('updateStreamerData', response.data.streamer_info)
-        })
-    }
-    return axios.get('/user/donationformdata/')
-      .then((response) => commit('updateDonateForm', response.data.streamer_info))
-  },
-  fetchFormData ({ commit }, userId = false) {
-    if (userId) {
-      return axios.get(`/user/donationformdata/?streamer=${userId}`)
-        .then((response) => {
-          commit('updateDonateForm', response.data.form_settings)
-          commit('updateStreamerData', response.data.streamer_info)
-        })
-    }
-    return axios.get('/user/donationformdata/')
-      .then((response) => commit('updateDonateForm', response.data.form_settings))
-  }
 }
 
 export default actions

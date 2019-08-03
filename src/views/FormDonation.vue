@@ -2,8 +2,8 @@
 	<div class="form-donation">
 		<div class="form-donation-background-image" :style="{background: background}"></div>
 		<div class="streamer-info">
-			<img :src="streamer_info.avatar" alt="avatar" class="avatar">
-			<div class="text" :class="color_schema.title_text">{{streamer_info.name}}</div>
+			<img :src="donateForm.streamer.avatar" alt="avatar" class="avatar">
+			<div class="text" :class="color_schema.title_text">{{donateForm.streamer.name}}</div>
 		</div>
 		<div class="form-donation-block text">
 			<div class="form-block">
@@ -14,19 +14,15 @@
 					<form class="donation-form text">
 						<div class="group-form">
 							<label for="username" :class="color_schema.text">Ваше имя</label>
-							<div class="custom-input">
-								<input :readonly="anonim" class="username-input" :class="color_schema.title_text"
-											 type="text" placeholder="Введите имя" :value="donateForm.ank.login"></input>
-								<img src="../assets/twitch.svg" alt="twitch" class="input-icon">
-								<img src="../assets/vk.svg" alt="vk" class="input-icon">
-							</div>
+							<input id="username" :readonly="anonim" class="text-input" :class="color_schema.title_text"
+										 type="text" placeholder="Введите имя" :value="donateForm.ank.login" />
 						</div>
 						<div class="group-form-currency">
 							<div class="group-form">
 								<label for="amount" :class="color_schema.text">Сумма Доната</label>
 								<input id="amount" class="text-input" :class="color_schema.title_text"
 											 type="text" placeholder="Введите сумму доната" name="amount"
-											 :min="streamer_form.donat_amount" v-model="donateForm.amount"></input>
+											 :min="donateForm.settings.main.minDonate" v-model="donateForm.amount"/>
 							</div>
 							<div class="select-form-group">
 								<label for="currency" class="currency text" :class="color_schema.text">
@@ -95,31 +91,32 @@
 			<div class="form-advancement text">
 				<div class="form-advancement-top" :class="color_schema.item">
 					<div class="title-block">БЛИЖАЙШАЯ НАГРАДА ЗА ДОНАТ</div>
-					<div class="title-block amount">500 EUR</div>
+					<div class="title-block amount">{{ closestMilestone.donate }} EUR</div>
 				</div>
 				<div class="form-advancement-middle" :class="color_schema.item">
-					<b-progress :value="200" :max="500" class="form-advancement-progress"></b-progress>
+					<b-progress :value="mydonat"
+											:max="closestMilestone.donate" class="form-advancement-progress"></b-progress>
 					<div class="description-block" :class="color_schema.text">
 						Для получения награды отправьте этому стримеру еще
-						<span :class="color_schema.title_text">300 EUR</span>
+						<span :class="color_schema.title_text">{{ getRewardDonateSum }} EUR</span>
 						<br>
 						Ваш текущий донат:
-						<span>{{milestones.mydonat}}</span>
+						<span>{{mydonat}}</span>
 					</div>
 				</div>
 				<div class="form-advancement-bottom text" :class="color_schema.item">
 					<div class="title-block">ВЫ ПОЛУЧИТЕ</div>
 					<div class="description-block">
-						{{milestones.badges.length}} <span :class="color_schema.text"> Бейджа </span>
+						{{closestMilestone.badges.length}} <span :class="color_schema.text"> Бейджа </span>
 					</div>
 					<div class="form-advancement-images">
-						<img v-for="badge in milestones.badges" :src="badge.img" alt="">
+						<img v-for="badge in closestMilestone.badges" :src="badge.img" alt="">
 					</div>
 					<div class="description-block">
-						{{milestones.music.length}}  <span :class="color_schema.text">Мелодии</span>
+						{{closestMilestone.music.length}}  <span :class="color_schema.text">Мелодии</span>
 					</div>
 					<div class="form-advancement-sounds" :class="[color_schema.item, color_schema.text]">
-						<div class="advancement-sounds form-sound"  v-for="sound in milestones.music">
+						<div class="advancement-sounds form-sound"  v-for="sound in closestMilestone.music">
 							<img class="play-icon-btn" src="../assets/play-icon.svg">
 							<div class="text">message.mp3</div>
 						</div>
@@ -153,33 +150,47 @@ export default {
         { value: 'RUS' },
         { value: 'USD' }
       ],
-      userId: this.$route.params.id,
       donateForm: {
         ank: {
-          login: this.$store.getters.user_info.name ? this.$store.getters.user_info.name : '',
+          login: '',
           message: ''
         },
-        amount: this.$store.getters.streamer_form.donat_amount,
+        settings: {
+          main: {
+            bg: 'default',
+            bgColor: '#6C55D9',
+            minDonate: 500
+          },
+          other: {
+            donatevideolimit: 500
+          }
+        },
+        streamer: {
+          avatar: '',
+          name: ''
+        },
+        amount: 500,
         comission: false
       },
-      milestones: {
-        mydonat: null,
+      closestMilestone: {
         badges: [],
         music: [],
-        animations: []
+        animations: [],
+        donat: 0
       },
+      mydonat: 0,
       youtube: '',
       payment: [],
       subscribe: false
     }
   },
   computed: {
-    ...mapGetters(['color_schema', 'streamer_form', 'streamer_info', 'user_info', 'is_auth', 'mainSettings']),
+    ...mapGetters(['color_schema', 'user_info']),
     background () {
-      if (this.streamer_form.background_image === 'image') {
+      if (this.donateForm.settings.main.bg === 'image') {
         return this.image
-      } else if (this.streamer_form.background_image === 'color') {
-        return '#6C55D9'
+      } else if (this.donateForm.settings.main.bg === 'color') {
+        return this.donateForm.settings.main.bgColor
       } else {
         return 'linear-gradient(to right, #6B35A4, #3D59A7) 90%'
       }
@@ -201,17 +212,25 @@ export default {
       return ''
     },
     isYoutubeEnabled: function () {
-      // return this.mainSettings.DonateForm.other.donatevideolimit > this.donateForm.amount
-      return true
+      return this.donateForm.settings.amount > this.donateForm.settings.other.donatevideolimit
+    },
+    getUserId: function () {
+      return this.$route.params.id ? this.$route.params.id : this.user_info.id
+    },
+    getRewardDonateSum: function () {
+      return this.closestMilestone.donate - this.mydonat
     }
   },
   methods: {
-    ...mapActions(['fetchFormData']),
     donat () {
-      let requestData = this.donateForm
-      requestData.user_id = this.userId
-      requestData.youtubeVideoID = this.youtubeVideoID
-      axios.post('/donate', requestData).then(response => {
+      axios.post('/donate', {
+        'amount': this.donateForm.amount,
+        'ank': this.donateForm.ank,
+        'commission': this.donateForm.comission,
+        'user_id': parseInt(this.getUserId),
+        'youtubeVideoID': this.youtubeVideoID
+      }).then(response => {
+        console.log(response.data.order_id)
         this.fetchPayment(response.data.order_id)
         this.paykeeper()
       }).catch(error => {
@@ -219,7 +238,7 @@ export default {
       })
     },
     paykeeper () {
-      this.$router.push({ name: 'profile', params: { id: this.userId } })
+      this.$router.push({ name: 'profile', params: { id: this.getUserId } })
     },
     fetchPayment (orderId) {
       axios.get(`/paykeeper/${orderId}`).then(response => {
@@ -228,7 +247,7 @@ export default {
       })
     },
     checkSubscribe () {
-      axios.get(`/premium/${this.userId}/checksubscribe/`).then(response => {
+      axios.get(`/premium/${this.user_info.id}/checksubscribe/`).then(response => {
         this.subscribe = response.data
       })
     },
@@ -236,32 +255,25 @@ export default {
       window.open(this.payment.payment_link, '_blank')
     },
     fetchMydonat () {
-      axios.get(`/${this.userId}/mydonat`).then(response => {
-        this.milestones.mydonat = response.data
-      })
-    },
-    fetchMilestones () {
-      axios.get(`/premium/${this.userId}/milestones`).then(response => {
-        this.milestones.badges = response.data.badges
-        this.milestones.animations = response.data.animations
-        this.milestones.music = response.data.music
+      axios.get(`/${this.user_info.id}/mydonat`).then(response => {
+        this.mydonat = response.data
       })
     },
     fetchClosestMilestoneData () {
-      axios.get(`/mailstone/closest?who_id=${this.userId}`).then(response => {
-        console.log(response)
-      }
-      )
+      axios.get(`/mailstone/closest?who_id=${this.getUserId}`).then(response => {
+        this.closestMilestone = response.data
+      })
+    },
+    fetchStreamerData () {
+      return axios.get(`/user/donationformdata/?streamer=${this.getUserId}`)
+        .then((response) => {
+          this.donateForm.settings = response.data.form_settings
+          this.donateForm.streamer = response.data.streamer_info
+        })
     }
   },
   created () {
-    this.fetchFormData(this.userId)
-    if (this.is_auth) {
-      this.fetchMydonat()
-      this.checkSubscribe()
-      this.fetchMilestones()
-      this.fetchClosestMilestoneData()
-    }
+    this.fetchStreamerData()
   },
   watch: {
     anonim: function (v) {
@@ -270,6 +282,13 @@ export default {
     'donateForm.amount': function () {
       if (!this.isYoutubeEnabled()) {
         this.youtube = ''
+      }
+    },
+    'user_info.id': function () {
+      if (this.user_info.id) {
+        this.fetchMydonat()
+        this.checkSubscribe()
+        this.fetchClosestMilestoneData()
       }
     }
   }

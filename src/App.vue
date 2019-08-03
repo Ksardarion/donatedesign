@@ -28,24 +28,24 @@
 
 </template>
 <script>
-	import axios from 'axios'
-  import LogoBox from './components/LogoBox.vue'
-  import NavBar from './components/NavBar.vue'
-  import SideBar from './components/SideBar.vue'
-  import VueCharts from 'vue-chartjs'
-  import { mapGetters, mapActions } from 'vuex'
+import axios from 'axios'
+import LogoBox from './components/LogoBox.vue'
+import NavBar from './components/NavBar.vue'
+import SideBar from './components/SideBar.vue'
+import VueCharts from 'vue-chartjs'
+import { mapGetters, mapActions } from 'vuex'
 
-  export default {
-    name: 'App',
-    components: {
-      LogoBox,
-      NavBar,
-      SideBar,
-      VueCharts
-    },
-    data () {
-      return {
-        paymentItems: [
+export default {
+  name: 'App',
+  components: {
+    LogoBox,
+    NavBar,
+    SideBar,
+    VueCharts
+  },
+  data () {
+    return {
+      paymentItems: [
         {
           name: 'Credit card',
           icon: require('./assets/Credit card.svg'),
@@ -66,35 +66,35 @@
           icon: require('./assets/qiwi.svg'),
           number: '+79281248796'
         }
-        ]
+      ]
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'color_schema', 'mainSettings', 'token'
+    ]),
+    modalItems () {
+      var arr = []
+      this.paymentItems.forEach(function (el) { arr.push({ value: el.name }) })
+      return arr
+    }
+  },
+  methods: {
+    ...mapActions([
+      'fetchSettings', 'fetchUser'
+    ]),
+    authorization () {
+      if (this.token) {
+				axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.token
+        this.fetchUser()
       }
-		},
-    computed: {
-      ...mapGetters([
-				'color_schema', 'mainSettings', 'token'
-			]),
-      modalItems () {
-        var arr = []
-        this.paymentItems.forEach(function (el) { arr.push({ value: el.name }) })
-        return arr
-      }
-		},
-		methods: {
-			...mapActions([
-				'fetchSettings', 'fetchUser'
-			]),
-			authorization () {
-				if (this.token) {
-          axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.token
-          this.fetchUser()
-				}
-			}
-		},
-		created () {
-			this.authorization()
-			this.fetchSettings()
-		}
+    }
+  },
+  created () {
+    this.authorization()
+    this.fetchSettings()
   }
+}
 </script>
 
 <style>

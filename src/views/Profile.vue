@@ -2,9 +2,9 @@
 	<div class="content-app1 profile">
 		<div class="profile-block">
 			<div class="user-info" :class="color_schema.item">
-				<img :src="streamer_info.avatar" alt="profile-avatar">
+				<img class="avatar" :src="streamer.avatar" alt="profile-avatar">
 				<div class="text">
-					{{ streamer_info.name }}
+					{{ streamer.name }}
 				</div>
 			</div>
 			<div class="user-statistic text" :class="color_schema.item">
@@ -54,7 +54,7 @@
 				<img src="../assets/+.svg" alt="+" class="icon-plus">
 				ПОДПИСАТЬСЯ
 			</button>
-			<button @click="$router.push({name: 'form-donation', params: { id: streamer_info.id }})" class="default-button">
+			<button @click="$router.push({name: 'form-donation', params: { id: streamer.id }})" class="default-button">
 				ОТПРАВИТЬ ДЕНЬГИ
 			</button>
 		</div>
@@ -106,6 +106,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import axios from 'axios'
 
 export default {
   name: 'profile',
@@ -118,14 +119,20 @@ export default {
         { amount: 1200, badge_count: 10, animation_count: 10, sound_count: 10 },
         { amount: 1200, badge_count: 10, animation_count: 10, sound_count: 10 }
       ],
-      userId: this.$route.params.id ? this.$route.params.id : this.$store.getters.user_info.id
+      userId: this.$route.params.id ? this.$route.params.id : this.$store.getters.user_info.id,
+      streamer: {}
     }
   },
   methods: {
-    ...mapActions(['fetchStreamerData'])
+    fetchStreamerData () {
+      return axios.get(`/user/donationformdata/?streamer=${this.userId}`)
+        .then((response) => {
+          this.streamer = response.data.streamer_info
+        })
+    }
   },
   computed: {
-    ...mapGetters(['color_schema', 'streamer_info'])
+    ...mapGetters(['color_schema'])
   },
   created () {
     this.fetchStreamerData()
@@ -226,4 +233,10 @@ export default {
     grid-column: 2/2;
     grid-row: 2/3;
 }
+	.avatar {
+		width: 100%;
+		height: 100%;
+		max-width: 200px;
+		max-height: 200px;
+	}
 </style>

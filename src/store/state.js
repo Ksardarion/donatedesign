@@ -78,10 +78,7 @@ var state = {
     'http://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3'
   ],
   alerts: [],
-  streamer_form: {
-    donat_amount: null,
-    background_image: null
-  },
+  streamer_form: {},
   streamer_data: {
     avatar: '../assets/avatar.png'
   }
