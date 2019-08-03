@@ -17,7 +17,7 @@
         </div>
         <div class="main-button">
           <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПРИСОЕДИНИТЬСЯ</button>
-          <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
+          <b-button v-else class="default-button text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
           </div>
           <div class="item-button">
             <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
-            <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
+            <b-button v-else class="default-button text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
           </div>
         </div>
       </div>
@@ -51,7 +51,7 @@
           </div>
           <div class="item-button">
             <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
-            <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
+            <b-button v-else class="default-button text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
           </div>
         </div>
         <div class="item-video right">
@@ -75,7 +75,7 @@
           </div>
           <div class="item-button">
             <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
-            <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
+            <b-button v-else class="default-button text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@
           </div>
           <div class="item-button">
             <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОПРОБОВАТЬ</button>
-            <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
+            <b-button v-else class="default-button text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
           </div>
         </div>
         <div class="item-video right">
@@ -115,7 +115,7 @@
       </div>
       <div class="support-lending-button">
         <button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ПОДДЕРЖАТЬ</button>
-        <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
+        <b-button v-else  class="default-button text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
       </div>
     </div>
 
@@ -160,7 +160,7 @@
         </div>
         <div class="footer-button">
           <b-button v-if="!is_auth" v-b-modal.login-modal variant="btn" class="default-button text">ВОЙТИ В СИСТЕМУ</b-button>
-          <b-button v-else variant="outline-light" class="sign-in text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
+          <b-button v-else class="default-button text" @click="$router.push({name: 'dashboard'})">МОЙ ПРОФИЛЬ</b-button>
         </div>
       </div>
       <footer>
@@ -308,7 +308,7 @@ button.btn.sign-in:hover {
 }
 
 .default-button {
-  width: 250px;
+  width: 255px;
   height: 100%;
   background-size: 200% auto;
   transition: 0.5s;
@@ -386,7 +386,7 @@ button.btn.sign-in:hover {
 }
 
 .item-button > button.btn.default-button {
-  width: 240px;
+  width: 255px;
   padding: 23px 52px;
 }
 

@@ -86,10 +86,10 @@
       </li>
     </ul>
     <li class="list-group-item exit-link">
-      <div @click="exit" class="text menu-link exit" exact :class="color_schema.link">
+      <a @click="exit" class="text menu-link exit" exact :class="color_schema.link">
         <img src="../assets/exit.svg" class="menu-icon">
         <span class="d-none d-lg-block">ВЫХОД</span>
-      </div>
+      </a>
       <!-- <router-link to="/" class="text menu-link exit" exact :class="color_schema.link">
         <img src="../assets/exit.svg" class="menu-icon">
         <span class="d-none d-lg-block">ВЫХОД</span>
