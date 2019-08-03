@@ -67,7 +67,7 @@
 						<div class="form-group">
 							<input type="text" name="alert-title" v-model="form_data.alert_title" class="alert-input">
 						</div>
-						<div class="preview-title" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_title_color, fontSize: form_data.alert_title_font_size + 'px'}" v-html="previewTitle">
+						<div class="preview-title" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_title_color, fontSize: form_data.positions.title.styles.font_size + 'px'}" v-html="previewTitle">
 
 						</div>
 						<div class="form-format-text">
@@ -76,9 +76,9 @@
 									<label class="text" :class="color_schema.text" >
 										Шрифт
 									</label>
-									<select-block id="alert-title-font" :value="form_data.alert_title_font" :options="[{value: form_data.alert_title_font}]" />
+									<select-block id="alert-title-font" @update="form_data.alert_title_font = $event" :value="form_data.alert_title_font" :options="fonts" />
 								</div>
-								<div class="form-group form-text-align">
+								<!-- <div class="form-group form-text-align">
 									<label class="text" :class="color_schema.text" >
 										Выравнивание текста
 									</label>
@@ -100,7 +100,7 @@
 									<div>
 
 									</div>
-								</div>
+								</div> -->
 							</div>
 							<div class="form-block1">
 								<div class="form-group input-title-color">
@@ -113,7 +113,7 @@
 									<label for="alert-font-size" class="text" :class="color_schema.text">
 										Размер текста
 									</label>
-									<input type="number" min="1" max="36" name="alert-font-size" v-model="form_data.alert_title_font_size" class="alert-input">
+									<input type="number" min="1" max="36" name="alert-font-size" v-model="form_data.positions.title.styles.font_size" class="alert-input">
 								</div>
 							</div>
 							<div class="form-block1 input-title-style" :class="color_schema.text">
@@ -121,7 +121,7 @@
 									Жирный
 									<label class="switch-checkbox" for="bold-style">
 
-										<input type="checkbox" id="bold-style" v-model="form_data.title_style.bold">
+										<input type="checkbox" id="bold-style" v-model="form_data.positions.title.styles.bold">
 										<span class="alert-slider-checkbox round"></span>
 									</label>
 								</div>
@@ -129,7 +129,7 @@
 									Курсив
 									<label class="switch-checkbox" for="cursive-style">
 
-										<input type="checkbox" id="cursive-style" v-model="form_data.title_style.italic">
+										<input type="checkbox" id="cursive-style" v-model="form_data.positions.title.styles.italic">
 										<span class="alert-slider-checkbox round"></span>
 									</label>
 
@@ -139,9 +139,12 @@
 						</div>
 					</div>
 					<div v-if="activetab === 2" class="tabcontent" :class="color_schema.item">
-						<div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_message_color, fontSize: form_data.alert_message_font_size + 'px'}" v-html="form_data.alert_message">
+						<div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="text_styles" v-html="form_data.alert_message">
 
 						</div>
+						<!-- <div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_message_color, fontSize: form_data.alert_message_font_size + 'px'}" v-html="form_data.alert_message">
+
+						</div> -->
 						<div class="form-format-text">
 							<div class="form-block2">
 								<div class="form-group input-title-font">
@@ -150,7 +153,7 @@
 									</label>
 									<select-block id="alert-title-font" :value="form_data.alert_message_font" :options="[{value: form_data.alert_title_font}]" />
 								</div>
-								<div class="form-group">
+								<!-- <div class="form-group">
 									<label class="text" :class="color_schema.text" >
 										Выравнивание текста
 									</label>
@@ -172,7 +175,7 @@
 									<div>
 
 									</div>
-								</div>
+								</div> -->
 							</div>
 							<div class="form-block1">
 								<div class="form-group input-title-color">
@@ -185,7 +188,7 @@
 									<label for="alert-font-size" class="text" :class="color_schema.text">
 										Размер текста
 									</label>
-									<input type="number" min="1" max="36" name="alert-font-size" v-model="form_data.alert_message_font_size" class="alert-input">
+									<input type="number" min="1" max="36" name="alert-font-size" v-model="form_data.positions.text.styles.font_size" class="alert-input">
 								</div>
 							</div>
 							<div class="form-block1 input-title-style" :class="color_schema.text">
@@ -193,7 +196,7 @@
 									Жирный
 									<label class="switch-checkbox" for="bold-style">
 
-										<input type="checkbox" id="bold-style" v-model="form_data.message_style.bold">
+										<input type="checkbox" id="bold-style" v-model="form_data.positions.text.styles.bold">
 										<span class="alert-slider-checkbox round"></span>
 									</label>
 								</div>
@@ -201,7 +204,7 @@
 									Курсив
 									<label class="switch-checkbox" for="cursive-style">
 
-										<input type="checkbox" id="cursive-style" v-model="form_data.message_style.italic">
+										<input type="checkbox" id="cursive-style" v-model="form_data.positions.text.styles.italic">
 										<span class="alert-slider-checkbox round"></span>
 									</label>
 
@@ -309,9 +312,7 @@
 						:hasActiveContent="true"
 						:outerBound="{ w: 1000, h: 645 }"
 					>
-						<div class="element" :style="getElementStyles(form_data.positions.title)">
-							{{ form_data.alert_title }}
-						</div>
+						<div class="element" :style="title_styles" v-html="form_data.alert_title"/>
 					</drr>
 
 					<drr
@@ -324,7 +325,7 @@
 						:hasActiveContent="true"
 						:outerBound="{ w: 1000, h: 645 }"
 					>
-						<div class="element" :style="getElementStyles(form_data.positions.text)">
+						<div class="element" :style="text_styles">
 							{{ form_data.alert_message }}
 						</div>
 					</drr>
@@ -446,6 +447,7 @@
 		},
 		data () {
 			return {
+				fonts: [],
 				elements: [],
 				type_form: null,
 				destroy_payload: {
@@ -476,12 +478,12 @@
 					type: 'donate',
 					range_value: [100, 500],
 					alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
-					title_align: 'center',
-					message_align: 'center',
-					title_style: { bold: true, italic: false },
-					message_style: { bold: true, italic: false },
-					alert_title_font_size: 12,
-					alert_message_font_size: 12,
+					// title_align: 'center',
+					// message_align: 'center',
+					// title_style: { bold: true, italic: false },
+					// message_style: { bold: true, italic: false },
+					// alert_title_font_size: 12,
+					// alert_message_font_size: 12,
 					alert_title_color: '#A1A1C3',
 					alert_message_color: '#A1A1C3',
 					alert_title_font: 'Montserrat',
@@ -500,8 +502,11 @@
 							text: '{{user}} перевел вам {{amount}}',
 							classPrefix: 'tr',
 							styles: {
+								font_size: 15,
+								bold: true,
+								italic: false,
 								background: 'transparent',
-								fontSize: '14px',
+								// fontSize: '14px',
 								width: '100%',
 								height: '100%'
 							}
@@ -518,8 +523,11 @@
 							text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
 							classPrefix: 'tr',
 							styles: {
+								font_size: 10,
+								bold: false,
+								italic: false,
 								background: 'transparent',
-								fontSize: '10px',
+								// fontSize: '10px',
 								width: '100%',
 								height: '100%'
 							}
@@ -563,37 +571,43 @@
 			// 	if (!this.links.length)return ''
 			// 	return this.links.find(x => x.type === 'donate').link
 			// },
+			text_styles: function () {
+				return this.getElementStyles(this.form_data.positions.text)
+			},
+			title_styles () {
+				return this.getElementStyles(this.form_data.positions.title)
+			},
 			previewTitle () {
 				return this.form_data.alert_title.replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
 			},
-			titleStyleoptions () {
-				return {
-					color: this.form_data.alert_title_color,
-					textAlign: this.form_data.title_align,
-					fontSize: this.form_data.alert_title_font_size + 'px',
-					fontFamily: this.form_data.alert_title_font,
-					fontStyle: this.form_data.title_style
-				}
-			},
-			messageStyleoptions () {
-				return {
-					color: this.form_data.alert_message_color,
-					textAlign: this.form_data.message_align,
-					fontSize: this.form_data.alert_message_font_size + 'px',
-					fontFamily: this.form_data.alert_message_font,
-					fontStyle: this.form_data.message_style
-				}
-			},
+			// titleStyleoptions () {
+			// 	return {
+			// 		color: this.form_data.alert_title_color,
+			// 		// textAlign: this.form_data.title_align,
+			// 		fontSize: this.form_data.alert_title_font_size + 'px',
+			// 		fontFamily: this.form_data.alert_title_font,
+			// 		fontStyle: this.form_data.title_style
+			// 	}
+			// },
+			// messageStyleoptions () {
+			// 	return {
+			// 		color: this.form_data.alert_message_color,
+			// 		// textAlign: this.form_data.message_align,
+			// 		fontSize: this.form_data.alert_message_font_size + 'px',
+			// 		fontFamily: this.form_data.alert_message_font,
+			// 		fontStyle: this.form_data.message_style
+			// 	}
+			// },
 			AlertImage () {
 				return this.alert_image == '' ? require('../assets/Image 23.png') : this.alert_image
 			}
 		},
 		watch: {
 			subscribeItems (val) {
-				console.log('subscribeItems', val)
+				// console.log('subscribeItems', val)
 			},
 			alerts (val) {
-				console.log('alerts', this.alerts)
+				// console.log('alerts', this.alerts)
 			},
 			actions (val) {
 				if (!val && this.alert_edit_id) {
@@ -605,10 +619,17 @@
 			...mapActions(['fetchAlerts', 'removeAlert']),
 			getElementStyles (element) {
 				const styles = element.styles ? element.styles : {}
+				const bold = element.styles.bold ? {fontWeight: 'bold'} : {}
+				const italic = element.styles.italic ? {fontStyle: 'italic'} : {}
+				// console.log('element', italic)
+
 				return {
+					...styles,
 					width: `${element.width}px`,
 					height: `${element.height}px`,
-					...styles
+					fontSize: `${element.font_size}px`,
+					...bold,
+					...italic,
 				}
 			},
 			editAlert (alert, type_form = 'donate') {
@@ -632,7 +653,7 @@
 			},
 			formToggle (type_form = 'donate', type_update = true) {
 				this.type_form = type_form
-				console.log(type_update)
+				// console.log(type_update)
 				if (type_update) {
 					if (type_form === 'subscribe') {
 						this.form_data.type = 'free'
@@ -671,8 +692,8 @@
 				var j, len, ref, thumbnailElement;
 				if (file.previewElement) {
 					file.previewElement.classList.remove("dz-file-preview");
-					console.log('qwe',file.previewElement)
-					console.log('qwe1',file.previewElement.classList)
+					// console.log('qwe',file.previewElement)
+					// console.log('qwe1',file.previewElement.classList)
 					ref = file.previewElement.querySelectorAll("[data-dz-thumbnail-bg]");
 					for (j = 0, len = ref.length; j < len; j++) {
 						thumbnailElement = ref[j];
@@ -686,9 +707,15 @@
 					})(this)), 1);
 				}
 			},
+			fetchFonts () {
+				axios.get('/fonts').then(response => {
+					this.fonts = response.data
+				})
+			}
 		},
-		mounted() {
+		mounted () {
 			this.fetchAlerts()
+			this.fetchFonts()
 		}
 	}
 </script>
