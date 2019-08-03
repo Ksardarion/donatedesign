@@ -1,8 +1,7 @@
 <template>
-
 	<div class="input-group color-picker" ref="colorpicker">
 		<span class="input-group-addon color-picker-container">
-			<span class="current-color" :style="'background-color: ' + color" @click="togglePicker()"></span>
+			<span class="current-color" :style="'background-color: ' + color" @click="togglePicker"></span>
 			<chrome-picker :value="color" @input="updateFromPicker" v-if="displayPicker" />
 		</span>
 	</div>
@@ -40,8 +39,8 @@ export default {
           hex: color
         }
       } else if (color.slice(0, 4) === 'rgba') {
-        var rgba = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',')
-        var hex = '#' + ((1 << 24) + (parseInt(rgba[0]) << 16) + (parseInt(rgba[1]) << 8) + parseInt(rgba[2])).toString(16).slice(1)
+        let rgba = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',')
+        let hex = '#' + ((1 << 24) + (parseInt(rgba[0]) << 16) + (parseInt(rgba[1]) << 8) + parseInt(rgba[2])).toString(16).slice(1)
         this.colors = {
           hex: hex,
           a: rgba[3]
@@ -59,9 +58,6 @@ export default {
     togglePicker () {
       this.displayPicker ? this.hidePicker() : this.showPicker()
     },
-    updateFromInput () {
-      this.updateColors(this.colorValue)
-    },
     updateFromPicker (color) {
       this.colors = color
       if (color.rgba.a === 1) {
@@ -73,6 +69,9 @@ export default {
     documentClick (e) {
       let el = this.$refs.colorpicker
       let target = e.target
+      if (target.classList.contains('form-donation-radio')) {
+      	return
+      }
       if (el !== target && !el.contains(target)) {
         this.hidePicker()
       }
