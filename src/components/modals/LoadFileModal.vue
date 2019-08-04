@@ -6,26 +6,24 @@
 			</div>
 			<div class="middle-block" :class="color_schema.item">
 				<div class="link-galery" @click="list = true">
-					Галерея (15)
+					Галерея ({{ galleryItems.length }})
 				</div>
 				<div class="link-galery-loaded" @click="list = false">
-					Загруженные (1)
+					Загруженные ({{ getLoadedCounter }})
 				</div>
-				<vue-dropzone id="dropzone" :include-styling="false" :options="dropzoneImageOptions" :useCustomSlot="true">
+				<vue-dropzone id="dropzone"
+											:include-styling="false"
+											:options="dropzoneImageOptions"
+											:useCustomSlot="true"
+											@vdropzone-success="processImageSaving"
+				>
 					<div class="dropzone-custom-content" ref="dropzoneContent">
 						<div class="dropzone-custom-title">
 							<img src="../../assets/upload-cloud.svg" alt="Upload Cloud" class="upload-img">
 							<div class="text" :class="color_schema.extra">ЗАГРУЗИТЬ ФАЙЛ</div>
 						</div>
-
 						<div class="subtitle" :class="color_schema.text">JPG, PNG, GIF</div>
 					</div>
-
-					<div class="dz-details">
-						<div class="dz-size"><span data-dz-size></span></div>
-						<div class="dz-filename"><span data-dz-name></span></div>
-					</div>
-
 				</vue-dropzone>
 			</div>
 			<div class="bottom-block" :class="color_schema.item">
@@ -36,13 +34,16 @@
 		<div class="right-block text">
 			<div :class="['list-modal-items', {images: (type == 'badge'), sounds: (type == 'sound')}]">
 				<div class="list-modal-item" v-for="item in listItems">
-					<img :src="item.url" :alt="item.filename"  v-show="type == 'badge'">
+					<img :class="['badge-in-list', {badgeselected: (item.selected)}]"
+							 :src="item.src"
+							 :alt="item.filename"
+							 v-show="type == 'badge'"
+							 @click="$set(item, 'selected', !item.selected), toggleSelectedBadge(item)"
+					>
 					<img class="sound-play" src="../../assets/play video.svg" v-show="type == 'sound'">
 				<!-- 	<button class="default-button player-button"  v-show="type == 'sound'">
 						<div class="arrow-right"></div>
 					</button> -->
-					<div class="filename">{{item.filename}}</div>
-					<div class="filesize">{{item.filesize}}</div>
 				</div>
 			</div>
 		</div>
@@ -53,6 +54,7 @@
 import { mapGetters } from 'vuex'
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import axios from 'axios'
 
 export default {
   name: 'load-file-modal',
@@ -63,34 +65,86 @@ export default {
   data () {
     return {
       dropzoneImageOptions: {
-        url: 'https://httpbin.org/post',
+        url: `https://api.donatesupp.com/api/mailstone/${this.type}/upload/`,
         thumbnailWidth: 150,
-        maxFilesize: 0.5,
-        headers: { 'My-Awesome-Header': 'header value' },
-        addRemoveLinks: true,
-        maxFiles: 1
+        headers: { 'Authorization': 'Bearer ' + this.$store.getters.token },
+        // maxFiles: 1,
+        maxFilesize: 0.5
       },
       list: true,
+      galleryItems: [],
       imageItems: [],
-      soundItems: []
+      soundItems: [],
+      selectedItems: []
     }
   },
   methods: {
+    toggleSelectedBadge (item) {
+    	if (!this.selectedItems.some(element => element.id === item.id)) {
+				this.selectedItems.push(item)
+			} else {
+				this.selectedItems = this.selectedItems.filter(element => element.id !== item.id)
+			}
+    },
     hideModal () {
+      this.$emit('clicked', this.selectedItems)
       this.$refs.load_file_modal.hide()
+    },
+    getItems () {
+      axios.get(`/mailstone/1/${this.type}/`)
+        .then((response) => { this.pushItems(response.data) })
+    },
+    getLoadedItems () {
+      axios.get(`/mailstone/1/${this.type}/?loaded=1`)
+        .then((response) => { this.pushLoadedItems(response.data) })
+    },
+    pushItems (data) {
+      this.galleryItems.push(...data)
+    },
+    pushLoadedItems (data) {
+      if (this.type === 'sound') {
+        this.soundItems.push(...data)
+      } else {
+        this.imageItems.push(...data)
+      }
+    },
+    processImageSaving (file, xhr) {
+      this.imageItems.push({
+        src: 'https://api.donatesupp.com' + xhr.src,
+        selected: false
+      })
     }
   },
   computed: {
     ...mapGetters(['color_schema', 'user']),
     listItems () {
-      var items = this.type === 'badge' ? this.imageItems : this.soundItems
-      return this.list ? items : [items[0]]
+      let items = this.list
+        ? this.galleryItems
+        : this.type === 'badge'
+          ? this.imageItems
+          : this.soundItems
+      return items
+    },
+    getLoadedCounter () {
+    	return this.type === 'sound' ? this.soundItems.length : this.imageItems.length
     }
+  },
+  mounted () {
+  	this.getItems()
+    this.getLoadedItems()
   }
 }
 </script>
 
 <style>
+	img.badgeselected {
+		border: 2px solid #998CFD;
+		border-radius: 3px;
+	}
+	img.badge-in-list {
+		max-width: 130px;
+		max-height: 130px;
+	}
 .load-file-modal-content {
 	width: 851px !important;
 	height: 645px !important;
