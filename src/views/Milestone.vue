@@ -25,7 +25,23 @@
       </div>
       <div class="form-group">
         <label>Анимация</label>
-        <select-block id="milestone-animation" :value="animation.value" :options="animation_options" />
+				<div class="select-block">
+					<b-dropdown toggle-class="drop-select-block" id="milestone-animation"
+											v-model="animation.value"
+											:text="animation.value"
+											dropbottom
+											class="btn my-btn"
+					>
+						<b-dropdown-item v-for="option in animation_options"
+														 :value="option.value"
+														 :key="option.value"
+														 :class="{ active: animation.value === option.value }"
+														 @click="animation.value = option.value; animation.class_name = option.class_name;"
+						>
+							{{ option.value }}
+						</b-dropdown-item>
+					</b-dropdown>
+				</div>
       </div>
       <div class="milestone-form-badge">
         <label>Бейдж</label>
