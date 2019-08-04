@@ -142,14 +142,13 @@ import axios from 'axios'
 export default {
   name: 'form-donation',
   props: {
-  	myId: {
-  		type: Number,
+    myId: {
+      type: Number,
       required: false
     }
   },
   data () {
     return {
-      image: require('../assets/Background@2x.png'),
       anonim: false,
       currencyOptions: [
         { value: 'EUR' },
@@ -165,6 +164,7 @@ export default {
           main: {
             bg: 'default',
             bgColor: '#6C55D9',
+            bgImage: '../assets/Background@2x.png',
             minDonate: 500
           },
           other: {
@@ -194,7 +194,7 @@ export default {
     ...mapGetters(['color_schema', 'user_info']),
     background () {
       if (this.donateForm.settings.main.bg === 'image') {
-        return this.image
+        return `url(https://api.donatesupp.com${this.donateForm.settings.main.bgImage})`
       } else if (this.donateForm.settings.main.bg === 'color') {
         return this.donateForm.settings.main.bgColor
       } else {

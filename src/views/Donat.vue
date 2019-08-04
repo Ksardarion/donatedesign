@@ -80,6 +80,7 @@
 											ref="myVueDropzone"
 											@vdropzone-file-added="showImageDropzone = !showImageDropzone"
 											@vdropzone-removed-file="showImageDropzone = !showImageDropzone"
+											@vdropzone-success="saveFileToConfig"
 											:include-styling="false"
 											:options="dropzoneImageOptions"
 											:useCustomSlot="true"
@@ -104,7 +105,7 @@
 				<div class="donation-form-preview" :class="color_schema.item">
 					<div class="top-block">
 						<div :class="color_schema.text"> Превью </div>
-						<router-link :to="{path: '/form-donation', params: { id: this.$store.getters.user_info.id }}"
+						<router-link :to="{name: 'form-donation', params: { id: this.$store.getters.user_info.id }}"
 												 class="form-donation-page-link" :class="color_schema.title_text">
 							Посмотреть полный размер
 							<img src="../assets/right-arrow.svg" alt="arrow" class="arrow-icon">
@@ -157,10 +158,10 @@ export default {
   data () {
     return {
       dropzoneImageOptions: {
-        url: 'https://httpbin.org/post',
+        url: 'https://api.donatesupp.com/api/image/upload/',
         thumbnailWidth: 150,
         maxFilesize: 3,
-        headers: { 'My-Awesome-Header': 'header value' },
+        headers: { 'Authorization': 'Bearer ' + this.$store.getters.token },
         maxFiles: 1,
         previewTemplate: this.template()
       },
@@ -191,6 +192,7 @@ export default {
         main: {
           bg: 'default',
           bgColor: '#6C55D9',
+          bgImage: require('../assets/Background@2x.png'),
           minDonate: 500
         }
       }
@@ -234,7 +236,11 @@ export default {
         .then((response) => { this.settings = response.data.form_settings })
     },
     updateDonateForm: function () {
-      return axios.post('/donate/settings/', this.settings)
+      return axios.post(`/donate/settings/${this.$store.getters.user_info.id}`, { settings: this.settings })
+    },
+    saveFileToConfig: function (file, xhr) {
+      this.settings.main.bgImage = xhr.src
+      return axios.post(`/donate/settings/${this.$store.getters.user_info.id}`, { settings: this.settings })
     }
   },
   created () {
