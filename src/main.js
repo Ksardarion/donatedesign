@@ -12,8 +12,8 @@ Vue.use(VueSwimlane)
 
 Vue.config.productionTip = false
 
-// axios.defaults.baseURL = 'https://api.donatesupp.com/api'
-axios.defaults.baseURL = 'https://api.donatesupp.com/api'
+import { config } from '@/config'
+axios.defaults.baseURL = config.baseURL
 
 // Vue.use(VueClipboard)
 

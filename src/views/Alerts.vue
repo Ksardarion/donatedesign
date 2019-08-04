@@ -213,15 +213,17 @@
 
 						</div>
 					</div>
-					<div v-if="activetab === 3" class="tabcontent" :class="color_schema.item">
+					<div v-show="activetab === 3" class="tabcontent" :class="color_schema.item">
 						<vue-dropzone
 						id="alerts-dropzone"
+						ref="myVueDropzone"
 						@vdropzone-file-added="showImageDropzone = !showImageDropzone"
-						@vdropzone-removed-file="showImageDropzone = !showImageDropzone"
+						@vdropzone-removed-file="showImageDropzone = !showImageDropzone, form_data.image = ''"
 						:include-styling="false"
 						:options="dropzoneImageOptions"
 						:useCustomSlot="true"
 						v-on:vdropzone-thumbnail="thumbnail"
+						@vdropzone-success="imageSuccess"
 						>
 						<div class="dropzone-custom-content" ref="dropzoneContent" v-show="showImageDropzone">
 							<div class="dropzone-custom-title">
@@ -435,6 +437,8 @@
 	import vue2Dropzone from 'vue2-dropzone'
 	import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
+	import { config } from '@/config'
+
 	export default {
 		name: 'alerts',
 		components: {
@@ -457,25 +461,24 @@
 				durationSound: 15,
 				volumeSound: 50,
 				dropzoneImageOptions: {
-					url: 'https://httpbin.org/post',
+					url: config.baseURL + '/alerts/image',
 					thumbnailWidth: 150,
 					maxFilesize: 3,
-					headers: { 'My-Awesome-Header': 'header value' },
 					addRemoveLinks: true,
 					maxFiles: 1,
 					previewTemplate: this.template()
 				},
 				dropzoneSoundOptions: {
-					url: 'https://httpbin.org/post',
+					url: config.baseURL + '/test',
 					thumbnailWidth: 150,
 					maxFilesize: 10,
-					headers: { 'My-Awesome-Header': 'header value' },
 					addRemoveLinks: true,
 					maxFiles: 1
 				},
 				form_data: {
 					strick: 0,
 					type: 'donate',
+					image: '',
 					range_value: [100, 500],
 					alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
 					// title_align: 'center',
@@ -566,7 +569,7 @@
 		},
 		computed: {
 			...mapState(['alerts']),
-			...mapGetters(['color_schema']),
+			...mapGetters(['color_schema', 'token']),
 			// linkDonate () {
 			// 	if (!this.links.length)return ''
 			// 	return this.links.find(x => x.type === 'donate').link
@@ -634,6 +637,12 @@
 			},
 			editAlert (alert, type_form = 'donate') {
 				this.form_data = alert.settings
+				this.form_data.image = alert.image
+
+				if (this.form_data.image) {
+					var file = { size: 0, name: "image alert", type: "image/png" };
+					this.$refs.myVueDropzone.manuallyAddFile(file, this.form_data.image);
+				}
 				this.alert_edit_id = alert.id
 				this.formToggle(type_form)
 			},
@@ -666,12 +675,6 @@
 					this.actions = !this.actions
 				}, 50);
 			},
-			hideImageDropzone () {
-				this.showImageDropzone = false
-			},
-			hideSoundDropzone () {
-				this.showSoundDropzone = false
-			},
 			template: function () {
 				return `<div class="dz-preview dz-file-preview">
 				<div class="dz-details">
@@ -687,6 +690,9 @@
 
 				</div>
 				`;
+			},
+			imageSuccess (file, response) {
+				this.form_data.image = response
 			},
 			thumbnail: function(file, dataUrl) {
 				var j, len, ref, thumbnailElement;
@@ -713,7 +719,8 @@
 				})
 			}
 		},
-		mounted () {
+		created () {
+			this.dropzoneImageOptions.headers = { 'Authorization': 'Bearer ' + this.token }
 			this.fetchAlerts()
 			this.fetchFonts()
 		}
@@ -949,7 +956,7 @@ input:checked + .alert-slider-checkbox {
   .tabcontent {
   	border-bottom-left-radius: 10px;
   	border-bottom-right-radius: 10px;
-  	padding: 25px;
+  	padding: 25px 0px 45px 25px;
   }
   .alert-tabs {
   	height: 60px;
@@ -1285,7 +1292,7 @@ img.preview-icon {
 	width: inherit;
 	height: inherit;
 	background-size: contain;
-	background: no-repeat;
+	background-repeat: no-repeat;
 }
 #alerts-dropzone .dz-preview .dz-image > img {
 	width: 100%;

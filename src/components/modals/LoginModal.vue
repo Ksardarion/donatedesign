@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { config } from '@/config'
+
 import { mapGetters } from 'vuex'
 
 export default {
@@ -68,13 +70,13 @@ export default {
     locationHref: function () {
       let is_streamer = this.user ? 0 : 1
       if (this.service === 'twitch') {
-        return `https://api.donatesupp.com/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `${config.domain}/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
       if (this.service === 'google') {
-        return `https://api.donatesupp.com/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `${config.domain}/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
 
-      return `https://api.donatesupp.com/oauth/${this.service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+      return `${config.domain}/oauth/${this.service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
     },
     redirectRoute: function () {
       if (this.redirectParams[0].length === 0) {

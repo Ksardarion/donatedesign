@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { config } from '@/config'
+
 export default {
 	props: {
 		service: {
@@ -46,13 +48,13 @@ export default {
 			let is_streamer =  this.is_streamer ? 1 : 0
 			let service = this.service.toLowerCase()
       if (service === 'twitch') {
-        return `https://api.donatesupp.com/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `${config.domain}/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
       if (service === 'youtube') {
-        return `https://api.donatesupp.com/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `${config.domain}/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
       }
 
-      return `https://api.donatesupp.com/oauth/${service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+      return `${config.domain}/oauth/${service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
     }
 	},
 	methods: {
