@@ -164,7 +164,7 @@ export default {
           main: {
             bg: 'default',
             bgColor: '#6C55D9',
-            bgImage: require('../assets/Background@2x.png'),
+            bgImage: '../assets/Background@2x.png',
             minDonate: 500
           },
           other: {
@@ -194,7 +194,7 @@ export default {
     ...mapGetters(['color_schema', 'user_info']),
     background () {
       if (this.donateForm.settings.main.bg === 'image') {
-        return this.settings.main.bgImage
+        return `url(https://api.donatesupp.com${this.donateForm.settings.main.bgImage})`
       } else if (this.donateForm.settings.main.bg === 'color') {
         return this.donateForm.settings.main.bgColor
       } else {
