@@ -83,7 +83,7 @@ export default {
   computed: {
     ...mapGetters(['color_schema', 'user']),
     listItems () {
-      var items = this.type == 'badge' ? this.imageItems : this.soundItems
+      var items = this.type === 'badge' ? this.imageItems : this.soundItems
       return this.list ? items : [items[0]]
     }
   }

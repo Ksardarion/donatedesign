@@ -70,7 +70,7 @@ export default {
       let el = this.$refs.colorpicker
       let target = e.target
       if (target.classList.contains('form-donation-radio')) {
-      	return
+        return
       }
       if (el !== target && !el.contains(target)) {
         this.hidePicker()
