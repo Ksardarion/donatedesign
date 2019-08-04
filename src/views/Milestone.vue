@@ -27,18 +27,17 @@
         <label>Анимация</label>
 				<div class="select-block">
 					<b-dropdown toggle-class="drop-select-block" id="milestone-animation"
-											v-model="animation.value"
-											:text="animation.value"
+											v-model="animation.animate"
+											:text="animation.animate"
 											dropbottom
 											class="btn my-btn"
 					>
 						<b-dropdown-item v-for="option in animation_options"
-														 :value="option.value"
-														 :key="option.value"
-														 :class="{ active: animation.value === option.value }"
-														 @click="animation.value = option.value; animation.class_name = option.class_name;"
+														 :value="option.animate"
+														 :class="{ active: animation.animate === option.animate }"
+														 @click="animation.animate = option.animate"
 						>
-							{{ option.value }}
+							{{ option.animate }}
 						</b-dropdown-item>
 					</b-dropdown>
 				</div>
@@ -55,11 +54,7 @@
 						</div>
 						<div class="img-info">
 							<div class="name">
-								happy_corgi.GIF
 								<img src="../assets/remove-btn.svg" alt="remove" class="remove-icon" />
-							</div>
-							<div class="img-size" :class="color_schema.text">
-								842,50 Кб
 							</div>
 						</div>
 				</div>
@@ -135,7 +130,7 @@
   </div>
   <!-- </template> -->
 </div>
-<load-file-modal @clicked="fillBadges" :type="type"/>
+<load-file-modal @badge="fillBadges" @sound="fillSounds" :type="type"/>
 <destroy-modal title="Майлстоун" :m_id="c_id"/>
 </div>
 </template>
@@ -144,6 +139,7 @@
 import { mapGetters, mapState, mapActions } from 'vuex'
 import ModalBlock from '@/components/ModalBlock.vue'
 import MilestoneBox from '@/components/MilestoneBox.vue'
+import axios from 'axios'
 
 export default {
   name: 'milestone',
@@ -154,13 +150,8 @@ export default {
   data () {
     return {
       type: 'badge',
-      animation: { value: 'Стандартно', class_name: 'static' },
-      animation_options: [
-        { value: 'Стандартно', class_name: 'static' },
-        { value: 'Слайдер', class_name: 'widget-slider' },
-        { value: 'Список', class_name: 'widget-list' },
-        { value: 'Бегущая строка', class_name: 'crawl-line' }
-      ],
+      animation: { animate: 'bounce' },
+      animation_options: [],
       amount: 3000,
       actions: false,
       c_id: null,
@@ -170,6 +161,7 @@ export default {
   },
   mounted () {
     this.$store.dispatch('fetchMilestones')
+    this.fetchAnimations()
   },
   computed: {
     ...mapGetters(['color_schema']),
@@ -177,7 +169,7 @@ export default {
     payload () {
       return {
         donate: this.amount,
-        animations: [],
+        animations: [this.animation],
         badges: this.getBadgesIds(),
         music: this.selectedSounds
       }
@@ -192,12 +184,20 @@ export default {
     fillBadges (badges) {
       this.selectedBadges = badges
     },
+		fillSounds (sounds) {
+    	this.selectedSounds = sounds
+		},
     getBadgesIds () {
     	let array = []
       this.selectedBadges.forEach((element) => {
         array.push(element.id)
       })
     	return array
+    },
+    fetchAnimations () {
+      axios.get('/mailstone/animations').then(response => {
+        this.animation_options = response.data
+      })
     },
     ...mapActions(['createMilestone'])
   }

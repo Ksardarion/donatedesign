@@ -80,14 +80,14 @@ export default {
   },
   methods: {
     toggleSelectedBadge (item) {
-    	if (!this.selectedItems.some(element => element.id === item.id)) {
-				this.selectedItems.push(item)
-			} else {
-				this.selectedItems = this.selectedItems.filter(element => element.id !== item.id)
-			}
+      if (!this.selectedItems.some(element => element.id === item.id)) {
+        this.selectedItems.push(item)
+      } else {
+        this.selectedItems = this.selectedItems.filter(element => element.id !== item.id)
+      }
     },
     hideModal () {
-      this.$emit('clicked', this.selectedItems)
+      this.$emit(this.type, this.selectedItems)
       this.$refs.load_file_modal.hide()
     },
     getItems () {
@@ -99,13 +99,13 @@ export default {
         .then((response) => { this.pushLoadedItems(response.data) })
     },
     pushItems (data) {
-      this.galleryItems.push(...data)
+      this.galleryItems = data
     },
     pushLoadedItems (data) {
       if (this.type === 'sound') {
-        this.soundItems.push(...data)
+        this.soundItems = data
       } else {
-        this.imageItems.push(...data)
+        this.imageItems = data
       }
     },
     processImageSaving (file, xhr) {
@@ -126,12 +126,18 @@ export default {
       return items
     },
     getLoadedCounter () {
-    	return this.type === 'sound' ? this.soundItems.length : this.imageItems.length
+      return this.type === 'sound' ? this.soundItems.length : this.imageItems.length
     }
   },
   mounted () {
-  	this.getItems()
+    this.getItems()
     this.getLoadedItems()
+  },
+  watch: {
+    type: function () {
+      this.getItems()
+      this.getLoadedItems()
+    }
   }
 }
 </script>
