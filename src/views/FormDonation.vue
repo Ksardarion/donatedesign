@@ -141,6 +141,12 @@ import axios from 'axios'
 
 export default {
   name: 'form-donation',
+  props: {
+  	myId: {
+  		type: Number,
+      required: false
+    }
+  },
   data () {
     return {
       image: require('../assets/Background@2x.png'),
@@ -196,8 +202,8 @@ export default {
       }
     },
     sounds () {
-      var numberArr = Array.from({ length: 2 }, (v, k) => k + 1)
-      var arr = []
+      let numberArr = Array.from({ length: 2 }, (v, k) => k + 1)
+      let arr = []
       numberArr.forEach(function (el) {
         let filename = 'message' + el + '.mp3'
         arr.push({ 'url': '../assets/badges/' + filename, 'filename': filename })
@@ -215,7 +221,7 @@ export default {
       return this.donateForm.settings.amount > this.donateForm.settings.other.donatevideolimit
     },
     getUserId: function () {
-      return this.$route.params.id ? this.$route.params.id : this.user_info.id
+      return this.myId ? this.myId : this.$route.params.id ? this.$route.params.id : this.user_info.id
     },
     getRewardDonateSum: function () {
       return this.closestMilestone.donate - this.mydonat
@@ -227,7 +233,7 @@ export default {
         'amount': this.donateForm.amount,
         'ank': this.donateForm.ank,
         'commission': this.donateForm.comission,
-        'user_id': parseInt(this.getUserId),
+        'user_id': this.getUserId,
         'youtubeVideoID': this.youtubeVideoID
       }).then(response => {
         console.log(response.data.order_id)

@@ -71,32 +71,8 @@ export default {
         maxFiles: 1
       },
       list: true,
-      imageItems: [
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' },
-        { url: require('../../assets/dog.png'), filename: 'test.GIF', filesize: '842,50 Кб' }
-      ],
-      soundItems: [
-        { filename: 'message.mp3', filesize: '842,50 Кб' },
-        { filename: 'message.mp3F', filesize: '842,50 Кб' },
-        { filename: 'message.mp3', filesize: '842,50 Кб' },
-        { filename: 'message.mp3', filesize: '842,50 Кб' },
-        { filename: 'message.mp3F', filesize: '842,50 Кб' },
-        { filename: 'message.mp3', filesize: '842,50 Кб' },
-        { filename: 'message.mp3', filesize: '842,50 Кб' },
-        { filename: 'message.mp3F', filesize: '842,50 Кб' },
-        { filename: 'message.mp3', filesize: '842,50 Кб' },
-        { filename: 'message.mp3F', filesize: '842,50 Кб' },
-        { filename: 'message.mp3', filesize: '842,50 Кб' }
-      ]
+      imageItems: [],
+      soundItems: []
     }
   },
   methods: {
@@ -107,7 +83,7 @@ export default {
   computed: {
     ...mapGetters(['color_schema', 'user']),
     listItems () {
-      var items = this.type == 'badge' ? this.imageItems : this.soundItems
+      var items = this.type === 'badge' ? this.imageItems : this.soundItems
       return this.list ? items : [items[0]]
     }
   }

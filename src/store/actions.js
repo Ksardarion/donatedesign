@@ -79,14 +79,10 @@ var actions = {
   fetchMilestones ({ commit }) {
     return axios.get('/mailstone/list')
       .then(response => commit('setMilestones', response.data))
-
-    // return client
-    // .fetchMilestones()
-    // .then(milestones => commit('setMilestones', milestones))
   },
-  removeMilestones ({ commit }, milestone_id) {
-    return axios.delete('/mailstone/' + milestone_id)
-      .then(response => commit('removeMilestones', milestone_id))
+  removeMilestones ({ commit }, milestoneId) {
+    return axios.delete('/mailstone/' + milestoneId)
+      .then(() => commit('removeMilestones', milestoneId))
 
     // return client
     // .removeMilestones(milestone_id)

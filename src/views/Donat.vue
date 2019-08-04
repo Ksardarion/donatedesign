@@ -41,7 +41,8 @@
 									<label >
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-default" value="default" v-model="settings.main.bg" class="form-donation-radio">
+											<input type="radio" name="background-default" value="default" v-model="settings.main.bg"
+														 class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Стандартно
 										</div>
@@ -54,7 +55,8 @@
 									<label>
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-color" value="color" v-model="settings.main.bg" class="form-donation-radio">
+											<input type="radio" name="background-color" value="color" v-model="settings.main.bg"
+														 class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Цвет
 										</div>
@@ -67,7 +69,8 @@
 									<label  >
 
 										<div class="checkbox-form-donation">
-											<input type="radio" name="background-image" value="image" v-model="settings.main.bg" class="form-donation-radio">
+											<input type="radio" name="background-image" value="image" v-model="settings.main.bg"
+														 class="form-donation-radio">
 											<span class="custom-checkbox"></span>
 											Изображение
 										</div>
@@ -101,14 +104,15 @@
 				<div class="donation-form-preview" :class="color_schema.item">
 					<div class="top-block">
 						<div :class="color_schema.text"> Превью </div>
-						<router-link :to="{path: '/form-donation', params: {id: this.$store.getters.user_info.id}}" class="form-donation-page-link" :class="color_schema.title_text">
+						<router-link :to="{path: '/form-donation', params: { id: this.$store.getters.user_info.id }}"
+												 class="form-donation-page-link" :class="color_schema.title_text">
 							Посмотреть полный размер
 							<img src="../assets/right-arrow.svg" alt="arrow" class="arrow-icon">
 						</router-link>
 					</div>
 
 					<div class="preview-form-donation-page">
-						<form-donation/>
+						<form-donation :myId="$store.getters.user_info.id"/>
 					</div>
 				</div>
 
