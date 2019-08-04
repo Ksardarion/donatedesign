@@ -38,8 +38,7 @@
         <div class="img-info">
           <div class="name">
             happy_corgi.GIF
-            <img src="../assets/remove-btn.svg" alt="remove" class="remove-icon">
-          </img>
+            <img src="../assets/remove-btn.svg" alt="remove" class="remove-icon" />
         </div>
         <div class="img-size" :class="color_schema.text">
           842,50 Кб
@@ -61,7 +60,6 @@
         </div>
         <img src="../assets/remove-btn.svg" alt="remove" class="remove-icon">
       </div>
-
     </div>
   </div>
 </b-collapse>
@@ -123,53 +121,105 @@
 </template>
 
 <script>
-  import { mapGetters, mapState, mapActions } from 'vuex'
-  import ModalBlock from '@/components/ModalBlock.vue'
-  import MilestoneBox from '@/components/MilestoneBox.vue'
+import { mapGetters, mapState, mapActions } from 'vuex'
+import ModalBlock from '@/components/ModalBlock.vue'
+import MilestoneBox from '@/components/MilestoneBox.vue'
 
-  export default {
-    name: 'milestone',
-    components: {
-      MilestoneBox,
-      ModalBlock
-    },
-    data () {
-      return {
-        type: 'badge',
-        animation: { value: 'Стандартно', class_name: 'static' },
-        animation_options: [
+export default {
+  name: 'milestone',
+  components: {
+    MilestoneBox,
+    ModalBlock
+  },
+  data () {
+    return {
+      type: 'badge',
+      animation: { value: 'Стандартно', class_name: 'static' },
+      animation_options: [
         { value: 'Стандартно', class_name: 'static' },
         { value: 'Слайдер', class_name: 'widget-slider' },
         { value: 'Список', class_name: 'widget-list' },
         { value: 'Бегущая строка', class_name: 'crawl-line' }
-        ],
-        amount: 3000,
-        actions: false,
-        c_id: null
-      }
-    },
-    mounted() {
-      this.$store.dispatch('fetchMilestones')
-    },
-    computed: {
-      ...mapGetters(['color_schema']),
-      ...mapState(['milestones']),
-      payload(){
-        return {
-          amount: this.amount,
-          animation: this.animation
-        }
-      }
-    },
-    methods: {
-      save(payload) {
-        if (this.actions) {
-          this.createMilestone(payload)
-        }
+      ],
+      amount: 3000,
+      actions: false,
+      c_id: null,
+      dropzoneImageOptions: {
+        url: 'https://httpbin.org/post',
+        thumbnailWidth: 150,
+        maxFilesize: 3,
+        headers: { 'My-Awesome-Header': 'header value' },
+        addRemoveLinks: true,
+        maxFiles: 1,
+        previewTemplate: this.template()
       },
-      ...mapActions(['createMilestone'])
+      dropzoneSoundOptions: {
+        url: 'https://httpbin.org/post',
+        thumbnailWidth: 150,
+        maxFilesize: 10,
+        headers: { 'My-Awesome-Header': 'header value' },
+        addRemoveLinks: true,
+        maxFiles: 1
+      }
+    }
+  },
+  mounted () {
+    this.$store.dispatch('fetchMilestones')
+  },
+  computed: {
+    ...mapGetters(['color_schema']),
+    ...mapState(['milestones']),
+    payload () {
+      return {
+        amount: this.amount,
+        animation: this.animation
+      }
+    }
+  },
+  methods: {
+    save (payload) {
+      if (this.actions) {
+        this.createMilestone(payload)
+      }
+    },
+    ...mapActions(['createMilestone']),
+    template: function () {
+      return `<div class="dz-preview dz-file-preview">
+				<div class="dz-details">
+				<div class="dz-filename"><span data-dz-name></span></div>
+				<div data-dz-remove class="remove-icon"> </div>
+				</div>
+				<div class="dz-image">
+				<div data-dz-thumbnail-bg></div>
+				</div>
+
+				<div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+				<div class="dz-error-message"><span data-dz-errormessage></span></div>
+
+				</div>
+				`
+    },
+    thumbnail: function (file, dataUrl) {
+      var j, len, ref, thumbnailElement
+      if (file.previewElement) {
+        file.previewElement.classList.remove('dz-file-preview')
+        // console.log('qwe',file.previewElement)
+        // console.log('qwe1',file.previewElement.classList)
+        ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]')
+        for (j = 0, len = ref.length; j < len; j++) {
+          thumbnailElement = ref[j]
+          thumbnailElement.alt = file.name
+          thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")'
+        }
+        return setTimeout(((function (_this) {
+          return function () {
+            return file.previewElement.classList.add('dz-image-preview')
+          }
+        })(this)), 1)
+      }
     }
   }
+}
 </script>
 
 <style >

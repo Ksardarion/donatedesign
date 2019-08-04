@@ -26,9 +26,6 @@ var getters = {
   is_auth: state => {
     return !!state.user.id
   },
-  streamer_form: state => {
-    return state.streamer_form
-  },
   streamer_info: state => {
     return state.streamer_data
   }
