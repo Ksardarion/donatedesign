@@ -235,8 +235,16 @@
 						</div>
 					</vue-dropzone>
 				</div>
-				<div v-if="activetab === 4" class="tabcontent" :class="color_schema.item">
-					<vue-dropzone id="dropzone" @vdropzone-file-added="showSoundDropzone = !showSoundDropzone" :include-styling="false" :options="dropzoneSoundOptions" :useCustomSlot="true">
+				<div v-show="activetab === 4" class="tabcontent" :class="color_schema.item">
+					<vue-dropzone
+					id="dropzone"
+					ref="soundVueDropzone"
+					@vdropzone-file-added="showSoundDropzone = !showSoundDropzone"
+					:include-styling="false"
+					:options="dropzoneSoundOptions"
+					:useCustomSlot="true"
+					@vdropzone-success="soundSuccess"
+					>
 						<div class="dropzone-custom-content  sound-dropzone" ref="dropzoneContent" v-show="showSoundDropzone">
 							<div class="dropzone-custom-title">
 								<img src="../assets/upload-cloud.svg" alt="Upload Cloud" class="upload-img">
@@ -461,7 +469,7 @@
 				durationSound: 15,
 				volumeSound: 50,
 				dropzoneImageOptions: {
-					url: config.baseURL + '/alerts/image',
+					url: config.baseURL + '/alerts/file',
 					thumbnailWidth: 150,
 					maxFilesize: 3,
 					addRemoveLinks: true,
@@ -469,7 +477,7 @@
 					previewTemplate: this.template()
 				},
 				dropzoneSoundOptions: {
-					url: config.baseURL + '/test',
+					url: config.baseURL + '/alerts/file',
 					thumbnailWidth: 150,
 					maxFilesize: 10,
 					addRemoveLinks: true,
@@ -479,6 +487,7 @@
 					strick: 0,
 					type: 'donate',
 					image: '',
+					sound: '',
 					range_value: [100, 500],
 					alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
 					// title_align: 'center',
@@ -638,10 +647,15 @@
 			editAlert (alert, type_form = 'donate') {
 				this.form_data = alert.settings
 				this.form_data.image = alert.image
+				this.form_data.sound = alert.sound
 
 				if (this.form_data.image) {
 					var file = { size: 0, name: "image alert", type: "image/png" };
 					this.$refs.myVueDropzone.manuallyAddFile(file, this.form_data.image);
+				}
+				if (this.form_data.sound) {
+					var file = { size: 534, name: "sound alert", type: "music/mp3" };
+					this.$refs.soundVueDropzone.manuallyAddFile(file, this.form_data.sound);
 				}
 				this.alert_edit_id = alert.id
 				this.formToggle(type_form)
@@ -694,6 +708,10 @@
 			imageSuccess (file, response) {
 				this.form_data.image = response
 			},
+			soundSuccess (file, response) {
+				console.log('soundSuccess')
+				this.form_data.sound = response
+			},
 			thumbnail: function(file, dataUrl) {
 				var j, len, ref, thumbnailElement;
 				if (file.previewElement) {
@@ -721,6 +739,8 @@
 		},
 		created () {
 			this.dropzoneImageOptions.headers = { 'Authorization': 'Bearer ' + this.token }
+			this.dropzoneSoundOptions.headers = { 'Authorization': 'Bearer ' + this.token }
+
 			this.fetchAlerts()
 			this.fetchFonts()
 		}
