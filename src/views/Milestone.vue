@@ -155,20 +155,7 @@ export default {
       actions: false,
       c_id: null,
       selectedBadges: [],
-      selectedSounds: [
-				{
-					name: "neizvestnyj-i-disappear-spcsme.mp3",
-					src: "/storage/uploads/1/milestone/sound/neizvestnyj-i-disappear-spcsme.mp3"
-				},
-				{
-					name: "neizvestnyj-i-disappear-spcsme.mp3",
-					src: "/storage/uploads/1/milestone/sound/neizvestnyj-i-disappear-spcsme.mp3"
-				},
-				{
-					name: "neizvestnyj-i-disappear-spcsme.mp3",
-					src: "/storage/uploads/1/milestone/sound/neizvestnyj-i-disappear-spcsme.mp3"
-				}
-			]
+      selectedSounds: []
     }
   },
   mounted () {
