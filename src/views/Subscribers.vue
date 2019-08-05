@@ -53,4 +53,7 @@ export default {
 </script>
 
 <style scoped>
+	.round-chart {
+		grid-template-rows: 0fr 3fr;
+	}
 </style>
