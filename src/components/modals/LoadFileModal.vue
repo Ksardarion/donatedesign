@@ -6,23 +6,23 @@
 			</div>
 			<div class="middle-block" :class="color_schema.item">
 				<div class="link-galery" @click="list = true">
-					Галерея ({{ galleryItems.length }})
+					Галерея ({{ getGalleryCounter }})
 				</div>
 				<div class="link-galery-loaded" @click="list = false">
 					Загруженные ({{ getLoadedCounter }})
 				</div>
 				<vue-dropzone id="dropzone"
 											:include-styling="false"
-											:options="dropzoneImageOptions"
+											:options="type === 'sound' ? dropzoneSoundOptions : dropzoneImageOptions"
 											:useCustomSlot="true"
-											@vdropzone-success="processImageSaving"
+											@vdropzone-success="type === 'badge' ? processImageSaving : ''"
 				>
 					<div class="dropzone-custom-content" ref="dropzoneContent">
 						<div class="dropzone-custom-title">
 							<img src="../../assets/upload-cloud.svg" alt="Upload Cloud" class="upload-img">
 							<div class="text" :class="color_schema.extra">ЗАГРУЗИТЬ ФАЙЛ</div>
 						</div>
-						<div class="subtitle" :class="color_schema.text">JPG, PNG, GIF</div>
+						<div class="subtitle" :class="color_schema.text"> {{ getAllowedFileTypes }}</div>
 					</div>
 				</vue-dropzone>
 			</div>
@@ -37,13 +37,18 @@
 					<img :class="['badge-in-list', {badgeselected: (item.selected)}]"
 							 :src="item.src"
 							 :alt="item.filename"
-							 v-show="type == 'badge'"
+							 v-if="type === 'badge'"
 							 @click="$set(item, 'selected', !item.selected), toggleSelectedBadge(item)"
 					>
-					<img class="sound-play" src="../../assets/play video.svg" v-show="type == 'sound'">
-				<!-- 	<button class="default-button player-button"  v-show="type == 'sound'">
-						<div class="arrow-right"></div>
-					</button> -->
+					<vue-plyr
+						v-if="type === 'sound'"
+						@click="$set(item, 'selected', !item.selected), toggleSelectedBadge(item)"
+						:class="['sound-play', {badgeselected: (item.selected)}]"
+					>
+						<audio>
+							<source :src="`https://api.donatesupp.com${item.src}`" type="audio/mp3"/>
+						</audio>
+					</vue-plyr>
 				</div>
 			</div>
 		</div>
@@ -65,14 +70,26 @@ export default {
   data () {
     return {
       dropzoneImageOptions: {
-        url: `https://api.donatesupp.com/api/mailstone/${this.type}/upload/`,
+        url: `https://api.donatesupp.com/api/mailstone/badge/upload/`,
         thumbnailWidth: 150,
         headers: { 'Authorization': 'Bearer ' + this.$store.getters.token },
-        // maxFiles: 1,
-        maxFilesize: 0.5
+        maxFilesize: 0.5,
+        success: function (file, response) {
+          this.removeFile(file)
+        }
+      },
+      dropzoneSoundOptions: {
+        url: `https://api.donatesupp.com/api/mailstone/sound/upload/`,
+        thumbnailWidth: 150,
+        headers: { 'Authorization': 'Bearer ' + this.$store.getters.token },
+        maxFilesize: 15,
+        success: function (file, response) {
+          this.removeFile(file)
+        }
       },
       list: true,
-      galleryItems: [],
+      imageGalleryItems: [],
+      soundGalleryItems: [],
       imageItems: [],
       soundItems: [],
       selectedItems: []
@@ -99,7 +116,7 @@ export default {
         .then((response) => { this.pushLoadedItems(response.data) })
     },
     pushItems (data) {
-      this.galleryItems = data
+      this.imageGalleryItems = data
     },
     pushLoadedItems (data) {
       if (this.type === 'sound') {
@@ -113,20 +130,33 @@ export default {
         src: 'https://api.donatesupp.com' + xhr.src,
         selected: false
       })
+      axios.post('/mailstone/badge/add', {
+        path: 'https://api.donatesupp.com' + xhr.src
+      }).then(() => console.log('Badge saved to DB'))
     }
   },
   computed: {
     ...mapGetters(['color_schema', 'user']),
     listItems () {
-      let items = this.list
-        ? this.galleryItems
-        : this.type === 'badge'
-          ? this.imageItems
-          : this.soundItems
-      return items
+    	if (this.list) {
+    		return this.type === 'badge'
+          ? this.imageGalleryItems
+          : this.soundGalleryItems
+      }
+      return this.type === 'badge'
+        ? this.imageItems
+        : this.soundItems
+    },
+    getGalleryCounter () {
+    	return this.type === 'sound'
+        ? this.soundGalleryItems.length
+        : this.imageGalleryItems.length
     },
     getLoadedCounter () {
       return this.type === 'sound' ? this.soundItems.length : this.imageItems.length
+    },
+    getAllowedFileTypes () {
+      return this.type === 'badge' ? 'JPG, PNG, GIF' : 'Только mp3'
     }
   },
   mounted () {
@@ -143,6 +173,10 @@ export default {
 </script>
 
 <style>
+	.plyr--audio .plyr__controls {
+		background: unset!important;
+		color: #fff!important;
+	}
 	img.badgeselected {
 		border: 2px solid #998CFD;
 		border-radius: 3px;
@@ -244,8 +278,8 @@ export default {
 	align-items: center;
 }
 .sound-play {
-	widows: 45px;
-	height: 45px;
+	width: 100%;
+	padding: 15px 60px;
 }
 .link-galery, .link-galery-loaded {
 	cursor: pointer;

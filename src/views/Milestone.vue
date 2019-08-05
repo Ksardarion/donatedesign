@@ -65,15 +65,14 @@
       <div class="modal-sound modal-file" @click="type = 'sound'" v-b-modal.load-file-modal>
         ВЫБРАТЬ ФАЙЛ
       </div>
-      <div class="milestone-sounds" >
-        <img class="play-icon-btn" src="../assets/play-icon.svg">
-        <div class="info-sound text">
-          message.mp3
-          <div class="size-sound" :class="color_schema.text">
-            118,27 Кб
-          </div>
-        </div>
-        <img src="../assets/remove-btn.svg" alt="remove" class="remove-icon">
+      <div class="milestone-sounds">
+				<div v-for="sound in selectedSounds" class="milestone-sound">
+					<vue-plyr>
+						<audio>
+							<source :src="`https://api.donatesupp.com${sound.src}`" type="audio/mp3"/>
+						</audio>
+					</vue-plyr>
+				</div>
       </div>
     </div>
   </div>
@@ -156,7 +155,20 @@ export default {
       actions: false,
       c_id: null,
       selectedBadges: [],
-      selectedSounds: []
+      selectedSounds: [
+				{
+					name: "neizvestnyj-i-disappear-spcsme.mp3",
+					src: "/storage/uploads/1/milestone/sound/neizvestnyj-i-disappear-spcsme.mp3"
+				},
+				{
+					name: "neizvestnyj-i-disappear-spcsme.mp3",
+					src: "/storage/uploads/1/milestone/sound/neizvestnyj-i-disappear-spcsme.mp3"
+				},
+				{
+					name: "neizvestnyj-i-disappear-spcsme.mp3",
+					src: "/storage/uploads/1/milestone/sound/neizvestnyj-i-disappear-spcsme.mp3"
+				}
+			]
     }
   },
   mounted () {
@@ -211,6 +223,12 @@ export default {
     grid-column-gap: 15px;
     grid-row-gap: 20px;
   }
+	.milestone-sounds {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-column-gap: 15px;
+		grid-row-gap: 20px;
+	}
   .image-form > img {
     max-width: 100px;
     max-height: 100px;
@@ -382,7 +400,7 @@ img.remove-icon {
   align-items: flex-start;
 }
 
-.milestone-sounds {
+.milestone-sound {
   display: flex;
   justify-content: space-around;
   max-width: 238px;
