@@ -68,26 +68,24 @@ export default {
       return this.redirectDecode.split('-')
     },
     locationHref: function () {
-      let is_streamer = this.user ? 0 : 1
+      let isStreamer = this.user ? 0 : 1
       if (this.service === 'twitch') {
-        return `${config.domain}/twitch/login?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `${config.domain}/twitch/login?is_streamer=${isStreamer}&redirect=${this.redirectHref}`
       }
       if (this.service === 'google') {
-        return `${config.domain}/oauth2callback?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+        return `${config.domain}/oauth2callback?is_streamer=${isStreamer}&redirect=${this.redirectHref}`
       }
 
-      return `${config.domain}/oauth/${this.service}?is_streamer=${is_streamer}&redirect=${this.redirectHref}`
+      return `${config.domain}/oauth/${this.service}?is_streamer=${isStreamer}&redirect=${this.redirectHref}`
     },
     redirectRoute: function () {
       if (this.redirectParams[0].length === 0) {
         return { href: '' }
       }
-      let props = this.$router.resolve({
+      return this.$router.resolve({
         name: this.redirectParams[0],
         params: { id: this.redirectParams[1] }
       })
-
-      return props
     },
     redirectHref: function () {
       return escape(this.redirectRoute.href)
@@ -103,6 +101,10 @@ export default {
   background-color: #252A5E !important;
   border-radius: 15px !important;
   text-align: center !important;
+}
+.social-button img {
+	max-width: 45px;
+	max-height: 45px;
 }
 .login-modal-body {
 
