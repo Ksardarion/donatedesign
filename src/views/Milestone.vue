@@ -27,18 +27,17 @@
         <label>Анимация</label>
 				<div class="select-block">
 					<b-dropdown toggle-class="drop-select-block" id="milestone-animation"
-											v-model="animation.value"
-											:text="animation.value"
+											v-model="animation.animate"
+											:text="animation.animate"
 											dropbottom
 											class="btn my-btn"
 					>
 						<b-dropdown-item v-for="option in animation_options"
-														 :value="option.value"
-														 :key="option.value"
-														 :class="{ active: animation.value === option.value }"
-														 @click="animation.value = option.value; animation.class_name = option.class_name;"
+														 :value="option.animate"
+														 :class="{ active: animation.animate === option.animate }"
+														 @click="animation.animate = option.animate"
 						>
-							{{ option.value }}
+							{{ option.animate }}
 						</b-dropdown-item>
 					</b-dropdown>
 				</div>
@@ -48,17 +47,17 @@
         <div class="modal-badge modal-file" @click="type = 'badge'" v-b-modal.load-file-modal>
           ВЫБРАТЬ ФАЙЛ
         </div>
-        <div class="image-form">
-          <img src="../assets/dog.png" alt="dog">
-        </div>
-        <div class="img-info">
-          <div class="name">
-            happy_corgi.GIF
-            <img src="../assets/remove-btn.svg" alt="remove" class="remove-icon" />
-        </div>
-        <div class="img-size" :class="color_schema.text">
-          842,50 Кб
-        </div>
+				<div class="badges-blocks-list">
+					<div v-for="badge in selectedBadges" class="img-block">
+						<div class="image-form">
+							<img :src="badge.src " alt="dog">
+						</div>
+						<div class="img-info">
+							<div class="name">
+								<img src="../assets/remove-btn.svg" alt="remove" class="remove-icon" />
+							</div>
+						</div>
+				</div>
       </div>
     </div>
     <div class="milestone-form-sound">
@@ -131,7 +130,7 @@
   </div>
   <!-- </template> -->
 </div>
-<load-file-modal :type="type"/>
+<load-file-modal @badge="fillBadges" @sound="fillSounds" :type="type"/>
 <destroy-modal title="Майлстоун" :m_id="c_id"/>
 </div>
 </template>
@@ -140,6 +139,7 @@
 import { mapGetters, mapState, mapActions } from 'vuex'
 import ModalBlock from '@/components/ModalBlock.vue'
 import MilestoneBox from '@/components/MilestoneBox.vue'
+import axios from 'axios'
 
 export default {
   name: 'milestone',
@@ -150,45 +150,28 @@ export default {
   data () {
     return {
       type: 'badge',
-      animation: { value: 'Стандартно', class_name: 'static' },
-      animation_options: [
-        { value: 'Стандартно', class_name: 'static' },
-        { value: 'Слайдер', class_name: 'widget-slider' },
-        { value: 'Список', class_name: 'widget-list' },
-        { value: 'Бегущая строка', class_name: 'crawl-line' }
-      ],
+      animation: { animate: 'bounce' },
+      animation_options: [],
       amount: 3000,
       actions: false,
       c_id: null,
-      dropzoneImageOptions: {
-        url: 'https://httpbin.org/post',
-        thumbnailWidth: 150,
-        maxFilesize: 3,
-        headers: { 'My-Awesome-Header': 'header value' },
-        addRemoveLinks: true,
-        maxFiles: 1,
-        previewTemplate: this.template()
-      },
-      dropzoneSoundOptions: {
-        url: 'https://httpbin.org/post',
-        thumbnailWidth: 150,
-        maxFilesize: 10,
-        headers: { 'My-Awesome-Header': 'header value' },
-        addRemoveLinks: true,
-        maxFiles: 1
-      }
+      selectedBadges: [],
+      selectedSounds: []
     }
   },
   mounted () {
     this.$store.dispatch('fetchMilestones')
+    this.fetchAnimations()
   },
   computed: {
     ...mapGetters(['color_schema']),
     ...mapState(['milestones']),
     payload () {
       return {
-        amount: this.amount,
-        animation: this.animation
+        donate: this.amount,
+        animations: [this.animation],
+        badges: this.getBadgesIds(),
+        music: this.selectedSounds
       }
     }
   },
@@ -198,47 +181,40 @@ export default {
         this.createMilestone(payload)
       }
     },
-    ...mapActions(['createMilestone']),
-    template: function () {
-      return `<div class="dz-preview dz-file-preview">
-				<div class="dz-details">
-				<div class="dz-filename"><span data-dz-name></span></div>
-				<div data-dz-remove class="remove-icon"> </div>
-				</div>
-				<div class="dz-image">
-				<div data-dz-thumbnail-bg></div>
-				</div>
-
-				<div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
-				<div class="dz-error-message"><span data-dz-errormessage></span></div>
-
-				</div>
-				`
+    fillBadges (badges) {
+      this.selectedBadges = badges
     },
-    thumbnail: function (file, dataUrl) {
-      var j, len, ref, thumbnailElement
-      if (file.previewElement) {
-        file.previewElement.classList.remove('dz-file-preview')
-        // console.log('qwe',file.previewElement)
-        // console.log('qwe1',file.previewElement.classList)
-        ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]')
-        for (j = 0, len = ref.length; j < len; j++) {
-          thumbnailElement = ref[j]
-          thumbnailElement.alt = file.name
-          thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")'
-        }
-        return setTimeout(((function (_this) {
-          return function () {
-            return file.previewElement.classList.add('dz-image-preview')
-          }
-        })(this)), 1)
-      }
-    }
+		fillSounds (sounds) {
+    	this.selectedSounds = sounds
+		},
+    getBadgesIds () {
+    	let array = []
+      this.selectedBadges.forEach((element) => {
+        array.push(element.id)
+      })
+    	return array
+    },
+    fetchAnimations () {
+      axios.get('/mailstone/animations').then(response => {
+        this.animation_options = response.data
+      })
+    },
+    ...mapActions(['createMilestone'])
   }
 }
 </script>
 
 <style >
+  .badges-blocks-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-column-gap: 15px;
+    grid-row-gap: 20px;
+  }
+  .image-form > img {
+    max-width: 100px;
+    max-height: 100px;
+  }
 .milestone {
   display: flex;
   flex-direction: column;

@@ -68,12 +68,7 @@ var actions = {
     // .then(subscribers => commit('setSubscribers', subscribers))
   },
   createMilestone ({ dispatch }, milestone) {
-    return axios.post('/mailstone/add', {
-      animations: [],
-      badges: [],
-      donate: milestone.amount,
-      music: []
-    })
+    return axios.post('/mailstone/add', milestone)
       .then(() => dispatch('fetchMilestones'))
   },
   fetchMilestones ({ commit }) {
