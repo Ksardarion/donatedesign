@@ -7,8 +7,11 @@ import mock_data from './mock_data'
 import require_data from './require_data'
 // import VueClipboard from 'vue-clipboard2'
 import VueSwimlane from 'vue-swimlane'
+import VuePlyr from 'vue-plyr'
+import 'vue-plyr/dist/vue-plyr.css'
 
 Vue.use(VueSwimlane)
+Vue.use(VuePlyr)
 
 Vue.config.productionTip = false
 
