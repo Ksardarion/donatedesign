@@ -112,7 +112,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 	.login-modal-body {
 		position: initial;
 	}

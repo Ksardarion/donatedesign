@@ -10,8 +10,20 @@
 			<div class="payment-list">
 				<div class="payment-item" v-for="item in paymentItems" :class="color_schema.item">
 					<div class="payment-info">
-						<div class="payment-name" v-if="item.name === 'Credit card'">
-							{{item.name}}
+						<div class="payment-item-checkbox" >
+							<label class="switch-checkbox" :for="'select-payment-' + item.id">
+								<input type="checkbox"
+											 :id="'select-payment-' + item.id"
+											 @change="console.log(item)"
+											 v-model="item.active"
+											 :key="'select-payment-' + item.id"
+								>
+								<span class="payment-slider-checkbox round"></span>
+							</label>
+						</div>
+
+						<div class="payment-name" v-if="getMethodName(item.code) === 'Credit card'">
+							{{getMethodName(item.code)}}
 						</div>
 						<img :src="require('../assets/' + item.code + '.svg')" :alt="item.name">
 					</div>
@@ -139,49 +151,49 @@
 
 <script>
 
-	import { mapGetters } from 'vuex'
-	import vue2Dropzone from 'vue2-dropzone'
-	import 'vue2-dropzone/dist/vue2Dropzone.min.css'
-	import ColorPicker from '@/components/donat-component/ColorPicker.vue'
-	import PaymentsModal from '@/components/modals/PaymentsModal.vue'
-	import axios from 'axios'
+import { mapGetters } from 'vuex'
+import vue2Dropzone from 'vue2-dropzone'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import ColorPicker from '@/components/donat-component/ColorPicker.vue'
+import PaymentsModal from '@/components/modals/PaymentsModal.vue'
+import axios from 'axios'
 
-	export default {
-		name: 'donat',
-		components: {
-			ColorPicker,
-			vueDropzone: vue2Dropzone,
-			PaymentsModal
-		},
-		computed: {
-			...mapGetters(['color_schema', 'user'])
-		},
-		data () {
-			return {
-				dropzoneImageOptions: {
-					url: 'https://api.donatesupp.com/api/image/upload/',
-					thumbnailWidth: 150,
-					maxFilesize: 3,
-					headers: { 'Authorization': 'Bearer ' + this.$store.getters.token },
-					maxFiles: 1,
-					previewTemplate: this.template()
-				},
-				showImageDropzone: true,
-				paymentItems: [],
-				settings: {
-					main: {
-						bg: 'default',
-						bgColor: '#6C55D9',
-						bgImage: require('../assets/Background@2x.png'),
-						minDonate: 500
-					}
-				},
-				id: 'payments'
-			}
-		},
-		methods: {
-			template: function () {
-				return `<div class="dz-preview dz-file-preview">
+export default {
+  name: 'donat',
+  components: {
+    ColorPicker,
+    vueDropzone: vue2Dropzone,
+    PaymentsModal
+  },
+  computed: {
+    ...mapGetters(['color_schema', 'user'])
+  },
+  data () {
+    return {
+      dropzoneImageOptions: {
+        url: 'https://api.donatesupp.com/api/image/upload/',
+        thumbnailWidth: 150,
+        maxFilesize: 3,
+        headers: { 'Authorization': 'Bearer ' + this.$store.getters.token },
+        maxFiles: 1,
+        previewTemplate: this.template()
+      },
+      showImageDropzone: true,
+      paymentItems: [],
+      settings: {
+        main: {
+          bg: 'default',
+          bgColor: '#6C55D9',
+          bgImage: require('../assets/Background@2x.png'),
+          minDonate: 500
+        }
+      },
+      id: 'payments'
+    }
+  },
+  methods: {
+    template: function () {
+      return `<div class="dz-preview dz-file-preview">
 				<div class="dz-image">
 				<div data-dz-thumbnail-bg></div>
 				</div>
@@ -194,54 +206,142 @@
 
 				</div>
 				`
-			},
-			thumbnail: function (file, dataUrl) {
-				var j, len, ref, thumbnailElement
-				if (file.previewElement) {
-					file.previewElement.classList.remove('dz-file-preview')
-					ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]')
-					for (j = 0, len = ref.length; j < len; j++) {
-						thumbnailElement = ref[j]
-						thumbnailElement.alt = file.name
-						thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")'
-					}
-					return setTimeout(((function (_this) {
-						return function () {
-							return file.previewElement.classList.add('dz-image-preview')
-						}
-					})(this)), 1)
-				}
-			},
-			fetchFormData: function () {
-				axios.get('/user/donationformdata/')
-					.then((response) => { this.settings = response.data.form_settings })
-			},
-			updateDonateForm: function () {
-				return axios.post(`/donate/settings/${this.$store.getters.user_info.id}`, { settings: this.settings })
-			},
-			saveFileToConfig: function (file, xhr) {
-				this.settings.main.bgImage = xhr.src
-				return axios.post(`/donate/settings/${this.$store.getters.user_info.id}`, { settings: this.settings })
-			},
-			fetchPaymentMethods: function () {
-				axios.get('/payments/list/')
-					.then((response) => { this.paymentItems = response.data })
-			},
-			removeMethod: function (item) {
-				axios.delete(`/payments/${item.id}`)
-				this.paymentItems.splice(this.paymentItems.indexOf(item), 1)
-
-			},
-			pushMethod: function (method) {
-				this.paymentItems.push(method)
-			}
-		},
-		created () {
-			this.fetchFormData()
-			this.fetchPaymentMethods()
-		}
-	}
+    },
+    thumbnail: function (file, dataUrl) {
+      var j, len, ref, thumbnailElement
+      if (file.previewElement) {
+        file.previewElement.classList.remove('dz-file-preview')
+        ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]')
+        for (j = 0, len = ref.length; j < len; j++) {
+          thumbnailElement = ref[j]
+          thumbnailElement.alt = file.name
+          thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")'
+        }
+        return setTimeout(((function (_this) {
+          return function () {
+            return file.previewElement.classList.add('dz-image-preview')
+          }
+        })(this)), 1)
+      }
+    },
+    fetchFormData: function () {
+      axios.get('/user/donationformdata/')
+        .then((response) => { this.settings = response.data.form_settings })
+    },
+    updateDonateForm: function () {
+      return axios.post(`/donate/settings/${this.$store.getters.user_info.id}`, { settings: this.settings })
+    },
+    saveFileToConfig: function (file, xhr) {
+      this.settings.main.bgImage = xhr.src
+      return axios.post(`/donate/settings/${this.$store.getters.user_info.id}`, { settings: this.settings })
+    },
+    fetchPaymentMethods: function () {
+      axios.get('/payments/list/')
+        .then((response) => { this.paymentItems = response.data })
+    },
+    removeMethod: function (item) {
+      axios.delete(`/payments/${item.id}`)
+      this.paymentItems.splice(this.paymentItems.indexOf(item), 1)
+    },
+    pushMethod: function (method) {
+      this.paymentItems.push(method)
+    },
+    getMethodName: function (code) {
+      let name = 'Credit card'
+      switch (code) {
+        case 'web_money':
+          name = 'Web Money'
+          break
+        case 'yandex_money':
+          name = 'Yande Money'
+          break
+        case 'qiwi':
+          name = 'QIWI'
+          break
+      }
+      return name
+    }
+  },
+  created () {
+    this.fetchFormData()
+    this.fetchPaymentMethods()
+  }
+}
 </script>
+
+<style scoped>
+	.payment-item-checkbox {
+		padding-right: 20px;
+	}
+
+	.switch-checkbox {
+		position: relative;
+		display: inline-block;
+		width: 36px;
+		height: 20px;
+	}
+
+	.switch-checkbox input {
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	label.switch-checkbox {
+		margin: 0;
+	}
+
+	.payment-slider-checkbox {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #7E7EA5;
+		-webkit-transition: .4s;
+		transition: .4s;
+	}
+
+	.payment-slider-checkbox:before {
+		position: absolute;
+		content: "";
+		height: 18px;
+		width: 18px;
+		left: 0px;
+		bottom: 0px;
+		top: 1px;
+		background:white;
+		-webkit-transition: .4s;
+		transition: .4s;
+	}
+
+	input:checked + .payment-slider-checkbox {
+		background-color: #6C55D9;
+	}
+
+	/*input:checked + .collapse-slider-checkbox:before {
+    background: white;
+    background-size: 50% auto, cover;
+    }*/
+
+	input:focus + .payment-slider-checkbox {
+		box-shadow: 0 0 1px #2C2C43;
+	}
+
+	input:checked + .payment-slider-checkbox:before {
+		-webkit-transform: translateX(18px);
+		-ms-transform: translateX(18px);
+		transform: translateX(18px);
+	}
+	.payment-slider-checkbox.round {
+		border-radius: 23px;
+	}
+
+	.payment-slider-checkbox.round:before {
+		border-radius: 50%;
+	}
+</style>
 
 <style scoped>
 	.settings.donat {
