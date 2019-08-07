@@ -254,12 +254,6 @@ img.icon-close {
   justify-content: center;
 }
 
-.input-group-card {
-  display: grid;
-  grid-template-columns: 1fr 85px;
-  grid-column-gap: 10px;
-}
-
 .modal-content.payments-modal-content{
   max-width: 360px;
 }

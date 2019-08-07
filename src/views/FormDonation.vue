@@ -42,15 +42,15 @@
 								<label class="payment-input">
 									<input type="radio" name="payment" value="card" >
 									Card
-									<img src="../assets/Credit card.svg" alt="Card" class="input-payment-icon">
+									<img src="../assets/credit_card.svg" alt="Card" class="input-payment-icon">
 								</label>
 								<label class="payment-input">
 									<input type="radio" name="payment" value="card" >
-									<img src="../assets/webmoney-paying-logo.svg" alt="Card" class="input-payment-icon">
+									<img src="../assets/web_money.svg" alt="Card" class="input-payment-icon">
 								</label>
 								<label class="payment-input">
 									<input type="radio" name="payment" value="card" >
-									<img src="../assets/yandex-pay-logo.svg" alt="Card" class="input-payment-icon">
+									<img src="../assets/yandex_money.svg" alt="Card" class="input-payment-icon">
 								</label>
 								<label class="payment-input">
 									<input type="radio" name="payment" value="card" >

@@ -48,17 +48,17 @@ export default {
       paymentItems: [
         {
           name: 'Credit card',
-          icon: require('./assets/Credit card.svg'),
+          icon: require('./assets/credit_card.svg'),
           number: '4275 **** **** 4563'
         },
         {
           name: 'Web Money',
-          icon: require('./assets/webmoney-paying-logo.svg'),
+          icon: require('./assets/web_money.svg'),
           number: '+79281248796'
         },
         {
           name: 'Yandex Money',
-          icon: require('./assets/yandex-pay-logo.svg'),
+          icon: require('./assets/yandex_money.svg'),
           number: '410011435701035'
         },
         {
