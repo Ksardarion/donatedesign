@@ -21,6 +21,7 @@ import ModalBlock from '@/components/ModalBlock.vue'
 import PlayerModal from '@/components/modals/PlayerModal.vue'
 import DestroyModal from '@/components/modals/DestroyModal.vue'
 import LoadFileModal from '@/components/modals/LoadFileModal.vue'
+import PaymentsModal from '@/components/modals/PaymentsModal.vue'
 import AudioPlayer from '@/components/player/audio-player.vue'
 import Tooltip from 'vue-directive-tooltip'
 // import 'vue-directive-tooltip/css/index.css'
@@ -33,6 +34,7 @@ Vue.use(VueClipboards)
 Vue.use(bFormSlider)
 
 Vue.component('load-file-modal', LoadFileModal)
+Vue.component('payments-modal', PaymentsModal)
 Vue.component('audio-player', AudioPlayer)
 Vue.component('player-modal', PlayerModal)
 Vue.component('destroy-modal', DestroyModal)
