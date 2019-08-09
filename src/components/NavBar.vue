@@ -11,8 +11,8 @@
         <span class="slider-checkbox round"></span>
       </label>
     </div>
-    <div class="avatar">
-      <img :src="user_info.avatar">
+    <div class="avatar" >
+			<router-link to="/profile"><img :src="user_info.avatar"></router-link>
     </div>
   </div>
 </div>
@@ -56,7 +56,7 @@ export default {
 .avatar {
   margin-left: 25px;
 }
-.avatar > img {
+.avatar img {
   width: 45px;
   height: 45px;
 	border-radius: 25px;

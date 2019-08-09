@@ -9,15 +9,15 @@
 			</div>
 			<div class="user-statistic text" :class="color_schema.item">
 				<div class="subscribe-staistic">
-					<div> 2 тыс.</div>
+					<div>{{ getFollowersCount }}</div>
 					<div class="small-text" :class="color_schema.text"> Подписчиков</div>
 				</div>
 				<div class="payment-statistic">
-					<div>30 </div>
+					<div>{{ videosCount }}</div>
 					<div  class="small-text" :class="color_schema.text"> Стримов</div>
 				</div>
 				<div class="advancement-statistic">
-					<div> 5 тыс.</div>
+					<div>{{ getViewsCount }}</div>
 					<div  class="small-text" :class="color_schema.text"> Просмотров</div>
 				</div>
 			</div>
@@ -35,17 +35,11 @@
 				</div>
 			</div>
 			<div class="stream-block-bottom" :class="color_schema.item">
-				<img src="../assets/img.svg" alt="img" class="video-img">
-				<img src="../assets/img.svg" alt="img" class="video-img">
-				<img src="../assets/img.svg" alt="img" class="video-img">
-				<div class="text">
-					Let's Play GRIS Gameplay Part 1 - Artistic Narrative Platformer [First 45 Minutes Game...
-				</div>
-				<div class="text">
-					♪ Gris Main Theme - Piano Cover (with sheet music) ♫
-				</div>
-				<div class="text">
-					GRIS - Обзор игр - Первый взгляд | Утрата
+				<div v-for="video in videos" class="stream" @click="openVideo(video.url)">
+					<img :src="video.preview.medium" alt="img" class="video-img">
+					<div class="text">
+						{{ video.title}}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -63,7 +57,7 @@
 				Награды за донат
 			</div>
 			<div class="reward-info">
-				<div class="reward-block" v-for="item in rewardItems">
+				<div class="reward-block" v-for="item in milestones">
 					<div class="reward-block-top text" :class="color_schema.item">
 						<div class="amount">
 							{{ item.amount }} EUR
@@ -75,7 +69,7 @@
 					<div class="reward-block-bottom text" :class="color_schema.item">
 						<div class="milestone-badge">
 							<div class="count">
-								{{item.badge_count}}
+								{{item.badges_count}}
 							</div>
 							<div class="inscription" :class="color_schema.text">
 								Бейдж
@@ -83,7 +77,7 @@
 						</div>
 						<div class="animation">
 							<div class="count">
-								{{item.animation_count}}
+								{{item.animations_count}}
 							</div>
 							<div class="inscription  " :class="color_schema.text">
 								Анимация
@@ -91,7 +85,7 @@
 						</div>
 						<div class="sound">
 							<div class="count">
-								{{item.sound_count}}
+								{{item.music_count}}
 							</div>
 							<div class="inscription" :class="color_schema.text">
 								Мелодия
@@ -105,22 +99,17 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import axios from 'axios'
 
 export default {
   name: 'profile',
   data () {
     return {
-      rewardItems: [
-        { amount: 250, badge_count: 2, animation_count: 2, sound_count: 2 },
-        { amount: 500, badge_count: 5, animation_count: 5, sound_count: 5 },
-        { amount: 1200, badge_count: 10, animation_count: 10, sound_count: 10 },
-        { amount: 1200, badge_count: 10, animation_count: 10, sound_count: 10 },
-        { amount: 1200, badge_count: 10, animation_count: 10, sound_count: 10 }
-      ],
       userId: this.$route.params.id ? this.$route.params.id : this.$store.getters.user_info.id,
-      streamer: {}
+      streamer: {},
+			videos: {},
+			videosCount: 0
     }
   },
   methods: {
@@ -129,14 +118,33 @@ export default {
         .then((response) => {
           this.streamer = response.data.streamer_info
         })
-    }
+    },
+		fetchStreams () {
+    	return axios.get(`/user/streams/${this.userId}`)
+				.then((response) => {
+					this.videos = response.data.videos
+					this.videosCount = response.data._total
+				})
+		},
+		openVideo (url) {
+			window.open(url, '_blank')
+		}
   },
   computed: {
-    ...mapGetters(['color_schema'])
+    ...mapGetters(['color_schema']),
+		...mapState(['milestones']),
+		getFollowersCount () {
+    	return this.videos.length ? this.videos[0].channel.followers : 0
+    },
+		getViewsCount () {
+			return this.videos.length ? this.videos[0].channel.views : 0
+		}
   },
   created () {
     this.fetchStreamerData()
-  }
+		this.$store.dispatch('fetchMilestones')
+		this.fetchStreams()
+	}
 }
 </script>
 
@@ -173,6 +181,10 @@ export default {
 	padding: 25px;
 }
 
+.stream {
+	cursor: pointer;
+}
+
 .video-img {
 	width: 240px;
 	height: 125px;
@@ -201,7 +213,7 @@ export default {
 }
 .reward-info {
 	display: grid;
-	grid-template-columns: repeat(3, 250px);
+	grid-template-columns: repeat(4, 25%);
 	grid-column-gap: 15px;
 	grid-row-gap: 15px;
 	margin-bottom: 30px;
