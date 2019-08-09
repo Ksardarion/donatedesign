@@ -14,7 +14,7 @@
 							<label class="switch-checkbox" :for="'select-payment-' + item.id">
 								<input type="checkbox"
 											 :id="'select-payment-' + item.id"
-											 @change="console.log(item)"
+											 @change="togglePaymentStatus(item)"
 											 v-model="item.active"
 											 :key="'select-payment-' + item.id"
 								>
@@ -192,6 +192,13 @@ export default {
     }
   },
   methods: {
+    togglePaymentStatus: function (item) {
+      axios.post(`/payments/${item.id}`, { toggle: true })
+      this.paymentItems = this.paymentItems
+				.filter(function (el, elIndex) { return this.paymentItems.indexOf(item) !== elIndex })
+				.forEach((item) => { item.active = false })
+			this.paymentItems.push(item)
+    },
     template: function () {
       return `<div class="dz-preview dz-file-preview">
 				<div class="dz-image">
