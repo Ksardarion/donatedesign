@@ -9,7 +9,7 @@
         <button class="default-button text" @click="save(payload); actions = !actions; " v-b-toggle.milestone-create>
          {{ actions ? 'СОХРАНИТЬ' : 'ДОБАВИТЬ'}}
        </button>
-       <button v-if="actions" class="btn-cancel" @click="actions = !actions" v-b-toggle.milestone-create></button>
+       <button v-if="actions" class="btn-cancel" @click="cancel" v-b-toggle.milestone-create></button>
      </div>
    </div>
 
@@ -20,7 +20,7 @@
         <label>Суммарный Донат</label>
         <div class="text amount-milestone">
           <input type="number" name="amount" class="widget-input" v-model="amount">
-          EUR
+          {{ getUserCurrency }}
         </div>
       </div>
       <div class="form-group">
@@ -42,24 +42,24 @@
 					</b-dropdown>
 				</div>
       </div>
-      <div class="milestone-form-badge">
-        <label>Бейдж</label>
-        <div class="modal-badge modal-file" @click="type = 'badge'" v-b-modal.load-file-modal>
-          ВЫБРАТЬ ФАЙЛ
-        </div>
-				<div class="badges-blocks-list">
-					<div v-for="badge in selectedBadges" class="img-block">
+			<div class="milestone-form-badge">
+				<label>Бейдж</label>
+				<div class="modal-badge modal-file" @click="type = 'badge'" v-b-modal.load-file-modal>
+					ВЫБРАТЬ ФАЙЛ
+				</div>
+				<transition-group name="list" tag="div" class="badges-blocks-list">
+					<div v-for="badge in selectedBudges" class="img-block list-item" :key="badge.id">
 						<div class="image-form">
 							<img :src="badge.src " alt="dog">
 						</div>
 						<div class="img-info">
 							<div class="name">
-								<img src="../assets/remove-btn.svg" alt="remove" class="remove-icon" />
+								<img @click="removeBadge(badge)" src="../assets/remove-btn.svg" alt="remove" class="remove-icon" />
 							</div>
 						</div>
-				</div>
-      </div>
-    </div>
+					</div>
+				</transition-group>
+			</div>
     <div class="milestone-form-sound">
       <label>Мелодия</label>
       <div class="modal-sound modal-file" @click="type = 'sound'" v-b-modal.load-file-modal>
@@ -72,6 +72,7 @@
 							<source :src="`https://api.donatesupp.com${sound.src}`" type="audio/mp3"/>
 						</audio>
 					</vue-plyr>
+					<img @click="removeSound(sound)" src="../assets/remove-btn.svg" alt="remove" class="remove-icon" />
 				</div>
       </div>
     </div>
@@ -83,7 +84,7 @@
     <div class="milestone-box" v-for="milestone in milestones" :key="`milestones-${milestone.id}`">
       <div class="top-box" :class="color_schema.item">
         <div class="cash-box text">
-          ${{ milestone.donate }}
+          {{ milestone.donate }} {{ getUserCurrency }}
         </div>
         <div class="inscription text">
           Суммарный донат
@@ -129,7 +130,7 @@
   </div>
   <!-- </template> -->
 </div>
-<load-file-modal @badge="fillBadges" @sound="fillSounds" :type="type"/>
+<load-file-modal @sound="fillSounds" :type="type"/>
 <destroy-modal title="Майлстоун" :m_id="c_id"/>
 </div>
 </template>
@@ -154,7 +155,6 @@ export default {
       amount: 3000,
       actions: false,
       c_id: null,
-      selectedBadges: [],
       selectedSounds: []
     }
   },
@@ -163,8 +163,8 @@ export default {
     this.fetchAnimations()
   },
   computed: {
-    ...mapGetters(['color_schema']),
-    ...mapState(['milestones']),
+    ...mapGetters(['color_schema', 'getUserCurrency']),
+    ...mapState(['milestones', 'selectedBudges']),
     payload () {
       return {
         donate: this.amount,
@@ -175,20 +175,22 @@ export default {
     }
   },
   methods: {
+		cancel () {
+			setTimeout(() => {
+				this.actions = false
+			}, 50)
+		},
     save (payload) {
       if (this.actions) {
         this.createMilestone(payload)
       }
     },
-    fillBadges (badges) {
-      this.selectedBadges = badges
-    },
 		fillSounds (sounds) {
-    	this.selectedSounds = sounds
+			this.$store.commit('setSelectedSounds', sounds)
 		},
     getBadgesIds () {
     	let array = []
-      this.selectedBadges.forEach((element) => {
+      this.selectedBudges.forEach((element) => {
         array.push(element.id)
       })
     	return array
@@ -198,12 +200,31 @@ export default {
         this.animation_options = response.data
       })
     },
+		removeBadge: function (item) {
+			this.$store.commit('setSelectedBudges', this.selectedBudges.splice(this.selectedBudges.indexOf(item), 1))
+		},
+		removeSound: function (item) {
+			this.selectedSounds.splice(this.selectedSounds.indexOf(item), 1)
+		},
     ...mapActions(['createMilestone'])
   }
 }
 </script>
 
 <style >
+	.list-item {
+		 font-size: unset!important;
+		 height: unset!important;
+		 border-radius: unset!important;
+		 padding: unset!important;
+	}
+	.list-enter-active, .list-leave-active {
+		transition: all 1s;
+	}
+	.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+		opacity: 0;
+		transform: translateY(30px);
+	}
   .badges-blocks-list {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -216,7 +237,7 @@ export default {
 		grid-column-gap: 15px;
 		grid-row-gap: 20px;
 	}
-  .image-form > img {
+  .image-form img {
     max-width: 100px;
     max-height: 100px;
   }

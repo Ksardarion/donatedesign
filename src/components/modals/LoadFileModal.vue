@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import axios from 'axios'
@@ -90,8 +90,8 @@ export default {
       list: true,
       imageGalleryItems: [],
       soundGalleryItems: [],
-      imageItems: [],
-      soundItems: [],
+			soundItems: [],
+			budgeItems: [],
       selectedItems: []
     }
   },
@@ -104,7 +104,7 @@ export default {
       }
     },
     hideModal () {
-      this.$emit(this.type, this.selectedItems)
+			this.$store.commit('setSelectedBudges', this.selectedItems)
       this.$refs.load_file_modal.hide()
     },
     getItems () {
@@ -122,11 +122,11 @@ export default {
       if (this.type === 'sound') {
         this.soundItems = data
       } else {
-        this.imageItems = data
+        this.budgeItems = data
       }
     },
     processImageSaving (file, xhr) {
-      this.imageItems.push({
+      this.selectedBudges.push({
         src: 'https://api.donatesupp.com' + xhr.src,
         selected: false
       })
@@ -137,6 +137,7 @@ export default {
   },
   computed: {
     ...mapGetters(['color_schema', 'user']),
+    ...mapState(['selectedBudges']),
     listItems () {
     	if (this.list) {
     		return this.type === 'badge'
@@ -144,7 +145,7 @@ export default {
           : this.soundGalleryItems
       }
       return this.type === 'badge'
-        ? this.imageItems
+        ? this.budgeItems
         : this.soundItems
     },
     getGalleryCounter () {
@@ -153,7 +154,7 @@ export default {
         : this.imageGalleryItems.length
     },
     getLoadedCounter () {
-      return this.type === 'sound' ? this.soundItems.length : this.imageItems.length
+      return this.type === 'sound' ? this.soundItems.length : this.budgeItems.length
     },
     getAllowedFileTypes () {
       return this.type === 'badge' ? 'JPG, PNG, GIF' : 'Только mp3'

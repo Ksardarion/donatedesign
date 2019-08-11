@@ -25,7 +25,7 @@
 							<b-dropdown-item v-for="(item, index) in items"
 															 :value="item.code"
 															 :class="{ active: selectedItem.value === item.value }"
-															 @click="selectedItem.value = item.value"
+															 @click="selectedItem.value = item.value; selectedItem.code = item.code"
 															 :key="index"
 							>
 								{{ item.value }}

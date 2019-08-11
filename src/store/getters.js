@@ -28,7 +28,10 @@ var getters = {
   },
   streamer_info: state => {
     return state.streamer_data
-  }
+  },
+	getUserCurrency: state => {
+  	return state.user.currency
+	}
 }
 
 export default getters

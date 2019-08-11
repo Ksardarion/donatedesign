@@ -11,11 +11,12 @@
 				<div class="payment-item" v-for="item in paymentItems" :class="color_schema.item">
 					<div class="payment-info">
 						<div class="payment-item-checkbox" >
-							<label class="switch-checkbox" :for="'select-payment-' + item.id">
-								<input type="checkbox"
+							<label class="switch-checkbox">
+								<input type="radio"
 											 :id="'select-payment-' + item.id"
 											 @change="togglePaymentStatus(item)"
 											 v-model="item.active"
+											 :checked="item.active"
 											 :key="'select-payment-' + item.id"
 								>
 								<span class="payment-slider-checkbox round"></span>
@@ -133,7 +134,7 @@
 						<div>Минимальная сумма доната</div>
 						<div class="amount-slider">
 							<b-form-slider ref="range" :min="0" :max="1200" v-model="settings.main.minDonate" />
-							<div class="slider-value text">{{ settings.main.minDonate }}</div> EUR
+							<div class="slider-value text">{{ settings.main.minDonate }}</div> {{ getUserCurrency }}
 						</div>
 					</div>
 					<div class="form-buttons">
@@ -166,7 +167,7 @@ export default {
     PaymentsModal
   },
   computed: {
-    ...mapGetters(['color_schema', 'user'])
+    ...mapGetters(['color_schema', 'user', 'getUserCurrency'])
   },
   data () {
     return {
@@ -194,10 +195,6 @@ export default {
   methods: {
     togglePaymentStatus: function (item) {
       axios.post(`/payments/${item.id}`, { toggle: true })
-      this.paymentItems = this.paymentItems
-				.filter(function (el, elIndex) { return this.paymentItems.indexOf(item) !== elIndex })
-				.forEach((item) => { item.active = false })
-			this.paymentItems.push(item)
     },
     template: function () {
       return `<div class="dz-preview dz-file-preview">
@@ -233,7 +230,7 @@ export default {
     },
     fetchFormData: function () {
       axios.get('/user/donationformdata/')
-        .then((response) => { this.settings = response.data.form_settings })
+        .then((response) => { if (response.data.form_settings) this.settings = response.data.form_settings })
     },
     updateDonateForm: function () {
       return axios.post(`/donate/settings/${this.$store.getters.user_info.id}`, { settings: this.settings })
