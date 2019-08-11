@@ -114,6 +114,7 @@ var actions = {
       .fetchActivities(type)
       .then(activities => commit('addActivities', activities))
   },
+
 }
 
 export default actions

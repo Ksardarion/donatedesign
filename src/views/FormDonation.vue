@@ -91,20 +91,20 @@
 			<div class="form-advancement text">
 				<div class="form-advancement-top" :class="color_schema.item">
 					<div class="title-block">БЛИЖАЙШАЯ НАГРАДА ЗА ДОНАТ</div>
-					<div class="title-block amount">{{ closestMilestone.donate }} EUR</div>
+					<div class="title-block amount">{{ closestMilestone.donate }} RUB</div>
 				</div>
 				<div class="form-advancement-middle" :class="color_schema.item">
 					<b-progress :value="mydonat"
 											:max="closestMilestone.donate" class="form-advancement-progress"></b-progress>
 					<div class="description-block" :class="color_schema.text">
 						Для получения награды отправьте этому стримеру еще
-						<span :class="color_schema.title_text">{{ getRewardDonateSum }} EUR</span>
+						<span :class="color_schema.title_text">{{ getRewardDonateSum }} RUB</span>
 						<br>
 						Ваш текущий донат:
 						<span>{{mydonat}}</span>
 					</div>
 				</div>
-				<div class="form-advancement-bottom text" :class="color_schema.item">
+				<div v-if="typeof closestMilestone !== 'undefined'" class="form-advancement-bottom text" :class="color_schema.item">
 					<div class="title-block">ВЫ ПОЛУЧИТЕ</div>
 					<div class="description-block">
 						{{closestMilestone.badges.length}} <span :class="color_schema.text"> Бейджа </span>
@@ -151,9 +151,9 @@ export default {
     return {
       anonim: false,
       currencyOptions: [
-        { value: 'EUR' },
+        // { value: 'EUR' },
         { value: 'RUS' },
-        { value: 'USD' }
+        // { value: 'USD' }
       ],
       donateForm: {
         ank: {
@@ -218,7 +218,7 @@ export default {
       return ''
     },
     isYoutubeEnabled: function () {
-      return this.donateForm.settings.amount > this.donateForm.settings.other.donatevideolimit
+      return this.donateForm.settings.amount > this.donateForm.settings.other.donatevideolimit || 500
     },
     getUserId: function () {
       return this.myId ? this.myId : this.$route.params.id ? this.$route.params.id : this.user_info.id
@@ -236,7 +236,6 @@ export default {
         'user_id': this.getUserId,
         'youtubeVideoID': this.youtubeVideoID
       }).then(response => {
-        console.log(response.data.order_id)
         this.fetchPayment(response.data.order_id)
         this.paykeeper()
       }).catch(error => {
@@ -273,8 +272,12 @@ export default {
     fetchStreamerData () {
       return axios.get(`/user/donationformdata/?streamer=${this.getUserId}`)
         .then((response) => {
-          this.donateForm.settings = response.data.form_settings
-          this.donateForm.streamer = response.data.streamer_info
+        	let newSettings = response.data.form_settings
+          if (typeof newSettings.other === 'undefined') {
+            newSettings.other = { donatevideolimit: 500 }
+          }
+          if (response.data.form_settings) { this.donateForm.settings = newSettings }
+          if (response.data.streamer_info) { this.donateForm.streamer = response.data.streamer_info }
         })
     }
   },

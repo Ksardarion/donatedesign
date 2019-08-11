@@ -86,11 +86,13 @@ var mutations = {
     state.alerts = alerts
   },
   updateDonateForm (state, settings) {
-		console.log('test m');
-		state.streamer_form = settings
+    state.streamer_form = settings
   },
-  updateStreamerData (state, streamer) {
-    state.streamer_data = streamer
+  setSelectedBudges (state, budges) {
+    state.selectedBudges = budges
+  },
+  setSelectedSounds (state, sounds) {
+    state.selectedSounds = sounds
   }
 }
 

@@ -81,7 +81,9 @@ var state = {
   streamer_form: {},
   streamer_data: {
     avatar: '../assets/avatar.png'
-  }
+  },
+	selectedBudges: [],
+	selectedSounds: []
 }
 
 export default state
