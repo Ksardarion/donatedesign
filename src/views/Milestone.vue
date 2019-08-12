@@ -32,7 +32,8 @@
 											dropbottom
 											class="btn my-btn"
 					>
-						<b-dropdown-item v-for="option in animation_options"
+						<b-dropdown-item v-for="(option, index) in animation_options"
+														 :key="`option-animation-${index}`"
 														 :value="option.animate"
 														 :class="{ active: animation.animate === option.animate }"
 														 @click="animation.animate = option.animate"
