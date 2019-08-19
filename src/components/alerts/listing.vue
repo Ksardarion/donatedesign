@@ -36,31 +36,31 @@
 import axios from 'axios'
 
 export default {
-	props: {
-		alert: {
-			required: true,
-		},
-		color_schema: {
-			required: true
-		}
-	},
-	methods: {
-		editAlert (alert) {
-			this.$emit('editing', alert)
-		},
-		preview (type, options) {
-			axios.post(`/alerts/preview/${type}`, options).then(response => {
-				// this.links = response.data
-			})
-		},
-		activeToggle (alert) {
-			axios.put(`/alerts/${alert.id}`, alert).then(response => {
-				// this.fetchAlerts()
-			})
-		},
-		destroy (alert) {
-			this.$emit('destroy', alert)
-		}
-	}
+  props: {
+    alert: {
+      required: true
+    },
+    color_schema: {
+      required: true
+    }
+  },
+  methods: {
+    editAlert (alert) {
+      this.$emit('editing', alert)
+    },
+    preview (type, options) {
+      axios.post(`/alerts/preview/${type}`, options).then(response => {
+        // this.links = response.data
+      })
+    },
+    activeToggle (alert) {
+      axios.put(`/alerts/${alert.id}`, alert).then(response => {
+        // this.fetchAlerts()
+      })
+    },
+    destroy (alert) {
+      this.$emit('destroy', alert)
+    }
+  }
 }
 </script>
