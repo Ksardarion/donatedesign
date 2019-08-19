@@ -116,7 +116,7 @@
 
 			}
 		},
-		mounted() {
+		mounted () {
 			const listElm = document.querySelector('.player-list');
 			listElm.addEventListener('scroll', e => {
 				if(listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {

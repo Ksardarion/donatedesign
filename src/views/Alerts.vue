@@ -20,12 +20,22 @@
 					<div class="custom-form-alerts">
 						<div class="form-alert-range">
 							<label :class="color_schema.text" for="alert-range">
-								Диапазон доната для алерта, EUR
+								Диапазон доната для алерта, {{ $store.getters.user_info.currency }}
 							</label>
 							<div class="alert-range-slider">
-								<div class="slider-value text">{{Math.min(...form_data.range_value) }} </div>
+								<input id="alert-range-min"
+											 type="number"
+											 :value="Math.min(...form_data.range_value)"
+											 @change="changeRangeValue"
+											 class="slider-value text"
+								/>
 								<b-form-slider ref="range" :min="0" :max="1000" v-model="form_data.range_value" />
-								<div class="slider-value text">{{Math.max(...form_data.range_value) }}</div>
+								<input id="alert-range-max"
+											 type="number"
+											 :value="Math.max(...form_data.range_value)"
+											 @change="changeRangeValue"
+											 class="slider-value text"
+								/>
 							</div>
 						</div>
 					</div>
@@ -67,8 +77,11 @@
 						<div class="form-group">
 							<input type="text" name="alert-title" v-model="form_data.alert_title" class="alert-input">
 						</div>
-						<div class="preview-title" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_title_color, fontSize: form_data.positions.title.styles.font_size + 'px'}" v-html="previewTitle">
-
+						<div class="preview-title"
+								 :class="[color_schema.global, color_schema.text]"
+								 :style="{color: form_data.alert_title_color, fontSize: form_data.positions.title.styles.font_size + 'px'}"
+								 v-html="previewTitle"
+						>
 						</div>
 						<div class="form-format-text">
 							<div class="form-block2">
@@ -76,31 +89,12 @@
 									<label class="text" :class="color_schema.text" >
 										Шрифт
 									</label>
-									<select-block id="alert-title-font" @update="form_data.alert_title_font = $event" :value="form_data.alert_title_font" :options="fonts" />
+									<select-block id="alert-title-font"
+																@update="form_data.alert_title_font = $event"
+																:value="form_data.alert_title_font"
+																:options="fonts"
+									/>
 								</div>
-								<!-- <div class="form-group form-text-align">
-									<label class="text" :class="color_schema.text" >
-										Выравнивание текста
-									</label>
-									<div class="radion-text">
-										<label>
-											<input type="radio" name="text-title-align" value="left" class="text-title-align" v-model="form_data.title_align">
-											<img src="../assets/left-text.svg" alt="text-title-align" class="text-title-align">
-										</label>
-										<label>
-											<input type="radio" name="text-title-align" value="center" class="text-title-align" v-model="form_data.title_align" >
-											<img src="../assets/center-text.svg" alt="text-title-align" class="text-title-align">
-										</label>
-										<label>
-											<input type="radio" name="text-title-align" value="right" class="text-title-align" v-model="form_data.title_align">
-											<img src="../assets/right-text.svg" alt="text-title-align" class="text-title-align">
-										</label>
-									</div>
-
-									<div>
-
-									</div>
-								</div> -->
 							</div>
 							<div class="form-block1">
 								<div class="form-group input-title-color">
@@ -139,12 +133,12 @@
 						</div>
 					</div>
 					<div v-if="activetab === 2" class="tabcontent" :class="color_schema.item">
-						<div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="text_styles" v-html="form_data.alert_message">
-
+						<div class="preview-message"
+								 :class="[color_schema.global, color_schema.text]"
+								 :style="text_styles"
+								 v-html="form_data.alert_message"
+						>
 						</div>
-						<!-- <div class="preview-message" :class="[color_schema.global, color_schema.text]" :style="{color: form_data.alert_message_color, fontSize: form_data.alert_message_font_size + 'px'}" v-html="form_data.alert_message">
-
-						</div> -->
 						<div class="form-format-text">
 							<div class="form-block2">
 								<div class="form-group input-title-font">
@@ -153,29 +147,6 @@
 									</label>
 									<select-block id="alert-title-font" :value="form_data.alert_message_font" :options="[{value: form_data.alert_title_font}]" />
 								</div>
-								<!-- <div class="form-group">
-									<label class="text" :class="color_schema.text" >
-										Выравнивание текста
-									</label>
-									<div class="radion-text">
-										<label>
-											<input type="radio" name="text-title-align" value="left" class="text-title-align" v-model="form_data.message_align">
-											<img src="../assets/left-text.svg" alt="text-title-align" class="text-title-align">
-										</label>
-										<label>
-											<input type="radio" name="text-title-align" value="center" class="text-title-align" v-model="form_data.message_align" >
-											<img src="../assets/center-text.svg" alt="text-title-align" class="text-title-align">
-										</label>
-										<label>
-											<input type="radio" name="text-title-align" value="right" class="text-title-align" v-model="form_data.message_align">
-											<img src="../assets/right-text.svg" alt="text-title-align" class="text-title-align">
-										</label>
-									</div>
-
-									<div>
-
-									</div>
-								</div> -->
 							</div>
 							<div class="form-block1">
 								<div class="form-group input-title-color">
@@ -244,6 +215,7 @@
 					:options="dropzoneSoundOptions"
 					:useCustomSlot="true"
 					@vdropzone-success="soundSuccess"
+					@vdropzone-error="showSoundDropzone = !showSoundDropzone"
 					>
 						<div class="dropzone-custom-content  sound-dropzone" ref="dropzoneContent" v-show="showSoundDropzone">
 							<div class="dropzone-custom-title">
@@ -258,14 +230,22 @@
 						</div>
 
 					</vue-dropzone>
-
+					<vue-plyr v-if="form_data.sound" class="sound-play">
+						<audio>
+							<source :src="form_data.sound" type="audio/mp3"/>
+						</audio>
+					</vue-plyr>
 					<div class="form-alert-sound-slider">
 						<label :class="color_schema.text" for="alert-range">
 							Продолжительность
 						</label>
 						<div class="alert-sound-slider">
-							<b-form-slider  :min="0" :max="100" v-model="durationSound"/>
-							<div class="slider-value text">{{ durationSound }}</div>
+							<b-form-slider  :min="0" :max="100" v-model="form_data.durationSound" />
+							<input id="alert-sound-duration"
+										 type="number"
+										 v-model="form_data.durationSound"
+										 class="slider-value text"
+							/>
 							<span>sec</span>
 						</div>
 					</div>
@@ -275,8 +255,12 @@
 							Громкость
 						</label>
 						<div class="alert-sound-slider">
-							<b-form-slider  :min="0" :max="100"  v-model="volumeSound"/>
-							<div class="slider-value text">{{ volumeSound }}</div>
+							<b-form-slider  :min="0" :max="100"  v-model="form_data.volumeSound" />
+							<input id="alert-sound-volume"
+										 type="number"
+										 v-model="form_data.volumeSound"
+										 class="slider-value text"
+							/>
 							<span>%</span>
 						</div>
 					</div>
@@ -284,7 +268,7 @@
 			</div>
 		</div>
 
-		<div class="alert-preview" :class="color_schema.item">
+		<div class="alert-preview" :class="color_schema.item" :style="{ height: (getPreviewHeight + 85) + 'px!important' }">
 			<div class="preview-action">
 				<div class="text " :class="color_schema.text">
 					Превью
@@ -295,18 +279,21 @@
 				</div>
 			</div>
 
-			<div class="custom-alert" :class="color_schema.global">
+			<div class="custom-alert"
+					 ref="alertPreview"
+					 :class="color_schema.global"
+					 :style="{ height: getPreviewHeight + 'px!important' }"
+			>
 				<div class="alert-custom-block">
 					<div class="custom-alert-image">
 						<drr
 							:selectable="false"
 							:x="form_data.positions.image.x"
 							:y="form_data.positions.image.y"
-							:w="form_data.positions.image.width"
-							:h="form_data.positions.image.height"
+							:w="form_data.positions.image.w"
+							:h="form_data.positions.image.h"
 							:angle="form_data.positions.image.angle"
 							:hasActiveContent="true"
-							:outerBound="{ w: 1000, h: 645 }"
 						>
 							<img :src="AlertImage" alt="Dog" :style="{ width: '100%', height: '100%' }">
 						</drr>
@@ -316,11 +303,10 @@
 						:selectable="false"
 						:x="form_data.positions.title.x"
 						:y="form_data.positions.title.y"
-						:w="form_data.positions.title.width"
-						:h="form_data.positions.title.height"
+						:w="form_data.positions.title.w"
+						:h="form_data.positions.title.h"
 						:angle="form_data.positions.title.angle"
 						:hasActiveContent="true"
-						:outerBound="{ w: 1000, h: 645 }"
 					>
 						<div class="element" :style="title_styles" v-html="form_data.alert_title"/>
 					</drr>
@@ -329,11 +315,10 @@
 						:selectable="false"
 						:x="form_data.positions.text.x"
 						:y="form_data.positions.text.y"
-						:w="form_data.positions.text.width"
-						:h="form_data.positions.text.height"
+						:w="form_data.positions.text.w"
+						:h="form_data.positions.text.h"
 						:angle="form_data.positions.text.angle"
 						:hasActiveContent="true"
-						:outerBound="{ w: 1000, h: 645 }"
 					>
 						<div class="element" :style="text_styles">
 							{{ form_data.alert_message }}
@@ -351,9 +336,7 @@
 			<div class="text" :class="color_schema.title_text">
 				Оповещение о донате
 			</div>
-			<button class="default-button text" v-show="!actions" @click="formToggle('donate')" v-b-toggle.alerts-actions>
-				{{ 'ДОБАВИТЬ'}}
-			</button>
+			<b-button class="btn-add" v-show="!actions" @click="formToggle('donate')" v-b-toggle.alerts-actions></b-button>
 		</div>
 
 		<div class="donat-alert-list">
@@ -371,7 +354,7 @@
 							Сумма:
 						</div>
 						<div class="range-amount">
-							{{ item.amount.min }} &laquo; {{item.amount.max}}
+							{{ item.amount.min }} - {{item.amount.max}}
 						</div>
 					</div>
 				</div>
@@ -381,17 +364,13 @@
 
 	</div>
 
-
 	<div class="subscribe-alert">
 		<div class="subscribe-alert-header">
 			<div class="text" :class="color_schema.title_text">
 				Оповещение о стриках подписок
 			</div>
-			<button class="default-button text" @click="formToggle('subscribe')" v-b-toggle.alerts-actions>
-				{{ actions ? 'СОХРАНИТЬ' : 'ДОБАВИТЬ'}}
-			</button>
+			<b-button class="btn-add" v-show="!actions" @click="formToggle('subscribe')" v-b-toggle.alerts-actions></b-button>
 		</div>
-
 
 		<div class="subscribe-alert-list">
 			<alert-listing
@@ -426,6 +405,7 @@
 
 	<preview-modal
 	 	:settings="[form_data.positions.image, form_data.positions.title, form_data.positions.text]"
+		:image="form_data.image"
 		@change-image="form_data.positions.image = $event"
 		@change-title="form_data.positions.title = $event"
 		@change-text="form_data.positions.text = $event"
@@ -435,267 +415,278 @@
 </template>
 
 <script>
-	import axios from 'axios'
-	import { mapState, mapActions, mapGetters } from 'vuex'
-	import SelectBlock from '@/components/SelectBlock.vue'
-	import AlertListing from '@/components/alerts/listing.vue'
-	import ColorPicker from '@/components/widget-component/ColorPicker.vue'
-	import bFormSlider from 'vue-bootstrap-slider/es/form-slider'
-	import PreviewModal from '@/components/modals/PreviewModal.vue'
-	import vue2Dropzone from 'vue2-dropzone'
-	import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import axios from 'axios'
+import { mapState, mapActions, mapGetters } from 'vuex'
+import SelectBlock from '@/components/SelectBlock.vue'
+import AlertListing from '@/components/alerts/listing.vue'
+import ColorPicker from '@/components/widget-component/ColorPicker.vue'
+import bFormSlider from 'vue-bootstrap-slider/es/form-slider'
+import PreviewModal from '@/components/modals/PreviewModal.vue'
+import vue2Dropzone from 'vue2-dropzone'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
-	import { config } from '@/config'
+import { config } from '@/config'
 
-	export default {
-		name: 'alerts',
-		components: {
-			SelectBlock,
-			ColorPicker,
-			bFormSlider,
-			PreviewModal,
-			vueDropzone: vue2Dropzone,
-			AlertListing
-		},
-		data () {
-			return {
-				fonts: [],
-				elements: [],
-				type_form: null,
-				destroy_payload: {
-					a_id: null
-				},
-				alert_image: '',
+export default {
+  name: 'alerts',
+  components: {
+    SelectBlock,
+    ColorPicker,
+    bFormSlider,
+    PreviewModal,
+    vueDropzone: vue2Dropzone,
+    AlertListing
+  },
+  data () {
+    return {
+      fonts: [],
+      elements: [],
+      type_form: null,
+      destroy_payload: {
+        a_id: null
+      },
+      dropzoneImageOptions: {
+        url: config.baseURL + '/alerts/image/upload',
+        thumbnailWidth: 150,
+        maxFilesize: 3,
+        addRemoveLinks: true,
+        maxFiles: 1,
+        previewTemplate: this.template()
+      },
+      dropzoneSoundOptions: {
+        url: config.baseURL + '/alerts/sound/upload',
+        thumbnailWidth: 150,
+        maxFilesize: 10,
+        addRemoveLinks: true,
+        maxFiles: 1,
+        previewTemplate: `<div> </div>`
+      },
+      form_data: {
+        strick: 0,
+        type: 'donate',
+        image: '',
+        sound: '',
 				durationSound: 15,
 				volumeSound: 50,
-				dropzoneImageOptions: {
-					url: config.baseURL + '/alerts/file',
-					thumbnailWidth: 150,
-					maxFilesize: 3,
-					addRemoveLinks: true,
-					maxFiles: 1,
-					previewTemplate: this.template()
-				},
-				dropzoneSoundOptions: {
-					url: config.baseURL + '/alerts/file',
-					thumbnailWidth: 150,
-					maxFilesize: 10,
-					addRemoveLinks: true,
-					maxFiles: 1
-				},
-				form_data: {
-					strick: 0,
-					type: 'donate',
-					image: '',
-					sound: '',
-					range_value: [100, 500],
-					alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
-					// title_align: 'center',
-					// message_align: 'center',
-					// title_style: { bold: true, italic: false },
-					// message_style: { bold: true, italic: false },
-					// alert_title_font_size: 12,
-					// alert_message_font_size: 12,
-					alert_title_color: '#A1A1C3',
-					alert_message_color: '#A1A1C3',
-					alert_title_font: 'Montserrat',
-					alert_message_font: 'Montserrat',
-					alert_title: '{{user}} перевел вам {{amount}}',
-					positions: {
-						title: {
-							id: 'title',
-							x: 200,
-							y: 120,
-							scaleX: 1,
-							scaleY: 1,
-							width: 400,
-							height: 20,
-							angle: 0,
-							text: '{{user}} перевел вам {{amount}}',
-							classPrefix: 'tr',
-							styles: {
-								font_size: 15,
-								bold: true,
-								italic: false,
-								background: 'transparent',
-								// fontSize: '14px',
-								width: '100%',
-								height: '100%'
-							}
-						},
-						text: {
-							id: 'text',
-							x: 200,
-							y: 200,
-							scaleX: 1,
-							scaleY: 1,
-							width: 400,
-							height: 100,
-							angle: 0,
-							text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
-							classPrefix: 'tr',
-							styles: {
-								font_size: 10,
-								bold: false,
-								italic: false,
-								background: 'transparent',
-								// fontSize: '10px',
-								width: '100%',
-								height: '100%'
-							}
-						},
-						image: {
-							id: 'image',
-							x: 200,
-							y: 50,
-							scaleX: 1,
-							scaleY: 1,
-							width: 100,
-							height: 100,
-							angle: 0,
-							text: '',
-							classPrefix: 'tr',
-							styles: {
-								background: 'transparent',
-								fontSize: '10px',
-								width: '100%',
-								height: '100%'
-							}
-						}
-					}
-				},
-				alert_edit_id: null,
-				// links: [],
-				activetab: 1,
-				actions: false,
-				subscribeItems: [
-				{ id: 1, active: true, strick: '1 месяц', icon: require('../assets/simple-icon.svg'), type: 'Простая подписка' },
-				{ id: 2, active: true, strick: '2 месяца', icon: require('../assets/prem-dark.svg'), type: 'Премиум подписка' }
-				],
-				showImageDropzone: true,
-				showSoundDropzone: true
-			}
-		},
-		computed: {
-			...mapState(['alerts']),
-			...mapGetters(['color_schema', 'token']),
-			// linkDonate () {
-			// 	if (!this.links.length)return ''
-			// 	return this.links.find(x => x.type === 'donate').link
-			// },
-			text_styles: function () {
-				return this.getElementStyles(this.form_data.positions.text)
-			},
-			title_styles () {
-				return this.getElementStyles(this.form_data.positions.title)
-			},
-			previewTitle () {
-				return this.form_data.alert_title.replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
-			},
-			// titleStyleoptions () {
-			// 	return {
-			// 		color: this.form_data.alert_title_color,
-			// 		// textAlign: this.form_data.title_align,
-			// 		fontSize: this.form_data.alert_title_font_size + 'px',
-			// 		fontFamily: this.form_data.alert_title_font,
-			// 		fontStyle: this.form_data.title_style
-			// 	}
-			// },
-			// messageStyleoptions () {
-			// 	return {
-			// 		color: this.form_data.alert_message_color,
-			// 		// textAlign: this.form_data.message_align,
-			// 		fontSize: this.form_data.alert_message_font_size + 'px',
-			// 		fontFamily: this.form_data.alert_message_font,
-			// 		fontStyle: this.form_data.message_style
-			// 	}
-			// },
-			AlertImage () {
-				return this.alert_image == '' ? require('../assets/Image 23.png') : this.alert_image
-			}
-		},
-		watch: {
-			subscribeItems (val) {
-				// console.log('subscribeItems', val)
-			},
-			alerts (val) {
-				// console.log('alerts', this.alerts)
-			},
-			actions (val) {
-				if (!val && this.alert_edit_id) {
-					this.alert_edit_id = null
-				}
-			}
-		},
-		methods: {
-			...mapActions(['fetchAlerts', 'removeAlert']),
-			getElementStyles (element) {
-				const styles = element.styles ? element.styles : {}
-				const bold = element.styles.bold ? {fontWeight: 'bold'} : {}
-				const italic = element.styles.italic ? {fontStyle: 'italic'} : {}
-				// console.log('element', italic)
+        range_value: [100, 500],
+        alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
+        alert_title_color: '#A1A1C3',
+        alert_message_color: '#A1A1C3',
+        alert_title_font: 'Montserrat',
+        alert_message_font: 'Montserrat',
+        alert_title: '{{user}} перевел вам {{amount}}',
+        positions: {
+          title: {
+            id: 'title',
+            x: 200,
+            y: 120,
+            scaleX: 1,
+            scaleY: 1,
+            w: 400,
+            h: 20,
+            angle: 0,
+            text: '{{user}} перевел вам {{amount}}',
+            classPrefix: 'tr',
+            styles: {
+              font_size: 15,
+              bold: true,
+              italic: false,
+              background: 'transparent',
+              // fontSize: '14px',
+              width: '100%',
+              height: '100%'
+            }
+          },
+          text: {
+            id: 'text',
+            x: 200,
+            y: 200,
+            scaleX: 1,
+            scaleY: 1,
+            w: 400,
+            h: 100,
+            angle: 0,
+            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
+            classPrefix: 'tr',
+            styles: {
+              font_size: 10,
+              bold: false,
+              italic: false,
+              // background: 'transparent',
+              width: '100%',
+              height: '100%'
+            }
+          },
+          image: {
+            id: 'image',
+            x: 200,
+            y: 50,
+            scaleX: 1,
+            scaleY: 1,
+            w: 100,
+            h: 100,
+            angle: 0,
+            text: '',
+            classPrefix: 'tr',
+            styles: {
+              background: 'transparent',
+              fontSize: '10px',
+              width: '100%',
+              height: '100%'
+            }
+          }
+        }
+      },
+      alert_edit_id: null,
+      // links: [],
+      activetab: 1,
+      actions: false,
+      subscribeItems: [
+        { id: 1, active: true, strick: '1 месяц', icon: require('../assets/simple-icon.svg'), type: 'Простая подписка' },
+        { id: 2, active: true, strick: '2 месяца', icon: require('../assets/prem-dark.svg'), type: 'Премиум подписка' }
+      ],
+      showImageDropzone: true,
+      showSoundDropzone: true
+    }
+  },
+  computed: {
+    ...mapState(['alerts']),
+    ...mapGetters(['color_schema', 'token']),
+    // linkDonate () {
+    // 	if (!this.links.length)return ''
+    // 	return this.links.find(x => x.type === 'donate').link
+    // },
+    text_styles: function () {
+      return this.getElementStyles(this.form_data.positions.text, 'message')
+    },
+    title_styles () {
+      return this.getElementStyles(this.form_data.positions.title, 'title')
+    },
+    previewTitle () {
+      return this.form_data.alert_title.replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
+    },
+    // titleStyleoptions () {
+    // 	return {
+    // 		color: this.form_data.alert_title_color,
+    // 		// textAlign: this.form_data.title_align,
+    // 		fontSize: this.form_data.alert_title_font_size + 'px',
+    // 		fontFamily: this.form_data.alert_title_font,
+    // 		fontStyle: this.form_data.title_style
+    // 	}
+    // },
+    // messageStyleoptions () {
+    // 	return {
+    // 		color: this.form_data.alert_message_color,
+    // 		// textAlign: this.form_data.message_align,
+    // 		fontSize: this.form_data.alert_message_font_size + 'px',
+    // 		fontFamily: this.form_data.alert_message_font,
+    // 		fontStyle: this.form_data.message_style
+    // 	}
+    // },
+    AlertImage () {
+      return this.form_data.image ? this.form_data.image : require('../assets/Image 23.png')
+    }
+  },
+  watch: {
+    subscribeItems (val) {
+      // console.log('subscribeItems', val)
+    },
+    alerts (val) {
+      // console.log('alerts', this.alerts)
+    },
+    actions (val) {
+      if (!val && this.alert_edit_id) {
+        this.alert_edit_id = null
+      }
+    }
+  },
+  methods: {
+    ...mapActions(['fetchAlerts', 'removeAlert']),
+    getPreviewHeight () {
+      return 701 * 0.645
+    },
+    changeRangeValue (event) {
+      let element = event.target
+      let type = element.id
+      let newValue = parseInt(element.value)
+      switch (type) {
+        case 'alert-range-min':
+          this.$set(this.form_data.range_value, 0, newValue)
+          break
+        case 'alert-range-max':
+          this.$set(this.form_data.range_value, 1, newValue)
+          break
+        default:
+          this.$set(this.form_data.range_value, 0, newValue)
+      }
+    },
+    getElementStyles (element, type) {
+      const styles = element.styles ? element.styles : {}
+      const bold = element.styles.bold ? { fontWeight: 'bold' } : {}
+      const italic = element.styles.italic ? { fontStyle: 'italic' } : {}
+      return {
+        ...styles,
+        width: `${element.width}px`,
+        height: `${element.height}px`,
+        fontSize: `${element.styles.font_size}px`,
+        ...bold,
+        ...italic,
+        color: this.form_data[`alert_${type}_color`],
+        fontFamily: this.form_data[`alert_${type}_font`]
+      }
+    },
+    editAlert (alert, type_form = 'donate') {
+      this.form_data = alert.settings
+      this.form_data.image = alert.settings.image
+      this.form_data.sound = alert.settings.sound
 
-				return {
-					...styles,
-					width: `${element.width}px`,
-					height: `${element.height}px`,
-					fontSize: `${element.font_size}px`,
-					...bold,
-					...italic,
-				}
-			},
-			editAlert (alert, type_form = 'donate') {
-				this.form_data = alert.settings
-				this.form_data.image = alert.image
-				this.form_data.sound = alert.sound
+      if (this.form_data.image) {
+        var file = { size: 0, name: 'image alert', type: 'image/png' }
+        this.$refs.myVueDropzone.manuallyAddFile(file, this.form_data.image)
+      }
+      if (this.form_data.sound) {
+        var file = { size: 534, name: 'sound alert', type: 'music/mp3' }
+        this.$refs.soundVueDropzone.manuallyAddFile(file, this.form_data.sound)
+      }
+      this.alert_edit_id = alert.id
+      this.formToggle(type_form)
+    },
+    create () {
+      axios.post('/alerts', this.form_data).then(response => {
+        this.fetchAlerts()
+      })
+    },
+    edit () {
+      axios.put(`/alerts/${this.alert_edit_id}`, this.form_data).then(response => {
+        this.fetchAlerts()
+      })
+    },
+    submit () {
+      !this.alert_edit_id ? this.create() : this.edit()
+      this.formToggle(this.type_form, false)
+    },
+    formToggle (type_form = 'donate', type_update = true) {
+      this.type_form = type_form
+      // console.log(type_update)
+      if (type_update) {
+        if (type_form === 'subscribe') {
+          this.form_data.type = 'free'
+        } else {
+          this.form_data.type = 'donate'
+        }
+      }
 
-				if (this.form_data.image) {
-					var file = { size: 0, name: "image alert", type: "image/png" };
-					this.$refs.myVueDropzone.manuallyAddFile(file, this.form_data.image);
-				}
-				if (this.form_data.sound) {
-					var file = { size: 534, name: "sound alert", type: "music/mp3" };
-					this.$refs.soundVueDropzone.manuallyAddFile(file, this.form_data.sound);
-				}
-				this.alert_edit_id = alert.id
-				this.formToggle(type_form)
-			},
-			create () {
-				axios.post('/alerts', this.form_data).then(response => {
-					this.fetchAlerts()
-				})
-			},
-			edit () {
-				axios.put(`/alerts/${this.alert_edit_id}`, this.form_data).then(response => {
-					this.fetchAlerts()
-				})
-			},
-			submit () {
-				!this.alert_edit_id ? this.create() : this.edit()
-				this.formToggle(this.type_form, false)
-			},
-			formToggle (type_form = 'donate', type_update = true) {
-				this.type_form = type_form
-				// console.log(type_update)
-				if (type_update) {
-					if (type_form === 'subscribe') {
-						this.form_data.type = 'free'
-					} else {
-						this.form_data.type = 'donate'
-					}
-				}
-
-				setTimeout(() => {
-					this.actions = !this.actions
-				}, 50);
-			},
-			template: function () {
-				return `<div class="dz-preview dz-file-preview">
+      setTimeout(() => {
+        this.actions = !this.actions
+      }, 50)
+    },
+    template: function () {
+      return `<div class="dz-preview dz-file-preview" >
 				<div class="dz-details">
 				<div class="dz-filename"><span data-dz-name></span></div>
 				<div data-dz-remove class="remove-icon"> </div>
 				</div>
-				<div class="dz-image">
+				<div class="dz-image" style="max-height: 200px">
 				<div data-dz-thumbnail-bg></div>
 				</div>
 
@@ -703,48 +694,48 @@
 				<div class="dz-error-message"><span data-dz-errormessage></span></div>
 
 				</div>
-				`;
-			},
-			imageSuccess (file, response) {
-				this.form_data.image = response
-			},
-			soundSuccess (file, response) {
-				console.log('soundSuccess')
-				this.form_data.sound = response
-			},
-			thumbnail: function(file, dataUrl) {
-				var j, len, ref, thumbnailElement;
-				if (file.previewElement) {
-					file.previewElement.classList.remove("dz-file-preview");
-					// console.log('qwe',file.previewElement)
-					// console.log('qwe1',file.previewElement.classList)
-					ref = file.previewElement.querySelectorAll("[data-dz-thumbnail-bg]");
-					for (j = 0, len = ref.length; j < len; j++) {
-						thumbnailElement = ref[j];
-						thumbnailElement.alt = file.name;
-						thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
-					}
-					return setTimeout(((function(_this) {
-						return function() {
-							return file.previewElement.classList.add("dz-image-preview");
-						};
-					})(this)), 1);
-				}
-			},
-			fetchFonts () {
-				axios.get('/fonts').then(response => {
-					this.fonts = response.data
-				})
-			}
-		},
-		created () {
-			this.dropzoneImageOptions.headers = { 'Authorization': 'Bearer ' + this.token }
-			this.dropzoneSoundOptions.headers = { 'Authorization': 'Bearer ' + this.token }
+				`
+    },
+    imageSuccess (file, response) {
+      this.form_data.image = response.src
+    },
+    soundSuccess (file, response) {
+      console.log('soundSuccess')
+      this.form_data.sound = response
+    },
+    thumbnail: function (file, dataUrl) {
+      var j, len, ref, thumbnailElement
+      if (file.previewElement) {
+        file.previewElement.classList.remove('dz-file-preview')
+        // console.log('qwe',file.previewElement)
+        // console.log('qwe1',file.previewElement.classList)
+        ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]')
+        for (j = 0, len = ref.length; j < len; j++) {
+          thumbnailElement = ref[j]
+          thumbnailElement.alt = file.name
+          thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")'
+        }
+        return setTimeout(((function (_this) {
+          return function () {
+            return file.previewElement.classList.add('dz-image-preview')
+          }
+        })(this)), 1)
+      }
+    },
+    fetchFonts () {
+      axios.get('/fonts').then(response => {
+        this.fonts = response.data
+      })
+    }
+  },
+  created () {
+    this.dropzoneImageOptions.headers = { 'Authorization': 'Bearer ' + this.token }
+    this.dropzoneSoundOptions.headers = { 'Authorization': 'Bearer ' + this.token }
 
-			this.fetchAlerts()
-			this.fetchFonts()
-		}
-	}
+    this.fetchAlerts()
+    this.fetchFonts()
+  }
+}
 </script>
 
 <style>
@@ -1034,9 +1025,11 @@ input:checked + .alert-slider-checkbox {
 
   .slider-value {
   	border: 2px solid #595986;
+		background: transparent;
+		color: white;
   	width: 45px;
   	height: 45px;
-  	/* text-align: center; */
+  	 text-align: center;
   	display: flex;
   	align-items: center;
   	justify-content: center;
@@ -1055,7 +1048,9 @@ input:checked + .alert-slider-checkbox {
   }
 
   .preview-title, .preview-message {
-  	/*width: 520px;*/
+  	width: 97%!important;
+		height: unset!important;
+		min-height: 100px;
   	display: flex;
   	align-items: center;
   	justify-content: center;
@@ -1168,6 +1163,7 @@ input:checked + .alert-slider-checkbox {
   .form-alert-sound-slider {
   	font-size: 12px;
   	margin-top: 25px;
+		width: 97%;
   }
 
   .radion-text {
@@ -1200,6 +1196,7 @@ input:checked + .alert-slider-checkbox {
 	width: 100%;
 	height: 240px;
 	position: relative;
+	overflow: hidden;
 }
 
 .tr-transform--active{
@@ -1333,7 +1330,3 @@ div.remove-icon {
 	height: 20px;
 }
 </style>
-
-    function newFunction() {
-      return 'title';
-    }
