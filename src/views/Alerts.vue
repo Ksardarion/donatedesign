@@ -308,7 +308,7 @@
 						:angle="form_data.positions.title.angle"
 						:hasActiveContent="true"
 					>
-						<div class="element" :style="title_styles" v-html="form_data.alert_title"/>
+						<div class="element" :style="title_styles" v-html="previewTitle" />
 					</drr>
 
 					<drr
@@ -466,8 +466,8 @@ export default {
         type: 'donate',
         image: '',
         sound: '',
-				durationSound: 15,
-				volumeSound: 50,
+        durationSound: 15,
+        volumeSound: 50,
         range_value: [100, 500],
         alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
         alert_title_color: '#A1A1C3',
@@ -552,10 +552,6 @@ export default {
   computed: {
     ...mapState(['alerts']),
     ...mapGetters(['color_schema', 'token']),
-    // linkDonate () {
-    // 	if (!this.links.length)return ''
-    // 	return this.links.find(x => x.type === 'donate').link
-    // },
     text_styles: function () {
       return this.getElementStyles(this.form_data.positions.text, 'message')
     },
@@ -563,26 +559,11 @@ export default {
       return this.getElementStyles(this.form_data.positions.title, 'title')
     },
     previewTitle () {
-      return this.form_data.alert_title.replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
+      return this.form_data.alert_title
+        .replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
+        .replace(/{{user}}/gi, 'Вася Пупкин')
+        .replace(/{{amount}}/gi, ' 1000 руб.')
     },
-    // titleStyleoptions () {
-    // 	return {
-    // 		color: this.form_data.alert_title_color,
-    // 		// textAlign: this.form_data.title_align,
-    // 		fontSize: this.form_data.alert_title_font_size + 'px',
-    // 		fontFamily: this.form_data.alert_title_font,
-    // 		fontStyle: this.form_data.title_style
-    // 	}
-    // },
-    // messageStyleoptions () {
-    // 	return {
-    // 		color: this.form_data.alert_message_color,
-    // 		// textAlign: this.form_data.message_align,
-    // 		fontSize: this.form_data.alert_message_font_size + 'px',
-    // 		fontFamily: this.form_data.alert_message_font,
-    // 		fontStyle: this.form_data.message_style
-    // 	}
-    // },
     AlertImage () {
       return this.form_data.image ? this.form_data.image : require('../assets/Image 23.png')
     }
@@ -639,14 +620,22 @@ export default {
       this.form_data = alert.settings
       this.form_data.image = alert.settings.image
       this.form_data.sound = alert.settings.sound
+      this.form_data.positions.image.x = this.form_data.positions.image.x * 1000
+      this.form_data.positions.image.y = this.form_data.positions.image.y * 645
+
+      this.form_data.positions.title.x = this.form_data.positions.title.x * 1000
+      this.form_data.positions.title.y = this.form_data.positions.title.y * 645
+
+      this.form_data.positions.text.x = this.form_data.positions.text.x * 1000
+      this.form_data.positions.text.y = this.form_data.positions.text.y * 645
 
       if (this.form_data.image) {
-        var file = { size: 0, name: 'image alert', type: 'image/png' }
-        this.$refs.myVueDropzone.manuallyAddFile(file, this.form_data.image)
+        let image = { size: 0, name: 'image alert', type: 'image/png' }
+        this.$refs.myVueDropzone.manuallyAddFile(image, this.form_data.image)
       }
       if (this.form_data.sound) {
-        var file = { size: 534, name: 'sound alert', type: 'music/mp3' }
-        this.$refs.soundVueDropzone.manuallyAddFile(file, this.form_data.sound)
+        let sound = { size: 534, name: 'sound alert', type: 'music/mp3' }
+        this.$refs.soundVueDropzone.manuallyAddFile(sound, this.form_data.sound)
       }
       this.alert_edit_id = alert.id
       this.formToggle(type_form)
@@ -657,6 +646,15 @@ export default {
       })
     },
     edit () {
+      this.form_data.positions.image.x = this.form_data.positions.image.x / 1000
+      this.form_data.positions.image.y = this.form_data.positions.image.y / 645
+
+      this.form_data.positions.title.x = this.form_data.positions.title.x / 1000
+      this.form_data.positions.title.y = this.form_data.positions.title.y / 645
+
+      this.form_data.positions.text.x = this.form_data.positions.text.x / 1000
+      this.form_data.positions.text.y = this.form_data.positions.text.y / 645
+
       axios.put(`/alerts/${this.alert_edit_id}`, this.form_data).then(response => {
         this.fetchAlerts()
       })
@@ -665,11 +663,10 @@ export default {
       !this.alert_edit_id ? this.create() : this.edit()
       this.formToggle(this.type_form, false)
     },
-    formToggle (type_form = 'donate', type_update = true) {
-      this.type_form = type_form
-      // console.log(type_update)
-      if (type_update) {
-        if (type_form === 'subscribe') {
+    formToggle (typeForm = 'donate', typeUpdate = true) {
+      this.type_form = typeForm
+      if (typeUpdate) {
+        if (typeForm === 'subscribe') {
           this.form_data.type = 'free'
         } else {
           this.form_data.type = 'donate'
