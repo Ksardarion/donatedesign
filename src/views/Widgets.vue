@@ -258,7 +258,7 @@
         style="border: 0"
         class="copy-link btn-action"
         v-tooltip.hover.top.end="{ content: 'Копировать ссылку', class: 'tooltip-custom' }"
-        v-clipboard="item.link"
+        v-clipboard="`${item.link}/${user_info.id}`"
         aria-controls="false"
         />
         <button
@@ -361,6 +361,7 @@
         ],
 				widget_type_options: [],
 				item_edit_slug: null,
+				default: {},
         item_form: {
           widget_type: { value: 'Последнее сообщение', message: 'Последнее сообщение: {{message}}' },
           widget_list_count: 20,
@@ -386,7 +387,7 @@
     //   this.$store.dispatch('fetchWidgets')
     // },
     computed: {
-      ...mapGetters(['color_schema']),
+      ...mapGetters(['color_schema', 'user_info']),
       ...mapState(['widgets']),
       replaceWidgetMessage () {
         return this.widget_message.replace(/({{message}})/, '<p> [текст сообщения]</p>')
@@ -439,6 +440,8 @@
 		created () {
 			this.fetchWidgetOptions()
 			this.$store.dispatch('fetchWidgets')
+
+			this.default = this.item_form
 		},
     methods: {
 			cancel () {
@@ -479,7 +482,9 @@
 						return this.editWidgets({settings: this.item_form, item_slug: this.item_edit_slug})
 					}
           return this.createWidgets(this.item_form)
-        }
+        } else {
+					this.item_form = this.default
+				}
       },
       ...mapActions(['createWidgets', 'editWidgets'])
     }
