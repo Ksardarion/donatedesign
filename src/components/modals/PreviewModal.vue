@@ -16,7 +16,7 @@
 				:h="element.h"
 				:angle="element.angle"
 				:hasActiveContent="true"
-				:outerBound="getBound"
+				:outerBound="bound"
 				@change="update(element.id, $event);"
 			>
 				<div class="element" :style="getElementStyles(element)" v-if="element.id !== 'image'">
@@ -43,7 +43,8 @@ export default {
   data () {
     return {
       offsetX: 0,
-      offsetY: 0
+      offsetY: 0,
+      bound: { w: 1000, h: 645, x: 500, y: 322.5 }
     }
   },
   methods: {
@@ -79,9 +80,6 @@ export default {
       set () {
         //
       }
-    },
-    getBound: function () {
-      return { w: 1000, h: 645, x: 500, y: 322.5 }
     }
   }
 }
