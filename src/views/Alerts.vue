@@ -631,10 +631,12 @@ export default {
 
       if (this.form_data.image) {
         let image = { size: 0, name: 'image alert', type: 'image/png' }
+				this.$refs.myVueDropzone.removeAllFiles()
         this.$refs.myVueDropzone.manuallyAddFile(image, this.form_data.image)
       }
       if (this.form_data.sound) {
         let sound = { size: 534, name: 'sound alert', type: 'music/mp3' }
+				this.$refs.soundVueDropzone.removeAllFiles()
         this.$refs.soundVueDropzone.manuallyAddFile(sound, this.form_data.sound)
       }
       this.alert_edit_id = alert.id
@@ -1299,8 +1301,8 @@ img.preview-icon {
 	display: inline-block
 }
 #alerts-dropzone .dz-preview .dz-image {
-	width: 300px;
-	height: 300px;
+	width: 200px;
+	height: 200px;
 }
 #alerts-dropzone .dz-preview .dz-image > div {
 	width: inherit;
