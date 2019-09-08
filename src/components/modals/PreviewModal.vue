@@ -10,8 +10,8 @@
 			<drr
 				v-for="element in elements"
 				:key="element.id"
-				:x="element.x"
-				:y="element.y"
+				:x="element.x * bound.w"
+				:y="element.y * bound.h"
 				:w="element.w"
 				:h="element.h"
 				:angle="element.angle"
