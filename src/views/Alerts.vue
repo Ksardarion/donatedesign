@@ -288,8 +288,8 @@
 					<div class="custom-alert-image">
 						<drr
 							:selectable="false"
-							:x="form_data.positions.image.x"
-							:y="form_data.positions.image.y"
+							:x="getX(form_data.positions.image.x)"
+							:y="getY(form_data.positions.image.y)"
 							:w="form_data.positions.image.w"
 							:h="form_data.positions.image.h"
 							:angle="form_data.positions.image.angle"
@@ -301,8 +301,8 @@
 
 					<drr
 						:selectable="false"
-						:x="form_data.positions.title.x"
-						:y="form_data.positions.title.y"
+						:x="getX(form_data.positions.title.x)"
+						:y="getY(form_data.positions.title.y)"
 						:w="form_data.positions.title.w"
 						:h="form_data.positions.title.h"
 						:angle="form_data.positions.title.angle"
@@ -313,8 +313,8 @@
 
 					<drr
 						:selectable="false"
-						:x="form_data.positions.text.x"
-						:y="form_data.positions.text.y"
+						:x="getX(form_data.positions.text.x)"
+						:y="getY(form_data.positions.text.y)"
 						:w="form_data.positions.text.w"
 						:h="form_data.positions.text.h"
 						:angle="form_data.positions.text.angle"
@@ -586,6 +586,14 @@ export default {
     getPreviewHeight () {
       return 701 * 0.645
     },
+    getX (value) {
+    	console.log(value)
+			console.log(value * 0.7)
+			return value * 0.7
+    },
+    getY (value) {
+    	return value * 0.37
+    },
     changeRangeValue (event) {
       let element = event.target
       let type = element.id
@@ -631,12 +639,12 @@ export default {
 
       if (this.form_data.image) {
         let image = { size: 0, name: 'image alert', type: 'image/png' }
-				this.$refs.myVueDropzone.removeAllFiles()
+        this.$refs.myVueDropzone.removeAllFiles()
         this.$refs.myVueDropzone.manuallyAddFile(image, this.form_data.image)
       }
       if (this.form_data.sound) {
         let sound = { size: 534, name: 'sound alert', type: 'music/mp3' }
-				this.$refs.soundVueDropzone.removeAllFiles()
+        this.$refs.soundVueDropzone.removeAllFiles()
         this.$refs.soundVueDropzone.manuallyAddFile(sound, this.form_data.sound)
       }
       this.alert_edit_id = alert.id
