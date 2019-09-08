@@ -288,8 +288,8 @@
 					<div class="custom-alert-image">
 						<drr
 							:selectable="false"
-							:x="form_data.positions.image.x"
-							:y="form_data.positions.image.y"
+							:x="getX(form_data.positions.image.x)"
+							:y="getY(form_data.positions.image.y)"
 							:w="form_data.positions.image.w"
 							:h="form_data.positions.image.h"
 							:angle="form_data.positions.image.angle"
@@ -301,8 +301,8 @@
 
 					<drr
 						:selectable="false"
-						:x="form_data.positions.title.x"
-						:y="form_data.positions.title.y"
+						:x="getX(form_data.positions.title.x)"
+						:y="getY(form_data.positions.title.y)"
 						:w="form_data.positions.title.w"
 						:h="form_data.positions.title.h"
 						:angle="form_data.positions.title.angle"
@@ -313,8 +313,8 @@
 
 					<drr
 						:selectable="false"
-						:x="form_data.positions.text.x"
-						:y="form_data.positions.text.y"
+						:x="getX(form_data.positions.text.x)"
+						:y="getY(form_data.positions.text.y)"
 						:w="form_data.positions.text.w"
 						:h="form_data.positions.text.h"
 						:angle="form_data.positions.text.angle"
@@ -478,8 +478,8 @@ export default {
         positions: {
           title: {
             id: 'title',
-            x: 200,
-            y: 120,
+            x: 0.5,
+            y: 0.2,
             scaleX: 1,
             scaleY: 1,
             w: 400,
@@ -499,8 +499,8 @@ export default {
           },
           text: {
             id: 'text',
-            x: 200,
-            y: 200,
+            x: 0.5,
+            y: 0.4,
             scaleX: 1,
             scaleY: 1,
             w: 400,
@@ -519,8 +519,8 @@ export default {
           },
           image: {
             id: 'image',
-            x: 200,
-            y: 50,
+            x: 0.5,
+            y: 0.6,
             scaleX: 1,
             scaleY: 1,
             w: 100,
@@ -586,6 +586,18 @@ export default {
     getPreviewHeight () {
       return 701 * 0.645
     },
+    getX (value) {
+      return value * 701
+    },
+    getY (value) {
+      return value * 240
+    },
+    getModalX (value) {
+      return value * 1000
+    },
+    getModalY (value) {
+      return value * 645
+    },
     changeRangeValue (event) {
       let element = event.target
       let type = element.id
@@ -620,48 +632,42 @@ export default {
       this.form_data = alert.settings
       this.form_data.image = alert.settings.image
       this.form_data.sound = alert.settings.sound
-      this.form_data.positions.image.x = this.form_data.positions.image.x * 1000
-      this.form_data.positions.image.y = this.form_data.positions.image.y * 645
-
-      this.form_data.positions.title.x = this.form_data.positions.title.x * 1000
-      this.form_data.positions.title.y = this.form_data.positions.title.y * 645
-
-      this.form_data.positions.text.x = this.form_data.positions.text.x * 1000
-      this.form_data.positions.text.y = this.form_data.positions.text.y * 645
-
       if (this.form_data.image) {
         let image = { size: 0, name: 'image alert', type: 'image/png' }
-				this.$refs.myVueDropzone.removeAllFiles()
+        this.$refs.myVueDropzone.removeAllFiles()
         this.$refs.myVueDropzone.manuallyAddFile(image, this.form_data.image)
       }
       if (this.form_data.sound) {
         let sound = { size: 534, name: 'sound alert', type: 'music/mp3' }
-				this.$refs.soundVueDropzone.removeAllFiles()
+        this.$refs.soundVueDropzone.removeAllFiles()
         this.$refs.soundVueDropzone.manuallyAddFile(sound, this.form_data.sound)
       }
       this.alert_edit_id = alert.id
       this.formToggle(type_form)
     },
     create () {
-      axios.post('/alerts', this.form_data).then(response => {
-        this.fetchAlerts()
-      })
+      axios.post('/alerts', this.form_data)
+        .then(() => { this.fetchAlerts() })
+        .then(() => { this.form_data = this.getDefaultFormData() })
+        .then(() => { this.$refs.myVueDropzone.removeAllFiles() })
+        .then(() => { this.$refs.soundVueDropzone.removeAllFiles() })
     },
     edit () {
-      this.form_data.positions.image.x = this.form_data.positions.image.x / 1000
-      this.form_data.positions.image.y = this.form_data.positions.image.y / 645
-
-      this.form_data.positions.title.x = this.form_data.positions.title.x / 1000
-      this.form_data.positions.title.y = this.form_data.positions.title.y / 645
-
-      this.form_data.positions.text.x = this.form_data.positions.text.x / 1000
-      this.form_data.positions.text.y = this.form_data.positions.text.y / 645
-
-      axios.put(`/alerts/${this.alert_edit_id}`, this.form_data).then(response => {
-        this.fetchAlerts()
-      })
+      axios.put(`/alerts/${this.alert_edit_id}`, this.form_data)
+        .then(() => { this.fetchAlerts() })
+        .then(() => { this.form_data = this.getDefaultFormData() })
+        .then(() => { this.$refs.myVueDropzone.removeAllFiles() })
+        .then(() => { this.$refs.soundVueDropzone.removeAllFiles() })
     },
     submit () {
+      this.form_data.positions.image.x = this.getModalX(this.form_data.positions.image.x)
+      this.form_data.positions.image.y = this.getModalY(this.form_data.positions.image.y)
+
+      this.form_data.positions.title.x = this.getModalX(this.form_data.positions.title.x)
+      this.form_data.positions.title.y = this.getModalY(this.form_data.positions.title.y)
+
+      this.form_data.positions.text.x = this.getModalX(this.form_data.positions.text.x)
+      this.form_data.positions.text.y = this.getModalY(this.form_data.positions.text.y)
       !this.alert_edit_id ? this.create() : this.edit()
       this.formToggle(this.type_form, false)
     },
@@ -699,7 +705,6 @@ export default {
       this.form_data.image = response.src
     },
     soundSuccess (file, response) {
-      console.log('soundSuccess')
       this.form_data.sound = response
     },
     thumbnail: function (file, dataUrl) {
@@ -725,6 +730,84 @@ export default {
       axios.get('/fonts').then(response => {
         this.fonts = response.data
       })
+    },
+    getDefaultFormData () {
+      return {
+        strick: 0,
+        type: 'donate',
+        image: '',
+        sound: '',
+        durationSound: 15,
+        volumeSound: 50,
+        range_value: [100, 500],
+        alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
+        alert_title_color: '#A1A1C3',
+        alert_message_color: '#A1A1C3',
+        alert_title_font: 'Montserrat',
+        alert_message_font: 'Montserrat',
+        alert_title: '{{user}} перевел вам {{amount}}',
+        positions: {
+          title: {
+            id: 'title',
+            x: 0.5,
+            y: 0.2,
+            scaleX: 1,
+            scaleY: 1,
+            w: 400,
+            h: 20,
+            angle: 0,
+            text: '{{user}} перевел вам {{amount}}',
+            classPrefix: 'tr',
+            styles: {
+              font_size: 15,
+              bold: true,
+              italic: false,
+              background: 'transparent',
+              // fontSize: '14px',
+              width: '100%',
+              height: '100%'
+            }
+          },
+          text: {
+            id: 'text',
+            x: 0.5,
+            y: 0.4,
+            scaleX: 1,
+            scaleY: 1,
+            w: 400,
+            h: 100,
+            angle: 0,
+            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
+            classPrefix: 'tr',
+            styles: {
+              font_size: 10,
+              bold: false,
+              italic: false,
+              // background: 'transparent',
+              width: '100%',
+              height: '100%'
+            }
+          },
+          image: {
+            id: 'image',
+            x: 0.5,
+            y: 0.6,
+            scaleX: 1,
+            scaleY: 1,
+            w: 100,
+            h: 100,
+            angle: 0,
+            text: '',
+            classPrefix: 'tr',
+            styles: {
+              background: 'transparent',
+              fontSize: '10px',
+              width: '100%',
+              height: '100%'
+            }
+          }
+        }
+      }
     }
   },
   created () {
