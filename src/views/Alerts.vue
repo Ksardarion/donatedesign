@@ -288,8 +288,8 @@
 					<div class="custom-alert-image">
 						<drr
 							:selectable="false"
-							:x="form_data.positions.image.x"
-							:y="form_data.positions.image.y"
+							:x="getX(form_data.positions.image.x)"
+							:y="getY(form_data.positions.image.y)"
 							:w="form_data.positions.image.w"
 							:h="form_data.positions.image.h"
 							:angle="form_data.positions.image.angle"
@@ -301,20 +301,20 @@
 
 					<drr
 						:selectable="false"
-						:x="form_data.positions.title.x"
-						:y="form_data.positions.title.y"
+						:x="getX(form_data.positions.title.x)"
+						:y="getY(form_data.positions.title.y)"
 						:w="form_data.positions.title.w"
 						:h="form_data.positions.title.h"
 						:angle="form_data.positions.title.angle"
 						:hasActiveContent="true"
 					>
-						<div class="element" :style="title_styles" v-html="form_data.alert_title"/>
+						<div class="element" :style="title_styles" v-html="previewTitle" />
 					</drr>
 
 					<drr
 						:selectable="false"
-						:x="form_data.positions.text.x"
-						:y="form_data.positions.text.y"
+						:x="getX(form_data.positions.text.x)"
+						:y="getY(form_data.positions.text.y)"
 						:w="form_data.positions.text.w"
 						:h="form_data.positions.text.h"
 						:angle="form_data.positions.text.angle"
@@ -466,8 +466,8 @@ export default {
         type: 'donate',
         image: '',
         sound: '',
-				durationSound: 15,
-				volumeSound: 50,
+        durationSound: 15,
+        volumeSound: 50,
         range_value: [100, 500],
         alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
         alert_title_color: '#A1A1C3',
@@ -478,8 +478,8 @@ export default {
         positions: {
           title: {
             id: 'title',
-            x: 200,
-            y: 120,
+            x: 0.5,
+            y: 0.2,
             scaleX: 1,
             scaleY: 1,
             w: 400,
@@ -499,8 +499,8 @@ export default {
           },
           text: {
             id: 'text',
-            x: 200,
-            y: 200,
+            x: 0.5,
+            y: 0.4,
             scaleX: 1,
             scaleY: 1,
             w: 400,
@@ -519,8 +519,8 @@ export default {
           },
           image: {
             id: 'image',
-            x: 200,
-            y: 50,
+            x: 0.5,
+            y: 0.6,
             scaleX: 1,
             scaleY: 1,
             w: 100,
@@ -552,10 +552,6 @@ export default {
   computed: {
     ...mapState(['alerts']),
     ...mapGetters(['color_schema', 'token']),
-    // linkDonate () {
-    // 	if (!this.links.length)return ''
-    // 	return this.links.find(x => x.type === 'donate').link
-    // },
     text_styles: function () {
       return this.getElementStyles(this.form_data.positions.text, 'message')
     },
@@ -563,26 +559,11 @@ export default {
       return this.getElementStyles(this.form_data.positions.title, 'title')
     },
     previewTitle () {
-      return this.form_data.alert_title.replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
+      return this.form_data.alert_title
+        .replace(/{{user}}|{{amount}}/gi, function (value) { return ("<span style='color: white' >" + value + '</span>') })
+        .replace(/{{user}}/gi, 'Вася Пупкин')
+        .replace(/{{amount}}/gi, ' 1000 руб.')
     },
-    // titleStyleoptions () {
-    // 	return {
-    // 		color: this.form_data.alert_title_color,
-    // 		// textAlign: this.form_data.title_align,
-    // 		fontSize: this.form_data.alert_title_font_size + 'px',
-    // 		fontFamily: this.form_data.alert_title_font,
-    // 		fontStyle: this.form_data.title_style
-    // 	}
-    // },
-    // messageStyleoptions () {
-    // 	return {
-    // 		color: this.form_data.alert_message_color,
-    // 		// textAlign: this.form_data.message_align,
-    // 		fontSize: this.form_data.alert_message_font_size + 'px',
-    // 		fontFamily: this.form_data.alert_message_font,
-    // 		fontStyle: this.form_data.message_style
-    // 	}
-    // },
     AlertImage () {
       return this.form_data.image ? this.form_data.image : require('../assets/Image 23.png')
     }
@@ -604,6 +585,18 @@ export default {
     ...mapActions(['fetchAlerts', 'removeAlert']),
     getPreviewHeight () {
       return 701 * 0.645
+    },
+    getX (value) {
+      return value * 701
+    },
+    getY (value) {
+      return value * 240
+    },
+    getModalX (value) {
+      return value * 1000
+    },
+    getModalY (value) {
+      return value * 645
     },
     changeRangeValue (event) {
       let element = event.target
@@ -639,37 +632,49 @@ export default {
       this.form_data = alert.settings
       this.form_data.image = alert.settings.image
       this.form_data.sound = alert.settings.sound
-
       if (this.form_data.image) {
-        var file = { size: 0, name: 'image alert', type: 'image/png' }
-        this.$refs.myVueDropzone.manuallyAddFile(file, this.form_data.image)
+        let image = { size: 0, name: 'image alert', type: 'image/png' }
+        this.$refs.myVueDropzone.removeAllFiles()
+        this.$refs.myVueDropzone.manuallyAddFile(image, this.form_data.image)
       }
       if (this.form_data.sound) {
-        var file = { size: 534, name: 'sound alert', type: 'music/mp3' }
-        this.$refs.soundVueDropzone.manuallyAddFile(file, this.form_data.sound)
+        let sound = { size: 534, name: 'sound alert', type: 'music/mp3' }
+        this.$refs.soundVueDropzone.removeAllFiles()
+        this.$refs.soundVueDropzone.manuallyAddFile(sound, this.form_data.sound)
       }
       this.alert_edit_id = alert.id
       this.formToggle(type_form)
     },
     create () {
-      axios.post('/alerts', this.form_data).then(response => {
-        this.fetchAlerts()
-      })
+      axios.post('/alerts', this.form_data)
+        .then(() => { this.fetchAlerts() })
+        .then(() => { this.form_data = this.getDefaultFormData() })
+        .then(() => { this.$refs.myVueDropzone.removeAllFiles() })
+        .then(() => { this.$refs.soundVueDropzone.removeAllFiles() })
     },
     edit () {
-      axios.put(`/alerts/${this.alert_edit_id}`, this.form_data).then(response => {
-        this.fetchAlerts()
-      })
+      axios.put(`/alerts/${this.alert_edit_id}`, this.form_data)
+        .then(() => { this.fetchAlerts() })
+        .then(() => { this.form_data = this.getDefaultFormData() })
+        .then(() => { this.$refs.myVueDropzone.removeAllFiles() })
+        .then(() => { this.$refs.soundVueDropzone.removeAllFiles() })
     },
     submit () {
+      this.form_data.positions.image.x = this.getModalX(this.form_data.positions.image.x)
+      this.form_data.positions.image.y = this.getModalY(this.form_data.positions.image.y)
+
+      this.form_data.positions.title.x = this.getModalX(this.form_data.positions.title.x)
+      this.form_data.positions.title.y = this.getModalY(this.form_data.positions.title.y)
+
+      this.form_data.positions.text.x = this.getModalX(this.form_data.positions.text.x)
+      this.form_data.positions.text.y = this.getModalY(this.form_data.positions.text.y)
       !this.alert_edit_id ? this.create() : this.edit()
       this.formToggle(this.type_form, false)
     },
-    formToggle (type_form = 'donate', type_update = true) {
-      this.type_form = type_form
-      // console.log(type_update)
-      if (type_update) {
-        if (type_form === 'subscribe') {
+    formToggle (typeForm = 'donate', typeUpdate = true) {
+      this.type_form = typeForm
+      if (typeUpdate) {
+        if (typeForm === 'subscribe') {
           this.form_data.type = 'free'
         } else {
           this.form_data.type = 'donate'
@@ -700,7 +705,6 @@ export default {
       this.form_data.image = response.src
     },
     soundSuccess (file, response) {
-      console.log('soundSuccess')
       this.form_data.sound = response
     },
     thumbnail: function (file, dataUrl) {
@@ -726,6 +730,84 @@ export default {
       axios.get('/fonts').then(response => {
         this.fonts = response.data
       })
+    },
+    getDefaultFormData () {
+      return {
+        strick: 0,
+        type: 'donate',
+        image: '',
+        sound: '',
+        durationSound: 15,
+        volumeSound: 50,
+        range_value: [100, 500],
+        alert_message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
+        alert_title_color: '#A1A1C3',
+        alert_message_color: '#A1A1C3',
+        alert_title_font: 'Montserrat',
+        alert_message_font: 'Montserrat',
+        alert_title: '{{user}} перевел вам {{amount}}',
+        positions: {
+          title: {
+            id: 'title',
+            x: 0.5,
+            y: 0.2,
+            scaleX: 1,
+            scaleY: 1,
+            w: 400,
+            h: 20,
+            angle: 0,
+            text: '{{user}} перевел вам {{amount}}',
+            classPrefix: 'tr',
+            styles: {
+              font_size: 15,
+              bold: true,
+              italic: false,
+              background: 'transparent',
+              // fontSize: '14px',
+              width: '100%',
+              height: '100%'
+            }
+          },
+          text: {
+            id: 'text',
+            x: 0.5,
+            y: 0.4,
+            scaleX: 1,
+            scaleY: 1,
+            w: 400,
+            h: 100,
+            angle: 0,
+            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, eiusmod incididunt tempor ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip commodo consequat. Duis aute reprehenderit dolor in irure in voluptate velit cillum dolore pariatur.',
+            classPrefix: 'tr',
+            styles: {
+              font_size: 10,
+              bold: false,
+              italic: false,
+              // background: 'transparent',
+              width: '100%',
+              height: '100%'
+            }
+          },
+          image: {
+            id: 'image',
+            x: 0.5,
+            y: 0.6,
+            scaleX: 1,
+            scaleY: 1,
+            w: 100,
+            h: 100,
+            angle: 0,
+            text: '',
+            classPrefix: 'tr',
+            styles: {
+              background: 'transparent',
+              fontSize: '10px',
+              width: '100%',
+              height: '100%'
+            }
+          }
+        }
+      }
     }
   },
   created () {
@@ -1302,8 +1384,8 @@ img.preview-icon {
 	display: inline-block
 }
 #alerts-dropzone .dz-preview .dz-image {
-	width: 300px;
-	height: 300px;
+	width: 200px;
+	height: 200px;
 }
 #alerts-dropzone .dz-preview .dz-image > div {
 	width: inherit;
