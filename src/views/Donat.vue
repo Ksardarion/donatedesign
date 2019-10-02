@@ -229,7 +229,7 @@ export default {
       }
     },
     fetchFormData: function () {
-      axios.get('/user/donationformdata/')
+      axios.get('/user/donationformdata')
         .then((response) => { if (response.data.form_settings) this.settings = response.data.form_settings })
     },
     updateDonateForm: function () {
@@ -240,7 +240,7 @@ export default {
       return axios.post(`/donate/settings/${this.$store.getters.user_info.id}`, { settings: this.settings })
     },
     fetchPaymentMethods: function () {
-      axios.get('/payments/list/')
+      axios.get('/payments/list')
         .then((response) => { this.paymentItems = response.data })
     },
     removeMethod: function (item) {

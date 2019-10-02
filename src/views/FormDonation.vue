@@ -252,7 +252,7 @@ export default {
       })
     },
     checkSubscribe () {
-      axios.get(`/premium/${this.user_info.id}/checksubscribe/`).then(response => {
+      axios.get(`/premium/${this.user_info.id}/checksubscribe`).then(response => {
         this.subscribe = response.data
       })
     },
@@ -272,6 +272,7 @@ export default {
     fetchStreamerData () {
       return axios.get(`/user/donationformdata/?streamer=${this.getUserId}`)
         .then((response) => {
+					console.log(2222)
         	let newSettings = response.data.form_settings
           if (typeof newSettings.other === 'undefined') {
             newSettings.other = { donatevideolimit: 500 }

@@ -130,7 +130,14 @@
  </label>
  <div class="amount-slider">
   <b-form-slider ref="range" :min="0" :max="500" v-model="item_form.widget_animation_delay" />
-  <div class="slider-value text">{{ item_form.widget_animation_delay }}</div>
+	<input
+		type="number"
+		:min="0"
+		:max="500"
+		v-model="item_form.widget_animation_delay"
+		class="widget-input"
+		style="margin-left: 10px;"
+	>
 </div>
 </div>
 </div>
@@ -279,7 +286,7 @@
           <label class="switch-checkbox" >
             <input type="radio"
 							:name="'select-widget'+index"
-							@change="activate(c_item.slug)"
+							@click="activate(c_item.slug), c_item.active = !c_item.active"
 							:value="c_item.active"
 							:checked="c_item.active"
 						>
@@ -300,6 +307,7 @@
         </div>
         <div class="collapse-actions">
           <button
+					v-if="!actions"
           style="border: 0"
           class="edit-link btn-action"
           v-tooltip.hover.top.end="{ content: 'Редактировать', class: 'tooltip-custom' }"
@@ -382,7 +390,16 @@
           sbor_bar_border_color: '#FFFFFF'
         }
       }
-    },
+		},
+		watch: {
+			'item_form.widget_animation_delay': function (value) {
+				value = Number(value)
+				if (value < 0)value = 0
+				if (value > 500)value = 500
+
+				this.item_form.widget_animation_delay = value
+			}
+		},
     // mounted() {
     //   this.$store.dispatch('fetchWidgets')
     // },
@@ -451,7 +468,6 @@
 				}, 50);
 			},
 			activate (widget_slug) {
-				console.log(widget_slug)
 				axios.get('/widget/activate/' + widget_slug)
 			},
 			fetchWidgetOptions () {
