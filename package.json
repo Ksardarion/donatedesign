@@ -19,7 +19,7 @@
     "howler": "^2.1.2",
     "i": "^0.3.6",
     "jquery": "^3.4.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "npm": "^6.10.3",
     "sass-loader": "^7.1.0",
     "typeface-montserrat": "0.0.54",
